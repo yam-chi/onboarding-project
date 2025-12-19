@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import { isValidPhone } from "@/lib/onboarding";
 
@@ -74,6 +75,9 @@ export default function Step0New() {
           <div className="bg-green-100 text-green-800 rounded-lg px-4 py-3 text-sm">
             제휴 요청이 접수되었습니다. 요청 ID: {successId}
             <div className="text-xs text-[#166534]">승인되면 다음 단계로 자동 진행됩니다.</div>
+            <div className="text-xs text-[#166534]">
+              홈으로 이동해 방금 만든 임시 ID/PW로 로그인하면 진행 상황을 이어서 볼 수 있습니다.
+            </div>
           </div>
         )}
 
@@ -126,7 +130,10 @@ export default function Step0New() {
           임시 ID/PW를 입력하면, 나중에 홈 화면에서 입력해서 진행 중인 온보딩으로 바로 들어올 수 있습니다. 비워두면 자동으로 생성하지는 않으니, 기억하기 쉬운 값을 넣어두세요.
         </div>
 
-        <div className="flex justify-end">
+        <div className="flex justify-between">
+          <Link href="/" className="px-5 py-3 rounded-lg border border-[#1C5DFF] text-[#1C5DFF] font-semibold">
+            홈(로그인)으로
+          </Link>
           <button
             type="button"
             onClick={submit}

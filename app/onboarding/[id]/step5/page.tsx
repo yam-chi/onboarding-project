@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useParams } from "next/navigation";
+import { useEffect, useState } from "react";
 
 // 외부 링크는 바로 하드코딩해 동작하도록 처리
 const manageUrl = "https://plab.so";
@@ -12,6 +13,28 @@ export default function OnboardingCompletePage() {
   const params = useParams<{ id: string }>();
   const rawId = params?.id;
   const id = Array.isArray(rawId) ? rawId[0] : rawId;
+  const [account, setAccount] = useState<string | null>(null);
+  const [password, setPassword] = useState<string | null>(null);
+
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      if (!id) return;
+      try {
+        const res = await fetch(`/api/onboarding/${id}/step5`);
+        const json = await res.json();
+        if (!res.ok) throw new Error(json?.error || "불러오기 실패");
+        if (!mounted) return;
+        setAccount(json.final_account ?? null);
+        setPassword(json.final_password ?? null);
+      } catch {
+        // 실패 시 무시하고 기본 안내만 표시
+      }
+    })();
+    return () => {
+      mounted = false;
+    };
+  }, [id]);
 
   return (
     <main className="min-h-screen bg-[#F7F9FC] px-4 py-12">
@@ -47,7 +70,8 @@ export default function OnboardingCompletePage() {
           <InfoCard
             title="계정 정보"
             items={[
-              "온보딩 중 설정한 임시 ID/PW 또는 담당자가 전달한 계정으로 로그인해주세요.",
+              account ? `계정: ${account}` : "담당자가 전달한 계정으로 로그인해주세요.",
+              password ? `비밀번호: ${password}` : "비밀번호는 전달된 정보를 사용해주세요.",
               "계정 분실 시 문의 채널로 연락주시면 바로 재발급해드립니다.",
             ]}
           />

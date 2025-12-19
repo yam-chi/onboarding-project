@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { useParams } from "next/navigation";
-import { OnboardingState, statusToLabel } from "@/lib/onboarding";
+import { useParams, useRouter } from "next/navigation";
+import { OnboardingState, statusToLabel, statusToPath } from "@/lib/onboarding";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -22,6 +22,7 @@ export default function Step1SettlementPage() {
   const params = useParams<{ id: string }>();
   const rawId = params?.id;
   const id = Array.isArray(rawId) ? rawId[0] : rawId;
+  const router = useRouter();
 
   const [info, setInfo] = useState<RequestInfo | null>(null);
   const [proposals, setProposals] = useState<Proposal[]>([]);
@@ -52,6 +53,9 @@ export default function Step1SettlementPage() {
   }, [id]);
 
   const statusLabel = info ? statusToLabel(info.step_status) : "";
+  const nextPath = info ? statusToPath(id, info.step_status) : null;
+  const showNext = nextPath && nextPath !== `/onboarding/${id}/step1`;
+  const prevPath = `/onboarding/${id}/wait`;
 
   const statusMessage = useMemo(() => {
     if (!info) return null;
@@ -76,6 +80,10 @@ export default function Step1SettlementPage() {
       if (!res.ok) throw new Error(json?.error || "승인 실패");
       setBanner("정산안을 승인했습니다.");
       setInfo((prev) => (prev ? { ...prev, step_status: json.step_status as OnboardingState } : prev));
+      // 승인 후 바로 다음 단계로 이동
+      if (json.step_status === "step1_pending") {
+        router.replace(`/onboarding/${id}/step2`);
+      }
     } catch (e: any) {
       setError(e.message ?? "오류가 발생했습니다.");
     }
@@ -139,25 +147,32 @@ export default function Step1SettlementPage() {
             </div>
           )}
           <div className="flex justify-end gap-2">
-            {info?.step_status === "step3_approved" && (
-              <Link
-                href={`/onboarding/${id}/step4`}
-                className="px-4 py-2 rounded-lg border border-[#1C5DFF] text-[#1C5DFF] font-semibold"
-              >
-                STEP4로 이동
-              </Link>
-            )}
             <button
               type="button"
               onClick={approve}
-              disabled={info?.step_status === "step3_approved"}
+              disabled={info?.step_status !== "step3_proposed"}
               className="px-4 py-2 rounded-lg text-white font-semibold"
-              style={{ background: info?.step_status === "step3_approved" ? "#9CA3AF" : "#1C5DFF" }}
+              style={{ background: info?.step_status === "step3_proposed" ? "#1C5DFF" : "#9CA3AF" }}
             >
-              {info?.step_status === "step3_approved" ? "승인 완료" : "이 정산안으로 진행"}
+              {info?.step_status === "step1_pending" ? "승인 완료" : "이 정산안으로 진행"}
             </button>
           </div>
         </section>
+
+        <nav className="flex items-center justify-between">
+          <Link href={prevPath} className="px-4 py-2 rounded-lg border border-[#1C5DFF] text-[#1C5DFF] font-semibold">
+            이전 단계로
+          </Link>
+          {showNext ? (
+            <Link href={nextPath || "#"} className="px-4 py-2 rounded-lg text-white font-semibold" style={{ background: "#1C5DFF" }}>
+              다음 단계로 이동
+            </Link>
+          ) : (
+            <button className="px-4 py-2 rounded-lg border border-[#E3E6EC] text-[#6b7280]" disabled>
+              다음 단계 준비 중
+            </button>
+          )}
+        </nav>
       </div>
     </main>
   );

@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import { OnboardingState, statusToLabel } from "@/lib/onboarding";
+import Link from "next/link";
+import { OnboardingState, statusToLabel, statusToPath } from "@/lib/onboarding";
 
 type Info = { step_status: OnboardingState; owner_name?: string | null; memo?: string | null };
 
@@ -40,6 +41,8 @@ export default function WaitPage() {
 
   const status = info?.step_status;
   const label = status ? statusToLabel(status) : "";
+  const nextPath = status ? statusToPath(id, status) : null;
+  const canGoNext = nextPath && nextPath !== `/onboarding/${id}/wait`;
 
   let title = "제휴 신청 검토 중";
   let message = "담당자가 구장 정보를 확인하고 있습니다.";
@@ -61,6 +64,18 @@ export default function WaitPage() {
         <div className="text-sm text-[#6b7280]">온보딩 ID: {id}</div>
         {label && <div className="text-xs text-[#1C5DFF] font-semibold">{label}</div>}
         <p className="text-sm text-[#4b5563] leading-6 whitespace-pre-line">{message}</p>
+
+        {canGoNext && (
+          <div className="pt-4">
+            <Link
+              href={nextPath || "#"}
+              className="inline-flex items-center px-5 py-3 rounded-lg text-white font-semibold"
+              style={{ background: "#1C5DFF" }}
+            >
+              다음 단계로 이동
+            </Link>
+          </div>
+        )}
       </div>
     </main>
   );

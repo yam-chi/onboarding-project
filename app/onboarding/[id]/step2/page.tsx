@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
 import { useParams } from "next/navigation";
-import { OnboardingState, statusToLabel } from "@/lib/onboarding";
+import { OnboardingState, statusToLabel, statusToPath } from "@/lib/onboarding";
 
 type StadiumInfo = {
   region?: string;
@@ -92,6 +93,9 @@ export default function Step2Page() {
   }, [id]);
 
   const statusLabel = status ? statusToLabel(status) : "";
+  const nextPath = status ? statusToPath(id, status) : null;
+  const showNext = nextPath && nextPath !== `/onboarding/${id}/step2`;
+  const prevPath = `/onboarding/${id}/step1`;
   const statusMessage = useMemo(() => {
     if (!status) return null;
     if (status === "step1_need_fix") return "담당자가 보완을 요청했습니다. 수정 후 다시 제출해주세요.";
@@ -267,6 +271,21 @@ export default function Step2Page() {
             {saving ? "제출 중..." : "제출하기"}
           </button>
         </div>
+
+        <nav className="flex items-center justify-between">
+          <Link href={prevPath} className="px-4 py-2 rounded-lg border border-[#1C5DFF] text-[#1C5DFF] font-semibold">
+            이전 단계로
+          </Link>
+          {showNext ? (
+            <Link href={nextPath || "#"} className="px-4 py-2 rounded-lg text-white font-semibold" style={{ background: "#1C5DFF" }}>
+              다음 단계로 이동
+            </Link>
+          ) : (
+            <button className="px-4 py-2 rounded-lg border border-[#E3E6EC] text-[#6b7280]" disabled>
+              다음 단계 준비 중
+            </button>
+          )}
+        </nav>
       </div>
     </main>
   );

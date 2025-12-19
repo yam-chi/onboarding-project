@@ -29,6 +29,8 @@ export async function GET(_req: NextRequest, context: { params: Promise<{ id: st
         other_services,
         memo,
         source,
+        final_account,
+        final_password,
         updated_at
       `,
       )

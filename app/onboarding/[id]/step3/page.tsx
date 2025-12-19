@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
 import { useParams } from "next/navigation";
-import { OnboardingState, statusToLabel } from "@/lib/onboarding";
+import { OnboardingState, statusToLabel, statusToPath } from "@/lib/onboarding";
 
 type DocRow = { doc_type: string; file_url: string; uploaded_at: string };
 type Stadium = { stadium_name?: string; region?: string; address?: string; address_detail?: string; stadium_contact?: string };
@@ -53,6 +54,9 @@ export default function Step3DocsPage() {
   }, [id]);
 
   const statusLabel = info ? statusToLabel(info.step_status) : "";
+  const nextPath = info ? statusToPath(id, info.step_status) : null;
+  const showNext = nextPath && nextPath !== `/onboarding/${id}/step3`;
+  const prevPath = `/onboarding/${id}/step2`;
   const statusMessage = useMemo(() => {
     if (!info) return null;
     const s = info.step_status;
@@ -203,6 +207,21 @@ export default function Step3DocsPage() {
             {saving ? "제출 중..." : "서류 제출 완료"}
           </button>
         </div>
+
+        <nav className="flex items-center justify-between">
+          <Link href={prevPath} className="px-4 py-2 rounded-lg border border-[#1C5DFF] text-[#1C5DFF] font-semibold">
+            이전 단계로
+          </Link>
+          {showNext ? (
+            <Link href={nextPath || "#"} className="px-4 py-2 rounded-lg text-white font-semibold" style={{ background: "#1C5DFF" }}>
+              다음 단계로 이동
+            </Link>
+          ) : (
+            <button className="px-4 py-2 rounded-lg border border-[#E3E6EC] text-[#6b7280]" disabled>
+              다음 단계 준비 중
+            </button>
+          )}
+        </nav>
       </div>
     </main>
   );

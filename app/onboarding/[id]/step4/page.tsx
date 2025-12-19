@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
 import { useParams } from "next/navigation";
-import { OnboardingState, statusToLabel } from "@/lib/onboarding";
+import { OnboardingState, statusToLabel, statusToPath } from "@/lib/onboarding";
 
 type TimeRow = { id?: string; day_of_week: string; start_time: string; end_time: string; note?: string | null };
 
@@ -60,6 +61,9 @@ export default function Step5Page() {
   }, [id]);
 
   const statusLabel = info ? statusToLabel(info.step_status) : "";
+  const nextPath = info ? statusToPath(id, info.step_status) : null;
+  const showNext = nextPath && nextPath !== `/onboarding/${id}/step4`;
+  const prevPath = `/onboarding/${id}/step3`;
   const statusMessage = useMemo(() => {
     if (!info) return null;
     if (info.step_status === "step5_submitted") return "세팅 가능 시간이 제출되었습니다. 담당자 검토 중입니다.";
@@ -123,6 +127,17 @@ export default function Step5Page() {
             </div>
           )}
           {statusMessage && <div className="bg-blue-50 text-[#1C5DFF] text-sm px-3 py-2 rounded-lg">{statusMessage}</div>}
+          {showNext && (
+            <div className="flex justify-end">
+              <Link
+                href={nextPath || "#"}
+                className="inline-flex items-center px-4 py-2 rounded-lg text-white font-semibold"
+                style={{ background: "#1C5DFF" }}
+              >
+                승인 완료 · 다음 단계로 이동
+              </Link>
+            </div>
+          )}
         </header>
 
         {banner && <div className="bg-green-100 text-green-800 px-4 py-3 rounded-lg text-sm">{banner}</div>}
@@ -192,6 +207,21 @@ export default function Step5Page() {
             {saving ? "제출 중..." : "세팅 가능 시간 제출하기"}
           </button>
         </div>
+
+        <nav className="flex items-center justify-between">
+          <Link href={prevPath} className="px-4 py-2 rounded-lg border border-[#1C5DFF] text-[#1C5DFF] font-semibold">
+            이전 단계로
+          </Link>
+          {showNext ? (
+            <Link href={nextPath || "#"} className="px-4 py-2 rounded-lg text-white font-semibold" style={{ background: "#1C5DFF" }}>
+              다음 단계로 이동
+            </Link>
+          ) : (
+            <button className="px-4 py-2 rounded-lg border border-[#E3E6EC] text-[#6b7280]" disabled>
+              다음 단계 준비 중
+            </button>
+          )}
+        </nav>
       </div>
     </main>
   );

@@ -8,7 +8,7 @@ async function fetchRequest(id: string) {
   if (!supabaseClient) throw new Error("Supabase 설정이 필요합니다.");
   const { data, error } = await supabaseClient
     .from("onboarding_requests")
-    .select("id, step_status")
+    .select("id, step_status, final_account, final_password")
     .eq("id", id)
     .single();
   if (error) throw error;
@@ -30,7 +30,12 @@ export async function GET(_req: NextRequest, context: { params: Promise<{ id: st
       .order("start_time", { ascending: true });
     if (tErr) throw tErr;
 
-    return NextResponse.json({ step_status: reqRow.step_status, times: times || [] });
+    return NextResponse.json({
+      step_status: reqRow.step_status,
+      times: times || [],
+      final_account: (reqRow as any).final_account ?? null,
+      final_password: (reqRow as any).final_password ?? null,
+    });
   } catch (e: any) {
     return NextResponse.json({ error: e.message ?? "server_error" }, { status: 500 });
   }

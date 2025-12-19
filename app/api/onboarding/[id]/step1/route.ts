@@ -95,13 +95,11 @@ export async function PATCH(req: NextRequest, context: { params: Promise<{ id: s
       return NextResponse.json({ error: "invalid_transition" }, { status: 400 });
     }
 
-    const { error: stErr } = await supabaseClient
-      .from("onboarding_requests")
-      .update({ step_status: "step3_approved" })
-      .eq("id", id);
+    // 정산안 승인 후 상세 입력 단계로 이동: step1_pending 으로 전환
+    const { error: stErr } = await supabaseClient.from("onboarding_requests").update({ step_status: "step1_pending" }).eq("id", id);
     if (stErr) throw stErr;
 
-    return NextResponse.json({ ok: true, step_status: "step3_approved" });
+    return NextResponse.json({ ok: true, step_status: "step1_pending" });
   } catch (e: any) {
     return NextResponse.json({ error: e.message ?? "server_error" }, { status: 500 });
   }
