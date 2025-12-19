@@ -1,6 +1,7 @@
 export const ONBOARDING_STATES = [
   "step0_pending",
   "step0_approved",
+  "step0_rejected",
   "step1_pending",
   "step1_submitted",
   "step1_need_fix",
@@ -20,6 +21,7 @@ export function statusToLabel(status: OnboardingState) {
   const map: Record<OnboardingState, string> = {
     step0_pending: "STEP0 · 제휴 요청 접수",
     step0_approved: "STEP0 · 제휴 요청 승인",
+    step0_rejected: "STEP0 · 제휴 요청 반려",
     step1_pending: "STEP2 · 구장 정보 입력 대기",
     step1_submitted: "STEP2 · 구장 정보 검토중",
     step1_need_fix: "STEP2 · 보완 요청",
@@ -41,6 +43,7 @@ export function statusToPath(id: string, status: OnboardingState) {
     // STEP0 대기/승인은 대기 안내 페이지로
     step0_pending: `${base}/wait`,
     step0_approved: `${base}/wait`,
+    step0_rejected: `${base}/wait`,
     // STEP1(정산 협의)
     step2_done: `${base}/step1`, // 전화 안내 완료 후 정산 확인
     step3_proposed: `${base}/step1`,

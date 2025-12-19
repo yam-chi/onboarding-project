@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { OnboardingState, statusToLabel, statusToPath } from "@/lib/onboarding";
+import { OnboardingState, statusToLabel } from "@/lib/onboarding";
 
 type Row = {
   id: string;
@@ -159,7 +159,7 @@ export default function AdminOnboardingListPage() {
                   </tr>
                 ) : (
                   filtered.map((row) => {
-                    const path = statusToPath(row.id, row.step_status);
+                    const adminPath = `/admin/onboarding/${row.id}`;
                     return (
                       <tr key={row.id} className="border-t border-[#E3E6EC] text-[#111827]">
                         <td className="px-4 py-3">{row.stadium_name || "-"}</td>
@@ -172,7 +172,7 @@ export default function AdminOnboardingListPage() {
                         <td className="px-4 py-3 text-xs text-[#6b7280]">{row.updated_at ? new Date(row.updated_at).toLocaleString() : "-"}</td>
                         <td className="px-4 py-3 text-right">
                           <Link
-                            href={path}
+                            href={adminPath}
                             className="inline-flex items-center px-3 py-1.5 rounded-lg border border-[#1C5DFF] text-[#1C5DFF] text-xs font-semibold"
                           >
                             열기

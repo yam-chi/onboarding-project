@@ -11,12 +11,17 @@ export async function PATCH(req: NextRequest, context: { params: Promise<{ id: s
     if (!id || !uuidRegex.test(id)) return NextResponse.json({ error: "invalid_id" }, { status: 400 });
 
     const body = await req.json().catch(() => ({}));
-    const { new_status } = body || {};
+    const { new_status, memo } = body || {};
     if (!new_status || !ONBOARDING_STATES.includes(new_status)) {
       return NextResponse.json({ error: "invalid_status" }, { status: 400 });
     }
 
-    const { error } = await supabaseClient.from("onboarding_requests").update({ step_status: new_status as OnboardingState }).eq("id", id);
+    const payload: any = { step_status: new_status as OnboardingState };
+    if (new_status === "step0_rejected" && memo) {
+      payload.memo = memo; // 반려 사유를 memo에 기록
+    }
+
+    const { error } = await supabaseClient.from("onboarding_requests").update(payload).eq("id", id);
     if (error) throw error;
 
     return NextResponse.json({ ok: true, step_status: new_status });

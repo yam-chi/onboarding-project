@@ -12,7 +12,26 @@ export async function GET(_req: NextRequest, context: { params: Promise<{ id: st
     }
     const { data, error } = await supabaseClient
       .from("onboarding_requests")
-      .select("id, step_status, owner_name, region, address, updated_at")
+      .select(
+        `
+        id,
+        step_status,
+        owner_name,
+        owner_email,
+        contact,
+        region,
+        address,
+        address_detail,
+        operating_status,
+        facility_count,
+        size_info,
+        service_types,
+        other_services,
+        memo,
+        source,
+        updated_at
+      `,
+      )
       .eq("id", id)
       .single();
     if (error) throw error;

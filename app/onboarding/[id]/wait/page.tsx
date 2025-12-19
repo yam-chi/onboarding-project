@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { OnboardingState, statusToLabel } from "@/lib/onboarding";
 
-type Info = { step_status: OnboardingState; owner_name?: string | null };
+type Info = { step_status: OnboardingState; owner_name?: string | null; memo?: string | null };
 
 export default function WaitPage() {
   const params = useParams<{ id: string }>();
@@ -41,16 +41,23 @@ export default function WaitPage() {
   const status = info?.step_status;
   const label = status ? statusToLabel(status) : "";
 
+  let title = "제휴 신청 검토 중";
   let message = "담당자가 구장 정보를 확인하고 있습니다.";
+
   if (status === "step0_approved") {
+    title = "검토 완료 · 전화 안내 대기";
     message =
-      "신청하신 구장 검토가 완료되었습니다. 담당자가 곧 전화를 드려 서비스 구조와 정산 방식을 안내드립니다. 전화 상담 후 제휴 진행 여부가 결정됩니다.";
+      "신청하신 구장 검토가 완료되었습니다.\n담당자가 곧 전화를 드려 서비스 구조와 정산 방식을 안내드립니다.\n전화 상담 후 제휴 진행 여부가 결정됩니다.";
+  } else if (status === "step0_rejected") {
+    title = "제휴 진행이 어렵습니다";
+    const reason = info?.memo && info.memo.length ? `반려 사유: ${info.memo}\n` : "";
+    message = `${reason}담당자가 제휴 요청을 검토한 결과, 아쉽게도 제휴 진행이 어렵습니다.\n문의사항이 있다면 담당자에게 연락주세요.`;
   }
 
   return (
     <main className="min-h-screen bg-[#F7F9FC] px-4 py-12">
       <div className="max-w-3xl mx-auto bg-white border border-[#E3E6EC] rounded-2xl shadow-sm p-8 space-y-6 text-center">
-        <h1 className="text-2xl font-semibold text-[#111827]">제휴 신청 검토 중</h1>
+        <h1 className="text-2xl font-semibold text-[#111827]">{title}</h1>
         <div className="text-sm text-[#6b7280]">온보딩 ID: {id}</div>
         {label && <div className="text-xs text-[#1C5DFF] font-semibold">{label}</div>}
         <p className="text-sm text-[#4b5563] leading-6 whitespace-pre-line">{message}</p>

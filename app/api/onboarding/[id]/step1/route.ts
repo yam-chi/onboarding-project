@@ -106,3 +106,30 @@ export async function PATCH(req: NextRequest, context: { params: Promise<{ id: s
     return NextResponse.json({ error: e.message ?? "server_error" }, { status: 500 });
   }
 }
+
+// 정산안 삭제 (담당자용)
+export async function DELETE(req: NextRequest, context: { params: Promise<{ id: string }> }) {
+  try {
+    if (!supabaseClient) throw new Error("Supabase 설정이 필요합니다.");
+    const { id } = await context.params;
+    if (!id || !uuidRegex.test(id)) return NextResponse.json({ error: "invalid_id" }, { status: 400 });
+
+    const body = await req.json().catch(() => ({}));
+    const { proposal_id } = body || {};
+    if (!proposal_id || !uuidRegex.test(proposal_id)) {
+      return NextResponse.json({ error: "invalid_proposal_id" }, { status: 400 });
+    }
+
+    // 해당 요청에 속한 제안만 삭제
+    const { error: delErr } = await supabaseClient
+      .from("onboarding_settlement_proposals")
+      .delete()
+      .eq("id", proposal_id)
+      .eq("onboarding_request_id", id);
+    if (delErr) throw delErr;
+
+    return NextResponse.json({ ok: true });
+  } catch (e: any) {
+    return NextResponse.json({ error: e.message ?? "server_error" }, { status: 500 });
+  }
+}
