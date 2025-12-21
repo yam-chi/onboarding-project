@@ -40,7 +40,7 @@ export default function WaitPage() {
   if (!id) return <div className="p-6 text-sm text-red-600">유효하지 않은 경로입니다.</div>;
 
   const status = info?.step_status;
-  const label = status ? statusToLabel(status) : "";
+  const label = status ? statusToLabel(status).replace(/^STEP0\s*·\s*/i, "") : "";
   const nextPath = status ? statusToPath(id, status) : null;
   const canGoNext = nextPath && nextPath !== `/onboarding/${id}/wait`;
 
@@ -61,7 +61,6 @@ export default function WaitPage() {
     <main className="min-h-screen bg-[#F7F9FC] px-4 py-12">
       <div className="max-w-3xl mx-auto bg-white border border-[#E3E6EC] rounded-2xl shadow-sm p-8 space-y-6 text-center">
         <h1 className="text-2xl font-semibold text-[#111827]">{title}</h1>
-        <div className="text-sm text-[#6b7280]">온보딩 ID: {id}</div>
         {label && <div className="text-xs text-[#1C5DFF] font-semibold">{label}</div>}
         <p className="text-sm text-[#4b5563] leading-6 whitespace-pre-line">{message}</p>
 
@@ -76,6 +75,15 @@ export default function WaitPage() {
             </Link>
           </div>
         )}
+
+        <div className="pt-2">
+          <Link
+            href="/"
+            className="inline-flex items-center px-4 py-2 rounded-lg border border-[#E3E6EC] text-sm font-semibold text-[#374151]"
+          >
+            로그아웃
+          </Link>
+        </div>
       </div>
     </main>
   );
