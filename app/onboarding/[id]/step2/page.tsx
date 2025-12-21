@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { OnboardingState, statusToLabel, statusToPath } from "@/lib/onboarding";
+import { OnboardingState, statusToPath } from "@/lib/onboarding";
 
 type StadiumInfo = {
   region?: string;
@@ -92,10 +92,9 @@ export default function Step2Page() {
     };
   }, [id]);
 
-  const statusLabel = status ? statusToLabel(status) : "";
+  const statusLabel = "구장 정보 입력 대기";
   const nextPath = status ? statusToPath(id, status) : null;
   const showNext = nextPath && nextPath !== `/onboarding/${id}/step2`;
-  const prevPath = `/onboarding/${id}/step1`;
   const statusMessage = useMemo(() => {
     if (!status) return null;
     if (status === "step1_need_fix") return "담당자가 보완을 요청했습니다. 수정 후 다시 제출해주세요.";
@@ -136,7 +135,12 @@ export default function Step2Page() {
       setStatus(json.step_status as OnboardingState);
       setBanner(submit ? "제출되었습니다. 담당자 검토 후 안내됩니다." : "임시 저장 완료");
     } catch (e: any) {
-      setError(e.message ?? "오류가 발생했습니다.");
+      const msg = e.message ?? "오류가 발생했습니다.";
+      if (msg.includes("invalid_phone")) {
+        setError("연락처 형식을 확인해주세요. 숫자만 입력하거나 010-1234-5678 형태로 입력해 주세요.");
+      } else {
+        setError(msg);
+      }
     } finally {
       setSaving(false);
     }
@@ -149,18 +153,12 @@ export default function Step2Page() {
     <main className="min-h-screen bg-[#F7F9FC] px-4 py-8">
       <div className="max-w-5xl mx-auto space-y-4">
         <header className="bg-white border border-[#E3E6EC] rounded-xl shadow-sm p-6 space-y-2">
-          <h1 className="text-xl font-semibold text-[#111827]">STEP2 · 구장 상세 정보 입력</h1>
-          <div className="text-sm text-[#4b5563]">온보딩 ID: {id}</div>
-          {status && (
-            <div className="text-xs text-[#6b7280]">
-              현재 상태: <span className="text-[#1C5DFF] font-semibold">{statusLabel}</span>
-            </div>
-          )}
+          <h1 className="text-xl font-semibold text-[#111827]">3. 구장 상세 정보 입력</h1>
+          <div className="text-xs text-[#6b7280]">
+            현재 상태: <span className="text-[#1C5DFF] font-semibold">{statusLabel}</span>
+          </div>
           {statusMessage && <div className="bg-blue-50 text-[#1C5DFF] text-sm px-3 py-2 rounded-lg">{statusMessage}</div>}
         </header>
-
-        {banner && <div className="bg-green-100 text-green-800 px-4 py-3 rounded-lg text-sm">{banner}</div>}
-        {error && <div className="bg-red-100 text-red-800 px-4 py-3 rounded-lg text-sm">{error}</div>}
 
         <section className="bg-white border border-[#E3E6EC] rounded-xl shadow-sm p-6 space-y-4">
           <h2 className="text-lg font-semibold text-[#111827]">구장 기본 정보</h2>
@@ -252,6 +250,9 @@ export default function Step2Page() {
           </button>
         </section>
 
+        {banner && <div className="bg-green-100 text-green-800 px-4 py-3 rounded-lg text-sm">{banner}</div>}
+        {error && <div className="bg-red-100 text-red-800 px-4 py-3 rounded-lg text-sm">{error}</div>}
+
         <div className="flex justify-end gap-2">
           <button
             type="button"
@@ -272,10 +273,7 @@ export default function Step2Page() {
           </button>
         </div>
 
-        <nav className="flex items-center justify-between">
-          <Link href={prevPath} className="px-4 py-2 rounded-lg border border-[#1C5DFF] text-[#1C5DFF] font-semibold">
-            이전 단계로
-          </Link>
+        <nav className="flex items-center justify-end">
           {showNext ? (
             <Link href={nextPath || "#"} className="px-4 py-2 rounded-lg text-white font-semibold" style={{ background: "#1C5DFF" }}>
               다음 단계로 이동
