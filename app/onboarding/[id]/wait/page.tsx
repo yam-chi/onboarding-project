@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { OnboardingState, statusToLabel, statusToPath } from "@/lib/onboarding";
 
@@ -9,6 +9,7 @@ type Info = { step_status: OnboardingState; owner_name?: string | null; memo?: s
 
 export default function WaitPage() {
   const params = useParams<{ id: string }>();
+  const router = useRouter();
   const rawId = params?.id;
   const id = Array.isArray(rawId) ? rawId[0] : rawId;
 
@@ -36,11 +37,13 @@ export default function WaitPage() {
     };
   }, [id]);
 
-  if (loading) return <div className="p-6 text-sm">불러오는 중…</div>;
-  if (!id) return <div className="p-6 text-sm text-red-600">유효하지 않은 경로입니다.</div>;
-
   const status = info?.step_status;
-  const label = status ? statusToLabel(status).replace(/^STEP0\s*·\s*/i, "") : "";
+  const label =
+    status === "step0_approved"
+      ? "검토 완료"
+      : status
+      ? statusToLabel(status).replace(/^STEP0\s*·\s*/i, "")
+      : "";
   const nextPath = status ? statusToPath(id, status) : null;
   const canGoNext = nextPath && nextPath !== `/onboarding/${id}/wait`;
 
@@ -49,13 +52,23 @@ export default function WaitPage() {
 
   if (status === "step0_approved") {
     title = "검토 완료 · 전화 안내 대기";
-    message =
-      "신청하신 구장 검토가 완료되었습니다.\n담당자가 곧 전화를 드려 서비스 구조와 정산 방식을 안내드립니다.\n전화 상담 후 제휴 진행 여부가 결정됩니다.";
+    message = "신청하신 구장 검토가 완료되었습니다.\n담당자와 전화 상담 후 제휴 진행 여부가 결정됩니다.";
   } else if (status === "step0_rejected") {
     title = "제휴 진행이 어렵습니다";
     const reason = info?.memo && info.memo.length ? `반려 사유: ${info.memo}` : "";
     message = `담당자가 제휴 요청을 검토한 결과, 아쉽게도 제휴 진행이 어렵습니다.${reason ? `\n${reason}` : ""}`;
   }
+
+  // step0 단계를 벗어난 상태라면 바로 다음 단계로 이동시켜 UX 개선
+  useEffect(() => {
+    if (!nextPath) return;
+    if (status && !["step0_pending", "step0_approved", "step0_rejected"].includes(status)) {
+      router.replace(nextPath);
+    }
+  }, [nextPath, router, status]);
+
+  if (loading) return <div className="p-6 text-sm">불러오는 중…</div>;
+  if (!id) return <div className="p-6 text-sm text-red-600">유효하지 않은 경로입니다.</div>;
 
   return (
     <main className="min-h-screen bg-[#F7F9FC] px-4 py-12">
