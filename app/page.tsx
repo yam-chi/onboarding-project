@@ -5,33 +5,22 @@ import Link from "next/link";
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-[#F7F9FC] flex items-center justify-center">
-      <div className="bg-white border border-[#E3E6EC] rounded-xl shadow-sm px-8 py-10 w-full max-w-3xl space-y-6">
-        <div className="text-center space-y-2">
-          <h1 className="text-3xl font-semibold text-[#111827]">PLAB 제휴 신청</h1>
-          <p className="text-sm text-[#4b5563]">새 온보딩 서비스 작업 공간입니다.</p>
-          <p className="text-xs text-[#6b7280]">이 화면이 보이면 무치노트와 분리된 새 프로젝트를 보고 있는 것입니다.</p>
-        </div>
+    <main className="min-h-screen bg-[#F7F9FC] flex flex-col items-center justify-center px-4 space-y-4">
+      <header className="text-center space-y-2">
+        <h1 className="text-3xl font-semibold text-[#111827]">PLAB 제휴 신청</h1>
+      </header>
 
-        <div className="grid md:grid-cols-2 gap-4">
-          <section className="border border-[#E3E6EC] rounded-lg p-4 space-y-3 text-left">
-            <div className="text-lg font-semibold text-[#111827]">1) 진행 중 신청 이어하기</div>
-            <p className="text-xs text-[#6b7280]">STEP0에서 설정한 임시 ID/PW로 접속해 진행 중인 온보딩을 이어서 할 수 있습니다.</p>
-            <HomeLoginForm />
-          </section>
-
-          <section className="border border-[#E3E6EC] rounded-lg p-4 space-y-3 text-left">
-            <div className="text-lg font-semibold text-[#111827]">2) 처음 신청하기</div>
-            <p className="text-xs text-[#6b7280]">제휴 요청을 새로 시작합니다. STEP0에서 임시 ID/PW를 설정하면 나중에 이어하기가 편해요.</p>
-            <Link
-              href="/onboarding/step0/new"
-              className="inline-flex items-center justify-center rounded-lg border border-[#E3E6EC] bg-[#1C5DFF] text-white px-4 py-2 text-sm font-semibold"
-            >
-              제휴 요청 시작 (STEP0)
-            </Link>
-          </section>
-        </div>
-      </div>
+      <section className="mx-auto max-w-md border border-[#E3E6EC] rounded-lg p-6 space-y-4 bg-white shadow-sm text-left">
+        <div className="text-lg font-semibold text-[#111827]">로그인</div>
+        <p className="text-xs text-[#6b7280] text-left">임시 ID/PW는 아래 ‘제휴 요청 시작’ 완료 후 발급됩니다.</p>
+        <HomeLoginForm />
+        <Link
+          href="/onboarding/step0/new"
+          className="inline-flex items-center justify-center rounded-lg border border-[#E3E6EC] bg-[#1C5DFF] text-white px-5 py-2 text-sm font-semibold w-full text-center"
+        >
+          제휴 요청 시작
+        </Link>
+      </section>
     </main>
   );
 }
