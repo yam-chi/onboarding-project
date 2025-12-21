@@ -29,6 +29,7 @@ export default function Step1SettlementPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [banner, setBanner] = useState<string | null>(null);
+  const [preview, setPreview] = useState<string | null>(null);
 
   useEffect(() => {
     let mounted = true;
@@ -52,10 +53,8 @@ export default function Step1SettlementPage() {
     };
   }, [id]);
 
-  const statusLabel = info ? statusToLabel(info.step_status) : "";
   const nextPath = info ? statusToPath(id, info.step_status) : null;
   const showNext = nextPath && nextPath !== `/onboarding/${id}/step1`;
-  const prevPath = `/onboarding/${id}/wait`;
 
   const statusMessage = useMemo(() => {
     if (!info) return null;
@@ -89,6 +88,15 @@ export default function Step1SettlementPage() {
     }
   };
 
+  // ESC로 모달 닫기
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setPreview(null);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
+
   if (loading) return <div className="p-6 text-sm">불러오는 중…</div>;
   if (!id) return <div className="p-6 text-sm text-red-600">유효하지 않은 경로입니다.</div>;
 
@@ -96,11 +104,10 @@ export default function Step1SettlementPage() {
     <main className="min-h-screen bg-[#F7F9FC] px-4 py-8">
       <div className="max-w-5xl mx-auto space-y-4">
         <header className="bg-white border border-[#E3E6EC] rounded-xl shadow-sm p-6 space-y-2">
-          <h1 className="text-xl font-semibold text-[#111827]">STEP1 · 정산안 확인/승인</h1>
-          <div className="text-sm text-[#4b5563]">온보딩 ID: {id}</div>
+          <h1 className="text-xl font-semibold text-[#111827]">2. 정산안 확인</h1>
           {info && (
             <div className="text-xs text-[#6b7280]">
-              현재 상태: <span className="text-[#1C5DFF] font-semibold">{statusLabel}</span>
+              현재 상태: <span className="text-[#1C5DFF] font-semibold">전화 안내 완료</span>
             </div>
           )}
           {statusMessage && <div className="bg-blue-50 text-[#1C5DFF] text-sm px-3 py-2 rounded-lg">{statusMessage}</div>}
@@ -110,10 +117,7 @@ export default function Step1SettlementPage() {
         {error && <div className="bg-red-100 text-red-800 px-4 py-3 rounded-lg text-sm">{error}</div>}
 
         <section className="bg-white border border-[#E3E6EC] rounded-xl shadow-sm p-6 space-y-4">
-          <div className="text-lg font-semibold text-[#111827]">정산안 확인 (구장주용)</div>
-          <p className="text-sm text-[#4b5563]">
-            담당자가 업로드한 정산안이 아래에 표시됩니다. 내용을 확인한 뒤 승인 버튼을 눌러주세요.
-          </p>
+          <p className="text-sm text-[#4b5563]">담당자가 업로드한 정산안을 확인한 뒤 승인 버튼을 눌러주세요.</p>
           {proposals.length === 0 ? (
             <div className="text-sm text-[#6b7280]">아직 제안된 정산안이 없습니다.</div>
           ) : (
@@ -124,21 +128,19 @@ export default function Step1SettlementPage() {
                     <div className="font-semibold text-[#111827]">
                       {p.title} {idx === 0 && <span className="text-xs text-[#1C5DFF] ml-2">최신</span>}
                     </div>
-                    <div className="text-xs text-[#6b7280]">{new Date(p.created_at).toLocaleString()}</div>
                   </div>
                   {p.description && <div className="text-sm text-[#374151]">{p.description}</div>}
                   {Array.isArray(p.image_urls) && p.image_urls.length > 0 && (
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                       {p.image_urls.map((url, i) => (
-                        <a
+                        <button
+                          type="button"
                           key={i}
-                          href={url}
-                          target="_blank"
-                          rel="noreferrer"
+                          onClick={() => setPreview(url)}
                           className="block border border-[#E3E6EC] rounded-lg overflow-hidden"
                         >
                           <Image src={url} alt="settlement" width={300} height={200} className="w-full h-32 object-cover" />
-                        </a>
+                        </button>
                       ))}
                     </div>
                   )}
@@ -154,15 +156,12 @@ export default function Step1SettlementPage() {
               className="px-4 py-2 rounded-lg text-white font-semibold"
               style={{ background: info?.step_status === "step3_proposed" ? "#1C5DFF" : "#9CA3AF" }}
             >
-              {info?.step_status === "step1_pending" ? "승인 완료" : "이 정산안으로 진행"}
+              {info?.step_status === "step1_pending" ? "승인 완료" : "정산안 승인"}
             </button>
           </div>
         </section>
 
-        <nav className="flex items-center justify-between">
-          <Link href={prevPath} className="px-4 py-2 rounded-lg border border-[#1C5DFF] text-[#1C5DFF] font-semibold">
-            이전 단계로
-          </Link>
+        <nav className="flex items-center justify-end">
           {showNext ? (
             <Link href={nextPath || "#"} className="px-4 py-2 rounded-lg text-white font-semibold" style={{ background: "#1C5DFF" }}>
               다음 단계로 이동
@@ -174,6 +173,21 @@ export default function Step1SettlementPage() {
           )}
         </nav>
       </div>
+
+      {preview && (
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 px-4">
+          <div className="relative bg-white p-2 rounded-lg max-w-6xl max-h-[90vh]">
+            <button
+              type="button"
+              className="absolute -top-10 right-0 text-white text-sm underline"
+              onClick={() => setPreview(null)}
+            >
+              닫기
+            </button>
+            <Image src={preview} alt="settlement-preview" width={2000} height={1400} className="max-h-[80vh] w-auto object-contain" />
+          </div>
+        </div>
+      )}
     </main>
   );
 }
