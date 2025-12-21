@@ -53,8 +53,8 @@ export default function WaitPage() {
       "신청하신 구장 검토가 완료되었습니다.\n담당자가 곧 전화를 드려 서비스 구조와 정산 방식을 안내드립니다.\n전화 상담 후 제휴 진행 여부가 결정됩니다.";
   } else if (status === "step0_rejected") {
     title = "제휴 진행이 어렵습니다";
-    const reason = info?.memo && info.memo.length ? `반려 사유: ${info.memo}\n` : "";
-    message = `${reason}담당자가 제휴 요청을 검토한 결과, 아쉽게도 제휴 진행이 어렵습니다.\n문의사항이 있다면 담당자에게 연락주세요.`;
+    const reason = info?.memo && info.memo.length ? `반려 사유: ${info.memo}` : "";
+    message = `담당자가 제휴 요청을 검토한 결과, 아쉽게도 제휴 진행이 어렵습니다.${reason ? `\n${reason}` : ""}`;
   }
 
   return (

@@ -20,6 +20,7 @@ export async function POST(req: NextRequest) {
       owner_name,
       contact,
       region,
+      stadium_name,
       address,
       address_detail,
       operating_status,
@@ -36,6 +37,9 @@ export async function POST(req: NextRequest) {
     if (!owner_name || !contact || !region || !address) {
       return NextResponse.json({ error: "missing_required" }, { status: 400 });
     }
+    if (!stadium_name) {
+      return NextResponse.json({ error: "missing_required" }, { status: 400 });
+    }
     if (!isValidPhone(contact)) {
       return NextResponse.json({ error: "invalid_phone" }, { status: 400 });
     }
@@ -49,6 +53,7 @@ export async function POST(req: NextRequest) {
         step_status: "step0_pending",
         temp_code: temp_code || null,
         temp_password: temp_password || null,
+        stadium_name,
         owner_name,
         contact: cleanContact,
         region,

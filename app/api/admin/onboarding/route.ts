@@ -7,29 +7,20 @@ export async function GET() {
     if (!supabaseClient) throw new Error("Supabase 설정이 필요합니다.");
     const { data, error } = await supabaseClient
       .from("onboarding_requests")
-      .select(
-        `
+      .select(`
           id,
           owner_name,
           owner_email,
+          stadium_name,
           region,
           step_status,
-          updated_at,
-          onboarding_stadium_info(stadium_name)
-        `,
-      )
+          updated_at
+        `)
       .order("updated_at", { ascending: false });
 
     if (error) throw error;
 
-    // stadium_name은 조인 배열로 오므로 편의상 평탄화
-    const rows =
-      data?.map((row: any) => ({
-        ...row,
-        stadium_name: row.onboarding_stadium_info?.[0]?.stadium_name ?? null,
-      })) ?? [];
-
-    return NextResponse.json({ items: rows });
+    return NextResponse.json({ items: data ?? [] });
   } catch (e: any) {
     return NextResponse.json({ error: e.message ?? "server_error" }, { status: 500 });
   }

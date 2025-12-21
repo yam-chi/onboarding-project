@@ -9,6 +9,7 @@ export default function Step0New() {
     owner_name: "",
     contact: "",
     region: "",
+    stadium_name: "",
     address: "",
     address_detail: "",
     operating_status: "",
@@ -42,13 +43,16 @@ export default function Step0New() {
       if (!form.owner_name || !form.contact || !form.region || !form.address) {
         throw new Error("필수 항목을 입력해주세요.");
       }
+      if (!form.stadium_name) {
+        throw new Error("구장명을 입력해주세요.");
+      }
       if (!isValidPhone(form.contact)) {
         throw new Error("연락처 형식을 확인해주세요.");
       }
       const payload = {
         ...form,
         facility_count: form.facility_count ? Number(form.facility_count) : null,
-      };
+        };
       const res = await fetch("/api/onboarding", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -78,6 +82,7 @@ export default function Step0New() {
           <Input label="연락처" value={form.contact} onChange={(v) => setForm({ ...form, contact: v })} placeholder="010-1234-5678" required />
           <Input label="지역" value={form.region} onChange={(v) => setForm({ ...form, region: v })} required />
           <Input label="주소" value={form.address} onChange={(v) => setForm({ ...form, address: v })} required />
+          <Input label="구장명" value={form.stadium_name} onChange={(v) => setForm({ ...form, stadium_name: v })} required />
           <Input label="운영 상태" value={form.operating_status} onChange={(v) => setForm({ ...form, operating_status: v })} placeholder="시공 예정 / 운영중 등" />
           <Input label="면 개수" value={form.facility_count} onChange={(v) => setForm({ ...form, facility_count: v })} />
           <Input label="규격 및 실내외 여부" value={form.size_info} onChange={(v) => setForm({ ...form, size_info: v })} placeholder="예: 1~3구장 / 실외 / 40x20" />
