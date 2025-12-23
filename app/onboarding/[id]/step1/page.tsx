@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { OnboardingState, statusToLabel, statusToPath } from "@/lib/onboarding";
+import { OnboardingState, statusToPath } from "@/lib/onboarding";
 import Link from "next/link";
 import Image from "next/image";
 

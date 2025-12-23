@@ -12,6 +12,7 @@ type OnboardingRow = {
   owner_name?: string | null;
   owner_email?: string | null;
   contact?: string | null;
+  temp_code?: string | null;
   region?: string | null;
   address?: string | null;
   address_detail?: string | null;
@@ -44,6 +45,7 @@ type StadiumInfo = {
   stadium_name?: string;
   address?: string;
   address_detail?: string;
+  account_email?: string;
   stadium_type?: string;
   artificial_grass?: boolean;
   stadium_contact?: string;
@@ -72,6 +74,7 @@ type StadiumInfo = {
   vest_memo?: string | null;
   ball_available?: boolean;
   ball_memo?: string | null;
+  hoped_times_note?: string | null;
 };
 
 type CourtInfo = {
@@ -102,8 +105,20 @@ export default function AdminOnboardingDetailPage() {
   const [settlementImages, setSettlementImages] = useState("");
   const [settlementPreviews, setSettlementPreviews] = useState<string[]>([]);
   const [proposals, setProposals] = useState<Proposal[]>([]);
+  const [editingProposalId, setEditingProposalId] = useState<string | null>(null);
+  const [editTitle, setEditTitle] = useState("");
+  const [editDesc, setEditDesc] = useState("");
+  const [editing, setEditing] = useState(false);
+  // stadiumInfo/courtInfo는 admin 편집 폼으로 대체되었으므로 사용하지 않음(legacy)
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [stadiumInfo, setStadiumInfo] = useState<StadiumInfo | null>(null);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [courtInfo, setCourtInfo] = useState<CourtInfo[]>([]);
+  const [adminStadium, setAdminStadium] = useState<StadiumInfo | null>(null);
+  const [adminCourts, setAdminCourts] = useState<CourtInfo[]>([]);
+  const [stadiumSaveMsg, setStadiumSaveMsg] = useState<string | null>(null);
+  const [stadiumSaveErr, setStadiumSaveErr] = useState<string | null>(null);
+  const [stadiumSaving, setStadiumSaving] = useState(false);
   const [businessUrl, setBusinessUrl] = useState<string | null>(null);
   const [bankbookUrl, setBankbookUrl] = useState<string | null>(null);
   const [times, setTimes] = useState<TimeRow[]>([]);
@@ -150,11 +165,10 @@ export default function AdminOnboardingDetailPage() {
   };
 
   useEffect(() => {
-    if (info && ["step2_done", "step3_proposed", "step3_approved"].includes(info.step_status)) {
-      loadProposals();
-    }
+    if (!id) return;
+    loadProposals();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [info?.step_status]);
+  }, [id]);
 
   const loadStadiumInfo = async () => {
     if (!id) return;
@@ -164,13 +178,15 @@ export default function AdminOnboardingDetailPage() {
       if (!res.ok) throw new Error(json?.error || "구장 정보 불러오기 실패");
       setStadiumInfo(json.stadium || null);
       setCourtInfo(json.courts || []);
+      setAdminStadium(json.stadium || null);
+      setAdminCourts(json.courts || []);
     } catch {
       // ignore
     }
   };
 
   useEffect(() => {
-    if (info && ["step1_pending", "step1_submitted", "step1_need_fix", "step1_approved"].includes(info.step_status)) {
+    if (info) {
       loadStadiumInfo();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -192,7 +208,7 @@ export default function AdminOnboardingDetailPage() {
   };
 
   useEffect(() => {
-    if (info && ["step3_approved", "step4_submitted"].includes(info.step_status)) {
+    if (info?.step_status) {
       loadDocs();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -239,6 +255,45 @@ export default function AdminOnboardingDetailPage() {
     }
   };
 
+  const startEditProposal = (proposal: Proposal) => {
+    setEditingProposalId(proposal.id);
+    setEditTitle(proposal.title || "");
+    setEditDesc(proposal.description || "");
+  };
+
+  const cancelEditProposal = () => {
+    setEditingProposalId(null);
+    setEditTitle("");
+    setEditDesc("");
+  };
+
+  const updateProposal = async () => {
+    if (!id || !editingProposalId) return;
+    setEditing(true);
+    setError(null);
+    try {
+      const res = await fetch(`/api/onboarding/${id}/step1`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "update",
+          proposal_id: editingProposalId,
+          title: editTitle.trim(),
+          description: editDesc.trim(),
+        }),
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json?.error || "수정 실패");
+      setBanner("정산안이 수정되었습니다.");
+      cancelEditProposal();
+      loadProposals();
+    } catch (e: any) {
+      setError(e.message ?? "오류가 발생했습니다.");
+    } finally {
+      setEditing(false);
+    }
+  };
+
   const doAction = async (next: OnboardingState) => {
     if (!id) return;
     setSaving(true);
@@ -282,18 +337,15 @@ export default function AdminOnboardingDetailPage() {
           { label: "반려 처리", next: "step0_rejected" as OnboardingState },
         ]
       : [];
-  const settlementEnabled = info && ["step2_done", "step3_proposed"].includes(info.step_status);
+  // 정산안 업로드 패널은 항상 노출
   const step1Actions =
-    info && ["step1_pending", "step1_submitted", "step1_need_fix"].includes(info.step_status)
+    info && ["step1_pending", "step1_submitted", "step1_need_fix", "step4_submitted"].includes(info.step_status)
       ? [
           { label: "보완 요청", next: "step1_need_fix" as OnboardingState },
           { label: "구장 정보 승인", next: "step1_approved" as OnboardingState },
         ]
       : [];
-  const step4Actions =
-    info && ["step3_approved", "step4_submitted"].includes(info.step_status)
-      ? [{ label: "서류 검토 완료", next: "step4_complete" as OnboardingState }]
-      : [];
+  // 서류 검토 패널은 스텝2 패널에 통합되었으므로 별도 액션 없음
   const step5Actions =
     info && ["step4_complete", "step5_submitted", "step5_complete"].includes(info.step_status)
       ? [{ label: "세팅 완료 처리", next: "step5_complete" as OnboardingState }]
@@ -311,13 +363,9 @@ export default function AdminOnboardingDetailPage() {
           <h1 className="text-2xl font-semibold text-[#111827]">요청 상세</h1>
           {info && (
             <div className="text-sm text-[#4b5563]">
-              ID: {info.id} · 현재 상태: <span className="text-[#1C5DFF] font-semibold">{statusToLabel(info.step_status)}</span>
+              현재 상태: <span className="text-[#1C5DFF] font-semibold">{statusToLabel(info.step_status)}</span>
             </div>
           )}
-          <div className="text-xs text-[#6b7280]">구장명: {info?.stadium_name || "-"} · 지역: {info?.region || "-"}</div>
-          <div className="text-xs text-[#6b7280]">
-            구장주: {info?.owner_name || "-"} ({info?.owner_email || "-"})
-          </div>
           {banner && <div className="bg-green-100 text-green-800 px-3 py-2 rounded-lg text-sm">{banner}</div>}
           {error && <div className="bg-red-100 text-red-800 px-3 py-2 rounded-lg text-sm">{error}</div>}
         </header>
@@ -326,8 +374,9 @@ export default function AdminOnboardingDetailPage() {
           <section className="bg-white border border-[#E3E6EC] rounded-xl shadow-sm p-5 space-y-2 text-sm text-[#4b5563]">
             <div className="text-sm text-[#111827] font-semibold">구장 정보</div>
             <div className="grid md:grid-cols-2 gap-3">
+              <InfoLine label="구장명" value={info.stadium_name || adminStadium?.stadium_name} />
               <InfoLine label="성함" value={info.owner_name} />
-              <InfoLine label="연락처" value={info.contact} />
+              <InfoLine label="연락처" value={info.contact || info.temp_code} />
               <InfoLine label="지역" value={info.region} />
               <InfoLine label="주소" value={[info.address, info.address_detail].filter(Boolean).join(" ")} />
               <InfoLine label="운영 상태" value={info.operating_status} />
@@ -363,12 +412,12 @@ export default function AdminOnboardingDetailPage() {
         />
         <ActionPanel
           title="STEP1 · 정산안 업로드/제안"
-          active={settlementEnabled || false}
+          active={["step2_done", "step3_proposed", "step3_approved"].includes(info?.step_status || "")}
           actions={[]}
           doAction={doAction}
           saving={saving}
           extraContent={
-            settlementEnabled ? (
+            ["step2_done", "step3_proposed", "step3_approved"].includes(info?.step_status || "") ? (
               <SettlementForm
                 id={id}
                 saving={saving}
@@ -399,11 +448,13 @@ export default function AdminOnboardingDetailPage() {
                 onError={(msg) => setError(msg)}
               />
             ) : (
-              <div className="text-sm text-[#6b7280]">정산안 업로드는 전화 안내 완료(혹은 제안 중) 상태에서 가능합니다.</div>
+              <div className="text-sm text-[#6b7280]">
+                전화 안내 완료 후 정산안 업로드가 가능합니다.
+              </div>
             )
           }
         />
-        {settlementEnabled && proposals.length > 0 && (
+        {proposals.length > 0 && (
           <section className="bg-white border border-[#E3E6EC] rounded-xl shadow-sm p-5 space-y-3 text-sm text-[#4b5563]">
             <div className="text-sm text-[#111827] font-semibold">업로드된 정산안</div>
             <div className="space-y-3">
@@ -417,6 +468,13 @@ export default function AdminOnboardingDetailPage() {
                       <span>{new Date(p.created_at).toLocaleString()}</span>
                       <button
                         type="button"
+                        onClick={() => startEditProposal(p)}
+                        className="px-2 py-1 rounded-md border border-[#E3E6EC] text-[#1C5DFF] text-[11px] font-semibold"
+                      >
+                        수정
+                      </button>
+                      <button
+                        type="button"
                         onClick={() => deleteProposal(p.id)}
                         disabled={deletingId === p.id}
                         className="px-2 py-1 rounded-md border border-[#E3E6EC] text-[#ef4444] text-[11px] font-semibold"
@@ -425,7 +483,41 @@ export default function AdminOnboardingDetailPage() {
                       </button>
                     </div>
                   </div>
-                  {p.description && <div className="text-sm text-[#374151]">{p.description}</div>}
+                  {editingProposalId === p.id ? (
+                    <div className="space-y-2 text-sm text-[#374151]">
+                      <input
+                        className="w-full border border-[#E3E6EC] rounded-md px-3 py-2"
+                        value={editTitle}
+                        onChange={(e) => setEditTitle(e.target.value)}
+                        placeholder="제안 제목"
+                      />
+                      <textarea
+                        className="w-full border border-[#E3E6EC] rounded-md px-3 py-2 min-h-[90px]"
+                        value={editDesc}
+                        onChange={(e) => setEditDesc(e.target.value)}
+                        placeholder="간단 설명"
+                      />
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={updateProposal}
+                          disabled={editing || !editTitle.trim()}
+                          className="px-3 py-2 rounded-md bg-[#1C5DFF] text-white text-xs font-semibold"
+                        >
+                          {editing ? "저장 중..." : "저장"}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={cancelEditProposal}
+                          className="px-3 py-2 rounded-md border border-[#E3E6EC] text-xs font-semibold"
+                        >
+                          취소
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    p.description && <div className="text-sm text-[#374151]">{p.description}</div>
+                  )}
                   {Array.isArray(p.image_urls) && p.image_urls.length > 0 && (
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                       {p.image_urls.map((url, i) => (
@@ -447,98 +539,334 @@ export default function AdminOnboardingDetailPage() {
         )}
         <ActionPanel
           title="STEP2 · 구장 정보 검토"
-          active={["step1_pending", "step1_submitted", "step1_need_fix"].includes(info?.step_status || "")}
+          active
           actions={step1Actions}
           doAction={doAction}
           saving={saving}
           extraContent={
-            stadiumInfo ? (
+            adminStadium ? (
               <div className="mt-2 space-y-3">
-                <div className="text-xs text-[#6b7280]">구장 상세 정보</div>
+                <div className="text-sm text-[#374151] font-semibold">계정 이메일</div>
                 <div className="grid md:grid-cols-2 gap-3 text-sm text-[#374151]">
-                  <InfoLine label="지역" value={stadiumInfo.region} />
-                  <InfoLine label="홈 필터 지역" value={stadiumInfo.home_filter_region} />
-                  <InfoLine label="구장명" value={stadiumInfo.stadium_name} />
-                  <InfoLine label="주소" value={[stadiumInfo.address, stadiumInfo.address_detail].filter(Boolean).join(" ")} />
-                  <InfoLine label="구장 유형" value={stadiumInfo.stadium_type} />
-                  <InfoLine label="인조잔디" value={stadiumInfo.artificial_grass ? "예" : stadiumInfo.artificial_grass === false ? "아니오" : "-"} />
-                  <InfoLine label="구장 연락처" value={stadiumInfo.stadium_contact} />
-                  <InfoLine label="런드리 연락처" value={stadiumInfo.laundry_contact} />
-                  <InfoLine label="공지사항" value={stadiumInfo.notice} className="md:col-span-2" />
-                  <InfoLine label="주차 가능" value={stadiumInfo.parking_available ? "예" : stadiumInfo.parking_available === false ? "아니오" : "-"} />
-                  <InfoLine label="무료 주차" value={stadiumInfo.parking_free ? "예" : stadiumInfo.parking_free === false ? "아니오" : "-"} />
-                  <InfoLine label="무료 주차 대수" value={stadiumInfo.parking_count?.toString()} />
-                  <InfoLine label="주차 연락처" value={stadiumInfo.parking_contact || ""} />
-                  <InfoLine label="주차 요금" value={stadiumInfo.parking_fee || ""} />
-                  <InfoLine label="샤워장" value={stadiumInfo.shower_available ? "예" : stadiumInfo.shower_available === false ? "아니오" : "-"} />
-                  <InfoLine label="샤워 메모" value={stadiumInfo.shower_memo} />
-                  <InfoLine label="풋살화 대여" value={stadiumInfo.shoes_available ? "예" : stadiumInfo.shoes_available === false ? "아니오" : "-"} />
-                  <InfoLine label="풋살화 메모" value={stadiumInfo.shoes_memo} />
-                  <InfoLine label="화장실" value={stadiumInfo.toilet_available ? "예" : stadiumInfo.toilet_available === false ? "아니오" : "-"} />
-                  <InfoLine label="화장실 메모" value={stadiumInfo.toilet_memo} />
-                  <InfoLine label="음료" value={stadiumInfo.drinks_available ? "예" : stadiumInfo.drinks_available === false ? "아니오" : "-"} />
-                  <InfoLine label="음료 메모" value={stadiumInfo.drinks_memo} />
-                  <InfoLine label="소셜 특이사항" value={stadiumInfo.social_special} />
-                  <InfoLine label="소셜 알림" value={stadiumInfo.social_message} />
-                  <InfoLine label="매니저 노트" value={stadiumInfo.manager_note} />
-                  <InfoLine label="대관 특이사항" value={stadiumInfo.rental_note} />
-                  <InfoLine label="꼭 지켜주세요" value={stadiumInfo.rental_warning} />
-                  <InfoLine label="대관 알림" value={stadiumInfo.rental_message} />
-                  <InfoLine label="조끼" value={stadiumInfo.vest_available ? "예" : stadiumInfo.vest_available === false ? "아니오" : "-"} />
-                  <InfoLine label="조끼 메모" value={stadiumInfo.vest_memo} />
-                  <InfoLine label="공" value={stadiumInfo.ball_available ? "예" : stadiumInfo.ball_available === false ? "아니오" : "-"} />
-                  <InfoLine label="공 메모" value={stadiumInfo.ball_memo} />
+                  <EditableInput
+                    label="계정 이메일"
+                    value={adminStadium.account_email || ""}
+                    onChange={(v) => setAdminStadium({ ...adminStadium, account_email: v })}
+                    placeholder="예: owner@example.com"
+                  />
+                </div>
+                <div className="grid md:grid-cols-2 gap-3 text-sm text-[#374151]">
+                  <EditableInput
+                    label="구장명"
+                    value={adminStadium.stadium_name || ""}
+                    onChange={(v) => setAdminStadium({ ...adminStadium, stadium_name: v })}
+                  />
+                  <EditableInput label="지역" value={adminStadium.region || ""} onChange={(v) => setAdminStadium({ ...adminStadium, region: v })} />
+                  <EditableInput
+                    label="주소"
+                    value={adminStadium.address || ""}
+                    onChange={(v) => setAdminStadium({ ...adminStadium, address: v })}
+                  />
+                  <EditableInput
+                    label="상세 주소"
+                    value={adminStadium.address_detail || ""}
+                    onChange={(v) => setAdminStadium({ ...adminStadium, address_detail: v })}
+                  />
+                  <EditableInput
+                    label="구장 유형"
+                    value={adminStadium.stadium_type || ""}
+                    onChange={(v) => setAdminStadium({ ...adminStadium, stadium_type: v })}
+                    placeholder="예: 실내, 실외"
+                  />
+                  <EditableInput
+                    label="구장 연락처"
+                    value={adminStadium.stadium_contact || ""}
+                    onChange={(v) => setAdminStadium({ ...adminStadium, stadium_contact: v })}
+                  />
+                  <EditableInput
+                    label="런드리 연락처"
+                    value={adminStadium.laundry_contact || ""}
+                    onChange={(v) => setAdminStadium({ ...adminStadium, laundry_contact: v })}
+                  />
+                  <EditableToggle
+                    label="인조잔디 여부"
+                    checked={!!adminStadium.artificial_grass}
+                    onChange={(v) => setAdminStadium({ ...adminStadium, artificial_grass: v })}
+                  />
+                  <EditableToggle
+                    label="주차 가능"
+                    checked={!!adminStadium.parking_available}
+                    onChange={(v) => setAdminStadium({ ...adminStadium, parking_available: v })}
+                  />
+                  <EditableToggle
+                    label="무료 주차"
+                    checked={!!adminStadium.parking_free}
+                    onChange={(v) => setAdminStadium({ ...adminStadium, parking_free: v })}
+                  />
+                  <EditableInput
+                    label="무료 주차 대수"
+                    value={adminStadium.parking_count ?? ""}
+                    onChange={(v) => setAdminStadium({ ...adminStadium, parking_count: Number(v) || null })}
+                  />
+                  <EditableInput
+                    label="주차 연락처"
+                    value={adminStadium.parking_contact || ""}
+                    onChange={(v) => setAdminStadium({ ...adminStadium, parking_contact: v })}
+                  />
+                  <EditableInput
+                    label="주차 요금"
+                    value={adminStadium.parking_fee || ""}
+                    onChange={(v) => setAdminStadium({ ...adminStadium, parking_fee: v })}
+                  />
+                  <EditableToggle
+                    label="샤워장"
+                    checked={!!adminStadium.shower_available}
+                    onChange={(v) => setAdminStadium({ ...adminStadium, shower_available: v })}
+                  />
+                  <EditableInput
+                    label="샤워 메모"
+                    value={adminStadium.shower_memo || ""}
+                    onChange={(v) => setAdminStadium({ ...adminStadium, shower_memo: v })}
+                  />
+                  <EditableToggle
+                    label="풋살화 대여"
+                    checked={!!adminStadium.shoes_available}
+                    onChange={(v) => setAdminStadium({ ...adminStadium, shoes_available: v })}
+                  />
+                  <EditableInput
+                    label="풋살화 메모"
+                    value={adminStadium.shoes_memo || ""}
+                    onChange={(v) => setAdminStadium({ ...adminStadium, shoes_memo: v })}
+                  />
+                  <EditableToggle
+                    label="화장실"
+                    checked={!!adminStadium.toilet_available}
+                    onChange={(v) => setAdminStadium({ ...adminStadium, toilet_available: v })}
+                  />
+                  <EditableInput
+                    label="화장실 메모"
+                    value={adminStadium.toilet_memo || ""}
+                    onChange={(v) => setAdminStadium({ ...adminStadium, toilet_memo: v })}
+                  />
+                  <EditableToggle
+                    label="음료"
+                    checked={!!adminStadium.drinks_available}
+                    onChange={(v) => setAdminStadium({ ...adminStadium, drinks_available: v })}
+                  />
+                  <EditableInput
+                    label="음료 메모"
+                    value={adminStadium.drinks_memo || ""}
+                    onChange={(v) => setAdminStadium({ ...adminStadium, drinks_memo: v })}
+                  />
+                  <EditableInput
+                    label="소셜 특이사항"
+                    value={adminStadium.social_special || ""}
+                    onChange={(v) => setAdminStadium({ ...adminStadium, social_special: v })}
+                  />
+                  <EditableInput
+                    label="소셜 알림"
+                    value={adminStadium.social_message || ""}
+                    onChange={(v) => setAdminStadium({ ...adminStadium, social_message: v })}
+                  />
+                  <EditableInput
+                    label="매니저 노트"
+                    value={adminStadium.manager_note || ""}
+                    onChange={(v) => setAdminStadium({ ...adminStadium, manager_note: v })}
+                  />
+                  <EditableInput
+                    label="대관 특이사항"
+                    value={adminStadium.rental_note || ""}
+                    onChange={(v) => setAdminStadium({ ...adminStadium, rental_note: v })}
+                  />
+                  <EditableInput
+                    label="꼭 지켜주세요"
+                    value={adminStadium.rental_warning || ""}
+                    onChange={(v) => setAdminStadium({ ...adminStadium, rental_warning: v })}
+                  />
+                  <EditableInput
+                    label="대관 알림"
+                    value={adminStadium.rental_message || ""}
+                    onChange={(v) => setAdminStadium({ ...adminStadium, rental_message: v })}
+                  />
+                  <EditableToggle
+                    label="조끼 제공"
+                    checked={!!adminStadium.vest_available}
+                    onChange={(v) => setAdminStadium({ ...adminStadium, vest_available: v })}
+                  />
+                  <EditableInput
+                    label="조끼 메모"
+                    value={adminStadium.vest_memo || ""}
+                    onChange={(v) => setAdminStadium({ ...adminStadium, vest_memo: v })}
+                  />
+                  <EditableToggle
+                    label="공 제공"
+                    checked={!!adminStadium.ball_available}
+                    onChange={(v) => setAdminStadium({ ...adminStadium, ball_available: v })}
+                  />
+                  <EditableInput label="공 메모" value={adminStadium.ball_memo || ""} onChange={(v) => setAdminStadium({ ...adminStadium, ball_memo: v })} />
+                </div>
+                <div className="text-sm text-[#374151] space-y-2">
+                  <div className="font-semibold">서류 확인</div>
+                  {businessUrl || bankbookUrl ? (
+                    <div className="grid md:grid-cols-2 gap-3">
+                      <DocThumb label="사업자등록증" url={businessUrl} onPreview={setPreviewImage} />
+                      <DocThumb label="통장 사본" url={bankbookUrl} onPreview={setPreviewImage} />
+                    </div>
+                  ) : (
+                    <div className="text-sm text-[#6b7280]">구장주 서류 제출 대기중입니다.</div>
+                  )}
                 </div>
                 <div className="space-y-2">
+                  <div className="text-sm text-[#374151] font-semibold">구장주 계정 정보 (STEP5 표시)</div>
+                  <div className="grid md:grid-cols-2 gap-2">
+                    <label className="text-xs text-[#6b7280] flex flex-col gap-1">
+                      계정(ID)
+                      <input
+                        value={finalAccount}
+                        onChange={(e) => setFinalAccount(e.target.value)}
+                        className="border border-[#E3E6EC] rounded-lg px-3 py-2 text-sm"
+                        placeholder="예: stadium123"
+                      />
+                    </label>
+                    <label className="text-xs text-[#6b7280] flex flex-col gap-1">
+                      비밀번호
+                      <input
+                        value={finalPassword}
+                        onChange={(e) => setFinalPassword(e.target.value)}
+                        className="border border-[#E3E6EC] rounded-lg px-3 py-2 text-sm"
+                        placeholder="예: temp1234"
+                      />
+                    </label>
+                  </div>
+                  <div className="text-[11px] text-[#9CA3AF]">세팅 완료 처리 시 함께 저장됩니다.</div>
+                </div>
+                <div className="text-sm text-[#374151] space-y-2">
+                  <div className="font-semibold">희망 운영 시간</div>
+                  <div className="border border-[#E3E6EC] rounded-lg px-3 py-2 bg-[#F9FAFB] min-h-[48px]">
+                    {adminStadium.hoped_times_note && adminStadium.hoped_times_note.trim().length > 0
+                      ? adminStadium.hoped_times_note
+                      : "구장주가 입력한 희망 시간이 없습니다."}
+                  </div>
+                </div>
+
+                <div className="space-y-2">
                   <div className="text-xs text-[#6b7280]">면 정보</div>
-                  {courtInfo && courtInfo.length > 0 ? (
+                  {adminCourts && adminCourts.length > 0 ? (
                     <div className="space-y-2">
-                      {courtInfo
+                      {adminCourts
                         .slice()
                         .sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0))
                         .map((c, idx) => (
                           <div key={`${c.court_name}-${idx}`} className="border border-[#E3E6EC] rounded-lg p-3 grid md:grid-cols-3 gap-2 text-sm">
-                            <InfoLine label="면 이름" value={c.court_name} />
-                            <InfoLine label="인원" value={c.capacity ? `${c.capacity}명` : "-"} />
-                            <InfoLine
-                              label="사이즈"
-                              value={c.size_x && c.size_y ? `${c.size_x} x ${c.size_y}` : c.size_x ? `${c.size_x}` : c.size_y ? `${c.size_y}` : "-"}
+                            <EditableInput
+                              label="면 이름"
+                              value={c.court_name || ""}
+                              onChange={(v) => {
+                                const next = [...adminCourts];
+                                next[idx] = { ...next[idx], court_name: v };
+                                setAdminCourts(next);
+                              }}
                             />
-                            <InfoLine label="바닥/유형" value={c.floor_type} />
-                            <InfoLine label="실내/실외" value={c.indoor_outdoor} />
+                            <EditableInput
+                              label="사이즈 X"
+                              value={c.size_x ?? ""}
+                              onChange={(v) => {
+                                const next = [...adminCourts];
+                                next[idx] = { ...next[idx], size_x: Number(v) || null };
+                                setAdminCourts(next);
+                              }}
+                            />
+                            <EditableInput
+                              label="사이즈 Y"
+                              value={c.size_y ?? ""}
+                              onChange={(v) => {
+                                const next = [...adminCourts];
+                                next[idx] = { ...next[idx], size_y: Number(v) || null };
+                                setAdminCourts(next);
+                              }}
+                            />
+                            <EditableInput
+                              label="바닥/유형"
+                              value={c.floor_type || ""}
+                              onChange={(v) => {
+                                const next = [...adminCourts];
+                                next[idx] = { ...next[idx], floor_type: v };
+                                setAdminCourts(next);
+                              }}
+                            />
+                            <EditableInput
+                              label="실내/실외"
+                              value={c.indoor_outdoor || ""}
+                              onChange={(v) => {
+                                const next = [...adminCourts];
+                                next[idx] = { ...next[idx], indoor_outdoor: v };
+                                setAdminCourts(next);
+                              }}
+                            />
+                            {adminCourts.length > 1 && (
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  const next = [...adminCourts];
+                                  next.splice(idx, 1);
+                                  setAdminCourts(next);
+                                }}
+                                className="text-xs text-red-500"
+                              >
+                                삭제
+                              </button>
+                            )}
                           </div>
                         ))}
                     </div>
                   ) : (
                     <div className="text-sm text-[#6b7280]">면 정보가 아직 없습니다.</div>
                   )}
+                  <button
+                    type="button"
+                    onClick={() => setAdminCourts((prev) => [...prev, { court_name: "", size_x: null, size_y: null, floor_type: "", indoor_outdoor: "" }])}
+                    className="px-3 py-2 rounded border border-[#1C5DFF] text-[#1C5DFF] text-sm font-semibold"
+                  >
+                    면 추가
+                  </button>
+                </div>
+
+                {stadiumSaveMsg && <div className="bg-green-100 text-green-800 px-3 py-2 rounded-lg text-sm">{stadiumSaveMsg}</div>}
+                {stadiumSaveErr && <div className="bg-red-100 text-red-800 px-3 py-2 rounded-lg text-sm">{stadiumSaveErr}</div>}
+                <div className="flex justify-end gap-2">
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      if (!id || !adminStadium) return;
+                      setStadiumSaveErr(null);
+                      setStadiumSaveMsg(null);
+                      setStadiumSaving(true);
+                      try {
+                        const res = await fetch(`/api/onboarding/${id}/step2`, {
+                          method: "PUT",
+                          headers: { "Content-Type": "application/json" },
+                          body: JSON.stringify({ stadium: adminStadium, courts: adminCourts, submit: false }),
+                        });
+                        const json = await res.json();
+                        if (!res.ok) throw new Error(json?.error || "저장 실패");
+                        setStadiumSaveMsg("저장되었습니다. 구장주 화면에도 반영되었습니다.");
+                        loadStadiumInfo();
+                      } catch (e: any) {
+                        setStadiumSaveErr(e.message ?? "저장 중 오류가 발생했습니다.");
+                      } finally {
+                        setStadiumSaving(false);
+                      }
+                    }}
+                    disabled={stadiumSaving}
+                    className="px-4 py-2 rounded-lg border border-[#1C5DFF] text-[#1C5DFF] font-semibold"
+                  >
+                    {stadiumSaving ? "저장 중…" : "수정 내용 저장"}
+                  </button>
                 </div>
               </div>
             ) : (
               <div className="text-sm text-[#6b7280]">구장주가 구장 상세 정보를 제출하면 이곳에 표시됩니다.</div>
             )
-          }
-        />
-        <ActionPanel
-          title="STEP3 · 서류 검토"
-          active={["step3_approved", "step4_submitted"].includes(info?.step_status || "")}
-          actions={step4Actions}
-          doAction={doAction}
-          saving={saving}
-          extraContent={
-            info && ["step3_approved", "step4_submitted"].includes(info.step_status) ? (
-              <div className="space-y-2 text-sm text-[#4b5563]">
-                <div className="text-xs text-[#6b7280]">구장주 서류 상태</div>
-                {businessUrl || bankbookUrl ? (
-                  <div className="grid md:grid-cols-2 gap-3">
-                    <DocThumb label="사업자등록증" url={businessUrl} onPreview={setPreviewImage} />
-                    <DocThumb label="통장 사본" url={bankbookUrl} onPreview={setPreviewImage} />
-                  </div>
-                ) : (
-                  <div className="text-sm text-[#6b7280]">구장주 서류 제출 대기중입니다.</div>
-                )}
-              </div>
-            ) : null
           }
         />
         <ActionPanel
@@ -576,56 +904,10 @@ export default function AdminOnboardingDetailPage() {
                     </tbody>
                   </table>
                 </div>
-
-                <div className="space-y-2">
-                  <div className="text-xs text-[#6b7280]">구장주 계정 정보 (STEP5에 표시)</div>
-                  <div className="grid md:grid-cols-2 gap-2">
-                    <label className="text-xs text-[#6b7280] flex flex-col gap-1">
-                      계정(ID)
-                      <input
-                        value={finalAccount}
-                        onChange={(e) => setFinalAccount(e.target.value)}
-                        className="border border-[#E3E6EC] rounded-lg px-3 py-2 text-sm"
-                        placeholder="예: stadium123"
-                      />
-                    </label>
-                    <label className="text-xs text-[#6b7280] flex flex-col gap-1">
-                      비밀번호
-                      <input
-                        value={finalPassword}
-                        onChange={(e) => setFinalPassword(e.target.value)}
-                        className="border border-[#E3E6EC] rounded-lg px-3 py-2 text-sm"
-                        placeholder="예: temp1234"
-                      />
-                    </label>
-                  </div>
-                  <div className="text-[11px] text-[#9CA3AF]">세팅 완료 처리 시 함께 저장됩니다.</div>
-                </div>
               </div>
             ) : (
               <div className="space-y-2 text-sm text-[#6b7280]">
                 <div>구장주가 제출한 세팅 시간이 없습니다.</div>
-                <div className="grid md:grid-cols-2 gap-2">
-                  <label className="text-xs text-[#6b7280] flex flex-col gap-1">
-                    계정(ID)
-                    <input
-                      value={finalAccount}
-                      onChange={(e) => setFinalAccount(e.target.value)}
-                      className="border border-[#E3E6EC] rounded-lg px-3 py-2 text-sm"
-                      placeholder="예: stadium123"
-                    />
-                  </label>
-                  <label className="text-xs text-[#6b7280] flex flex-col gap-1">
-                    비밀번호
-                    <input
-                      value={finalPassword}
-                      onChange={(e) => setFinalPassword(e.target.value)}
-                      className="border border-[#E3E6EC] rounded-lg px-3 py-2 text-sm"
-                      placeholder="예: temp1234"
-                    />
-                  </label>
-                </div>
-                <div className="text-[11px] text-[#9CA3AF]">세팅 완료 처리 시 함께 저장됩니다.</div>
               </div>
             )
           }
@@ -687,6 +969,39 @@ function InfoLine({ label, value, className }: { label: string; value?: string |
       <div className="text-xs text-[#6b7280]">{label}</div>
       <div className="text-sm text-[#111827]">{value && value.length ? value : "-"}</div>
     </div>
+  );
+}
+
+function EditableInput({
+  label,
+  value,
+  onChange,
+  placeholder,
+}: {
+  label: string;
+  value: string | number | null | undefined;
+  onChange: (v: string) => void;
+  placeholder?: string;
+}) {
+  return (
+    <label className="flex flex-col gap-1 text-xs text-[#6b7280]">
+      <span>{label}</span>
+      <input
+        value={value ?? ""}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
+        className="border border-[#E3E6EC] rounded-lg px-3 py-2 text-sm text-[#111827]"
+      />
+    </label>
+  );
+}
+
+function EditableToggle({ label, checked, onChange }: { label: string; checked: boolean; onChange: (v: boolean) => void }) {
+  return (
+    <label className="inline-flex items-center gap-2 text-xs text-[#6b7280]">
+      <input type="checkbox" checked={checked} onChange={(e) => onChange(e.target.checked)} />
+      <span className="text-[#111827] text-sm">{label}</span>
+    </label>
   );
 }
 

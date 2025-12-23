@@ -86,7 +86,26 @@ export async function PATCH(req: NextRequest, context: { params: Promise<{ id: s
 
     const body = await req.json().catch(() => ({}));
     const { action } = body || {};
-    if (action !== "approve") return NextResponse.json({ error: "invalid_action" }, { status: 400 });
+    if (action !== "approve" && action !== "update") {
+      return NextResponse.json({ error: "invalid_action" }, { status: 400 });
+    }
+
+    if (action === "update") {
+      const { proposal_id, title, description } = body || {};
+      if (!proposal_id || !uuidRegex.test(proposal_id)) {
+        return NextResponse.json({ error: "invalid_proposal_id" }, { status: 400 });
+      }
+      if (!title) return NextResponse.json({ error: "missing_title" }, { status: 400 });
+
+      const { error: updErr } = await supabaseClient
+        .from("onboarding_settlement_proposals")
+        .update({ title, description })
+        .eq("id", proposal_id)
+        .eq("onboarding_request_id", id);
+      if (updErr) throw updErr;
+
+      return NextResponse.json({ ok: true });
+    }
 
     const reqRow = await getRequest(id);
     const current = reqRow.step_status as OnboardingState;

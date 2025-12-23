@@ -3,7 +3,8 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { OnboardingState, statusToLabel, statusToPath } from "@/lib/onboarding";
+import { OnboardingState, statusToPath } from "@/lib/onboarding";
+import Image from "next/image";
 
 type DocRow = { doc_type: string; file_url: string; uploaded_at: string };
 type Stadium = { stadium_name?: string; region?: string; address?: string; address_detail?: string; stadium_contact?: string };
@@ -25,6 +26,7 @@ export default function Step3DocsPage() {
   const [bankbookUrl, setBankbookUrl] = useState<string | null>(null);
   const [uploadingType, setUploadingType] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+  const [previewImage, setPreviewImage] = useState<string | null>(null);
 
   useEffect(() => {
     let mounted = true;
@@ -53,7 +55,6 @@ export default function Step3DocsPage() {
     };
   }, [id]);
 
-  const statusLabel = info ? statusToLabel(info.step_status) : "";
   const nextPath = info ? statusToPath(id, info.step_status) : null;
   const showNext = nextPath && nextPath !== `/onboarding/${id}/step3`;
   const prevPath = `/onboarding/${id}/step2`;
@@ -120,18 +121,12 @@ export default function Step3DocsPage() {
     <main className="min-h-screen bg-[#F7F9FC] px-4 py-8">
       <div className="max-w-5xl mx-auto space-y-4">
         <header className="bg-white border border-[#E3E6EC] rounded-xl shadow-sm p-6 space-y-2">
-          <h1 className="text-xl font-semibold text-[#111827]">STEP3 · 서류 제출</h1>
-          <div className="text-sm text-[#4b5563]">온보딩 ID: {id}</div>
-          {info && (
-            <div className="text-xs text-[#6b7280]">
-              현재 상태: <span className="text-[#1C5DFF] font-semibold">{statusLabel}</span>
-            </div>
-          )}
+          <h1 className="text-xl font-semibold text-[#111827]">4. 서류 제출</h1>
+          <div className="text-xs text-[#6b7280]">
+            현재 상태: <span className="text-[#1C5DFF] font-semibold">구장 정보 작성 완료</span>
+          </div>
           {statusMessage && <div className="bg-blue-50 text-[#1C5DFF] text-sm px-3 py-2 rounded-lg">{statusMessage}</div>}
         </header>
-
-        {banner && <div className="bg-green-100 text-green-800 px-4 py-3 rounded-lg text-sm">{banner}</div>}
-        {error && <div className="bg-red-100 text-red-800 px-4 py-3 rounded-lg text-sm">{error}</div>}
 
         <section className="bg-white border border-[#E3E6EC] rounded-xl shadow-sm p-6 space-y-4">
           <div className="text-lg font-semibold text-[#111827]">필수 서류 업로드</div>
@@ -143,6 +138,7 @@ export default function Step3DocsPage() {
             onFile={(file) => handleUpload(file, "business_registration")}
             required
             note="사업자등록증 상 대표자명과 동일해야 합니다. (차명계좌 불가)"
+            onPreview={setPreviewImage}
           />
           <UploadField
             label="통장 사본"
@@ -150,6 +146,7 @@ export default function Step3DocsPage() {
             uploading={uploadingType === "bankbook"}
             onFile={(file) => handleUpload(file, "bankbook")}
             required
+            onPreview={setPreviewImage}
           />
         </section>
 
@@ -196,6 +193,9 @@ export default function Step3DocsPage() {
           </div>
         </section>
 
+        {banner && <div className="bg-green-100 text-green-800 px-4 py-3 rounded-lg text-sm">{banner}</div>}
+        {error && <div className="bg-red-100 text-red-800 px-4 py-3 rounded-lg text-sm">{error}</div>}
+
         <div className="flex justify-end">
           <button
             type="button"
@@ -223,6 +223,25 @@ export default function Step3DocsPage() {
           )}
         </nav>
       </div>
+
+      {previewImage && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4">
+          <div className="bg-white rounded-xl shadow-xl max-w-4xl w-full p-4 space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-semibold text-[#111827]">원본 보기</span>
+              <button
+                type="button"
+                onClick={() => setPreviewImage(null)}
+                className="text-[#6b7280] text-sm px-2 py-1 rounded-md border border-[#E3E6EC]"
+              >
+                닫기
+              </button>
+            </div>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={previewImage} alt="preview" className="w-full max-h-[70vh] object-contain rounded-lg border border-[#E3E6EC]" />
+          </div>
+        </div>
+      )}
     </main>
   );
 }
@@ -234,6 +253,7 @@ function UploadField({
   uploading,
   required,
   note,
+  onPreview,
 }: {
   label: string;
   url: string | null;
@@ -241,6 +261,7 @@ function UploadField({
   uploading: boolean;
   required?: boolean;
   note?: string;
+  onPreview?: (url: string | null) => void;
 }) {
   return (
     <div className="space-y-2">
@@ -269,11 +290,20 @@ function UploadField({
         {uploading && <div className="text-xs text-[#6b7280]">업로드 중...</div>}
       </div>
       {url && (
-        <div className="text-xs text-[#1C1E26]">
-          업로드됨:{" "}
-          <a href={url} target="_blank" rel="noreferrer" className="text-[#1C5DFF] underline">
-            {url.split("/").pop()}
-          </a>
+        <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={() => onPreview && onPreview(url)}
+            className="border border-[#E3E6EC] rounded-lg overflow-hidden"
+          >
+            <Image src={url} alt={label} width={160} height={110} className="w-40 h-28 object-cover" />
+          </button>
+          <div className="text-xs text-[#1C1E26]">
+            업로드됨:{" "}
+            <a href={url} target="_blank" rel="noreferrer" className="text-[#1C5DFF] underline">
+              {url.split("/").pop()}
+            </a>
+          </div>
         </div>
       )}
       {note && <div className="text-xs text-[#EF4444]">{note}</div>}

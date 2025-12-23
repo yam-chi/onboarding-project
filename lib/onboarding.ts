@@ -52,7 +52,7 @@ export function statusToPath(id: string, status: OnboardingState) {
     step1_pending: `${base}/step2`,
     step1_submitted: `${base}/step2`,
     step1_need_fix: `${base}/step2`,
-    step1_approved: `${base}/step3`, // 담당자 승인 후 서류 제출 단계로
+    step1_approved: `${base}/step5`, // 담당자 승인 후 세팅 완료 안내로 이동
     // STEP3(서류)
     step4_submitted: `${base}/step3`,
     step4_complete: `${base}/step4`,

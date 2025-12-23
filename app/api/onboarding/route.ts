@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabaseClient } from "@/lib/supabaseClient";
-import { normalizePhone, isValidPhone } from "@/lib/onboarding";
 
 // GET: (옵션) 상태 목록 조회용 (필요하면 확장)
 export async function GET() {
@@ -16,35 +15,14 @@ export async function POST(req: NextRequest) {
     const user = sessionData.session?.user;
 
     const body = await req.json().catch(() => ({}));
-    const {
-      owner_name,
-      contact,
-      region,
-      stadium_name,
-      address,
-      address_detail,
-      operating_status,
-      facility_count,
-      size_info,
-      service_types,
-      other_services,
-      memo,
-      source,
-      temp_code,
-      temp_password,
-    } = body;
+    const { owner_name, region, stadium_name, address, address_detail, operating_status, facility_count, size_info, service_types, other_services, memo, source, temp_code, temp_password } = body;
 
-    if (!owner_name || !contact || !region || !address) {
+    if (!owner_name || !region || !address) {
       return NextResponse.json({ error: "missing_required" }, { status: 400 });
     }
     if (!stadium_name) {
       return NextResponse.json({ error: "missing_required" }, { status: 400 });
     }
-    if (!isValidPhone(contact)) {
-      return NextResponse.json({ error: "invalid_phone" }, { status: 400 });
-    }
-
-    const cleanContact = normalizePhone(contact);
     const { data, error } = await supabaseClient
       .from("onboarding_requests")
       .insert({
@@ -55,7 +33,7 @@ export async function POST(req: NextRequest) {
         temp_password: temp_password || null,
         stadium_name,
         owner_name,
-        contact: cleanContact,
+        contact: null,
         region,
         address,
         address_detail,

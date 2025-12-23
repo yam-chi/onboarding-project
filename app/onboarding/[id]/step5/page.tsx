@@ -42,11 +42,8 @@ export default function OnboardingCompletePage() {
         <header className="text-left space-y-2">
           <h1 className="text-2xl font-semibold text-[#111827]">초기 세팅 완료!</h1>
           <p className="text-sm text-[#4b5563] leading-6">
-            축하드립니다. 플랩풋볼과의 제휴 초기 세팅이 완료되었습니다.
-            <br />
-            아래 정보를 확인하시고 차주부터 매치 운영을 준비해주세요.
+            플랩풋볼과의 제휴 초기 세팅이 완료되었습니다. 아래 정보를 확인하시고 매치 운영을 준비해주세요.
           </p>
-          <div className="text-xs text-[#6b7280]">온보딩 ID: {id}</div>
         </header>
 
         <section className="grid md:grid-cols-2 gap-4">

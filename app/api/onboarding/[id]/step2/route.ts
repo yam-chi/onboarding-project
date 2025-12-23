@@ -10,7 +10,7 @@ async function fetchRequest(id: string) {
   if (!supabaseClient) throw new Error("Supabase 설정이 필요합니다.");
   const { data, error } = await supabaseClient
     .from("onboarding_requests")
-    .select("id, step_status")
+    .select("id, step_status, region, address, address_detail, stadium_name, contact")
     .eq("id", id)
     .single();
   if (error) throw error;
@@ -26,12 +26,22 @@ export async function GET(_req: NextRequest, context: { params: Promise<{ id: st
     }
     const reqRow = await fetchRequest(id);
 
-    const { data: stadium, error: sErr } = await supabaseClient
+    const { data: stadiumRow, error: sErr } = await supabaseClient
       .from("onboarding_stadium_info")
       .select("*")
       .eq("onboarding_request_id", id)
       .maybeSingle();
     if (sErr && sErr.code !== "PGRST116") throw sErr;
+
+    const fallbackStadium = stadiumRow
+      ? stadiumRow
+      : {
+          region: reqRow.region,
+          address: reqRow.address,
+          address_detail: reqRow.address_detail,
+          stadium_name: reqRow.stadium_name,
+          stadium_contact: reqRow.contact,
+        };
 
     const { data: courts, error: cErr } = await supabaseClient
       .from("onboarding_court_info")
@@ -40,7 +50,7 @@ export async function GET(_req: NextRequest, context: { params: Promise<{ id: st
       .order("sort_order", { ascending: true });
     if (cErr) throw cErr;
 
-    return NextResponse.json({ stadium: stadium || null, courts: courts || [], step_status: reqRow.step_status });
+    return NextResponse.json({ stadium: fallbackStadium || null, courts: courts || [], step_status: reqRow.step_status });
   } catch (e: any) {
     return NextResponse.json({ error: e.message ?? "server_error" }, { status: 500 });
   }

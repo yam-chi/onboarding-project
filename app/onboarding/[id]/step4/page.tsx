@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { OnboardingState, statusToLabel, statusToPath } from "@/lib/onboarding";
+import { OnboardingState, statusToPath } from "@/lib/onboarding";
 
 type TimeRow = { id?: string; day_of_week: string; start_time: string; end_time: string; note?: string | null };
 
@@ -60,14 +60,13 @@ export default function Step5Page() {
     };
   }, [id]);
 
-  const statusLabel = info ? statusToLabel(info.step_status) : "";
   const nextPath = info ? statusToPath(id, info.step_status) : null;
   const showNext = nextPath && nextPath !== `/onboarding/${id}/step4`;
   const prevPath = `/onboarding/${id}/step3`;
   const statusMessage = useMemo(() => {
     if (!info) return null;
     if (info.step_status === "step5_submitted") return "세팅 가능 시간이 제출되었습니다. 담당자 검토 중입니다.";
-    if (info.step_status === "step4_complete") return "CSV 완료. 세팅 가능 시간을 제출해주세요.";
+    if (info.step_status === "step4_complete") return "세팅 가능 시간을 체크 후 제출해주세요. (체크 된 시간은 2시간 단위 입니다.)";
     return "요일별로 운영 가능한 시간을 선택해 제출해주세요.";
   }, [info]);
 
@@ -119,13 +118,10 @@ export default function Step5Page() {
     <main className="min-h-screen bg-[#F7F9FC] px-4 py-8">
       <div className="max-w-5xl mx-auto space-y-4">
         <header className="bg-white border border-[#E3E6EC] rounded-xl shadow-sm p-6 space-y-2">
-          <h1 className="text-xl font-semibold text-[#111827]">STEP4 · 세팅 가능 시간 입력</h1>
-          <div className="text-sm text-[#4b5563]">온보딩 ID: {id}</div>
-          {info && (
-            <div className="text-xs text-[#6b7280]">
-              현재 상태: <span className="text-[#1C5DFF] font-semibold">{statusLabel}</span>
-            </div>
-          )}
+          <h1 className="text-xl font-semibold text-[#111827]">5. 세팅 가능 시간 입력</h1>
+          <div className="text-xs text-[#6b7280]">
+            현재 상태: <span className="text-[#1C5DFF] font-semibold">서류 검토 완료</span>
+          </div>
           {statusMessage && <div className="bg-blue-50 text-[#1C5DFF] text-sm px-3 py-2 rounded-lg">{statusMessage}</div>}
           {showNext && (
             <div className="flex justify-end">
@@ -139,9 +135,6 @@ export default function Step5Page() {
             </div>
           )}
         </header>
-
-        {banner && <div className="bg-green-100 text-green-800 px-4 py-3 rounded-lg text-sm">{banner}</div>}
-        {error && <div className="bg-red-100 text-red-800 px-4 py-3 rounded-lg text-sm">{error}</div>}
 
         <section className="bg-white border border-[#E3E6EC] rounded-xl shadow-sm p-6 space-y-4">
           <div className="overflow-auto border border-[#E3E6EC] rounded-xl bg-white">
@@ -195,6 +188,9 @@ export default function Step5Page() {
             </table>
           </div>
         </section>
+
+        {banner && <div className="bg-green-100 text-green-800 px-4 py-3 rounded-lg text-sm">{banner}</div>}
+        {error && <div className="bg-red-100 text-red-800 px-4 py-3 rounded-lg text-sm">{error}</div>}
 
         <div className="flex justify-end">
           <button
