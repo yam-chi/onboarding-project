@@ -46,12 +46,13 @@ export default function OnboardingCompletePage() {
           </p>
         </header>
 
-        <section className="grid md:grid-cols-2 gap-4">
+        <section className="grid gap-4">
           <InfoCard
             title="구장 관리 페이지"
             items={[
               "아래 버튼으로 접속해 매치 세팅 시간과 운영 현황을 확인할 수 있습니다.",
-              "로그인이 필요한 경우 담당자가 안내한 계정 정보를 사용해주세요.",
+              "계정 분실 시 문의 채널로 연락주세요.",
+              `계정 정보 ID: ${account || "담당자 입력 후 표시됩니다"} / PW: ${password || "담당자 입력 후 표시됩니다"}`,
             ]}
             action={
               <Link
@@ -65,19 +66,11 @@ export default function OnboardingCompletePage() {
           />
 
           <InfoCard
-            title="계정 정보"
+            title="문의 채널(카카오/채널톡)"
             items={[
-              account ? `계정: ${account}` : "담당자가 전달한 계정으로 로그인해주세요.",
-              password ? `비밀번호: ${password}` : "비밀번호는 전달된 정보를 사용해주세요.",
-              "계정 분실 시 문의 채널로 연락주시면 바로 재발급해드립니다.",
-            ]}
-          />
-
-          <InfoCard
-            title="문의 채널 (카카오/채널톡)"
-            items={[
-              "정산 및 운영 관련 주요 안내는 카카오 채널(또는 채널톡)으로 전달됩니다.",
-              "채널에 접속 후 “구장명”을 포함해 간단한 메시지를 남겨주세요.",
+              "채널에 접속 후 “구장명”을 남겨주세요. (문의 이력이 있다면 생략 가능)",
+              "운영 관련 주요 안내는 카카오 채널(또는 채널톡)으로 전달되오니 채팅방 유지 부탁드려요.",
+              "매치 운영에 필요한 조끼·공 등은 장비팀이 매치 수에 맞춰 별도 발송되며 채널톡으로 안내드립니다.",
             ]}
             action={
               <Link
@@ -91,17 +84,10 @@ export default function OnboardingCompletePage() {
           />
 
           <InfoCard
-            title="런드리 / 장비 안내"
-            items={[
-              "매치 운영에 필요한 조끼·공 등은 장비팀이 매치 수에 맞춰 별도 발송 또는 안내드립니다.",
-              "추후 채널을 통해 다시 연락드릴 예정입니다.",
-            ]}
-          />
-
-          <InfoCard
-            title="플랩 가이드"
+            title="구장주 이용 가이드"
             items={[
               "플랩풋볼 운영 및 구장 이용 관련 가이드는 아래 링크에서 확인할 수 있습니다.",
+              "꼼꼼히 확인하시는걸 권유드려요.",
             ]}
             action={
               <Link
@@ -109,22 +95,19 @@ export default function OnboardingCompletePage() {
                 className="inline-flex items-center justify-center px-4 py-2 rounded-lg text-white font-semibold bg-[#1C5DFF]"
                 target="_blank"
               >
-                플랩풋볼 구장 이용 가이드 보기
+                이용 가이드 둘러보기
               </Link>
             }
           />
         </section>
 
-        <div className="flex flex-col sm:flex-row gap-3 justify-between items-center">
+        <div className="flex flex-col sm:flex-row gap-3 justify-end items-center">
           <Link
-            href="/onboarding"
+            href={id ? `/onboarding/${id}/step2` : "/onboarding"}
             className="px-5 py-2 rounded-lg text-white font-semibold w-full sm:w-auto"
             style={{ background: "#1C5DFF" }}
           >
-            온보딩 홈으로 가기
-          </Link>
-          <Link href="/onboarding/step0/new" className="text-xs text-[#1C5DFF] underline">
-            다른 구장 제휴도 시작하기
+            이전 단계로
           </Link>
         </div>
       </div>

@@ -62,7 +62,7 @@ export async function PATCH(req: NextRequest, context: { params: Promise<{ id: s
     if (!id || !uuidRegex.test(id)) return NextResponse.json({ error: "invalid_id" }, { status: 400 });
 
     const body = await req.json().catch(() => ({}));
-    const { business_url, bankbook_url } = body || {};
+    const { business_url, bankbook_url, skip_status } = body || {};
     if (!business_url || !bankbook_url) {
       return NextResponse.json({ error: "missing_documents" }, { status: 400 });
     }
@@ -113,7 +113,7 @@ export async function PATCH(req: NextRequest, context: { params: Promise<{ id: s
     if (insErr) throw insErr;
 
     let nextStatus: OnboardingState = current;
-    if (!["step4_submitted", "step4_complete", "step5_submitted"].includes(current)) {
+    if (!skip_status && !["step4_submitted", "step4_complete", "step5_submitted"].includes(current)) {
       const { error: stErr } = await supabaseClient
         .from("onboarding_requests")
         .update({ step_status: "step4_submitted" })

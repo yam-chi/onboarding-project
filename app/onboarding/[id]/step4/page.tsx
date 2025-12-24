@@ -65,7 +65,8 @@ export default function Step5Page() {
   const prevPath = `/onboarding/${id}/step3`;
   const statusMessage = useMemo(() => {
     if (!info) return null;
-    if (info.step_status === "step5_submitted") return "세팅 가능 시간이 제출되었습니다. 담당자 검토 중입니다.";
+    if (info.step_status === "step5_submitted")
+      return "세팅 가능 시간이 제출되었습니다. 담당자 검토 후 최종 안내가 진행됩니다.";
     if (info.step_status === "step4_complete") return "세팅 가능 시간을 체크 후 제출해주세요. (체크 된 시간은 2시간 단위 입니다.)";
     return "요일별로 운영 가능한 시간을 선택해 제출해주세요.";
   }, [info]);

@@ -109,7 +109,7 @@ export default function Step2Page() {
 
   const statusLabel = "구장 정보 입력 대기";
   const nextPath = status ? statusToPath(id, status) : null;
-  const showNext = nextPath && nextPath !== `/onboarding/${id}/step2`;
+  const showNext = status === "step1_approved" && nextPath && nextPath !== `/onboarding/${id}/step2`;
   const statusMessage = useMemo(() => {
     if (!status) return null;
     if (status === "step1_need_fix") return "담당자가 보완을 요청했습니다. 수정 후 다시 제출해주세요.";
@@ -180,11 +180,10 @@ export default function Step2Page() {
         const docRes = await fetch(`/api/onboarding/${id}/step3`, {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ business_url: businessUrl, bankbook_url: bankbookUrl }),
+          body: JSON.stringify({ business_url: businessUrl, bankbook_url: bankbookUrl, skip_status: true }),
         });
         const docJson = await docRes.json();
         if (!docRes.ok) throw new Error(docJson?.error || "서류 저장에 실패했습니다.");
-        nextStatus = docJson.step_status as OnboardingState;
       }
 
       setStatus(nextStatus);
@@ -385,7 +384,13 @@ export default function Step2Page() {
           </button>
         </div>
 
-        <nav className="flex items-center justify-end">
+        <nav className="flex items-center justify-between">
+          <Link
+            href={id ? `/onboarding/${id}/step1` : "/onboarding"}
+            className="px-4 py-2 rounded-lg border border-[#E3E6EC] text-[#6b7280]"
+          >
+            이전 단계로
+          </Link>
           {showNext ? (
             <Link href={nextPath || "#"} className="px-4 py-2 rounded-lg text-white font-semibold" style={{ background: "#1C5DFF" }}>
               다음 단계로 이동

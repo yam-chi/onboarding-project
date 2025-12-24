@@ -53,8 +53,8 @@ export default function Step1SettlementPage() {
     };
   }, [id]);
 
-  const nextPath = info ? statusToPath(id, info.step_status) : null;
-  const showNext = nextPath && nextPath !== `/onboarding/${id}/step1`;
+  const nextPath = `/onboarding/${id}/step2`;
+  const showNext = true;
 
   const statusMessage = useMemo(() => {
     if (!info) return null;
