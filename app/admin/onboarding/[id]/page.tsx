@@ -390,6 +390,18 @@ export default function AdminOnboardingDetailPage() {
               <InfoLine label="유입 경로" value={info.source} />
               <InfoLine label="기타 메모" value={info.memo} className="md:col-span-2" />
             </div>
+            <div className="pt-3 space-y-2">
+              <div className="text-sm text-[#374151] font-semibold">서류 확인</div>
+              {businessUrl || bankbookUrl || leaseUrl ? (
+                <div className="grid md:grid-cols-3 gap-3">
+                  <DocThumb label="사업자등록증" url={businessUrl} onPreview={setPreviewImage} />
+                  <DocThumb label="통장 사본" url={bankbookUrl} onPreview={setPreviewImage} />
+                  <DocThumb label="임대차 계약서" url={leaseUrl} onPreview={setPreviewImage} />
+                </div>
+              ) : (
+                <div className="text-sm text-[#6b7280]">구장주 서류 제출 대기중입니다.</div>
+              )}
+            </div>
           </section>
         )}
 
@@ -707,18 +719,6 @@ export default function AdminOnboardingDetailPage() {
                     onChange={(v) => setAdminStadium({ ...adminStadium, ball_available: v })}
                   />
                   <EditableInput label="공 메모" value={adminStadium.ball_memo || ""} onChange={(v) => setAdminStadium({ ...adminStadium, ball_memo: v })} />
-                </div>
-                <div className="text-sm text-[#374151] space-y-2">
-                  <div className="font-semibold">서류 확인</div>
-                  {businessUrl || bankbookUrl || leaseUrl ? (
-                    <div className="grid md:grid-cols-2 gap-3">
-                      <DocThumb label="사업자등록증" url={businessUrl} onPreview={setPreviewImage} />
-                      <DocThumb label="통장 사본" url={bankbookUrl} onPreview={setPreviewImage} />
-                      <DocThumb label="임대차 계약서" url={leaseUrl} onPreview={setPreviewImage} />
-                    </div>
-                  ) : (
-                    <div className="text-sm text-[#6b7280]">구장주 서류 제출 대기중입니다.</div>
-                  )}
                 </div>
                 <div className="space-y-2">
                   <div className="text-sm text-[#374151] font-semibold">구장주 계정 정보 (STEP5 표시)</div>

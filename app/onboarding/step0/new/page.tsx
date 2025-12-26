@@ -412,7 +412,7 @@ export default function Step0New() {
           {successId && (
             <div className="w-full bg-green-100 text-green-800 rounded-lg px-3 py-2 text-sm">
               제휴 요청이 접수되었습니다.
-              <div className="text-xs text-[#166534]">이후 단계는 로그인 후 진행 가능합니다.</div>
+              <div className="text-xs text-[#166534]">로그인 후 이후 단계를 진행해주세요.</div>
             </div>
           )}
 

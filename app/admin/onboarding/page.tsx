@@ -22,6 +22,9 @@ export default function AdminOnboardingListPage() {
   const [statusFilter, setStatusFilter] = useState<"all" | "inProgress" | "done" | OnboardingState>("all");
   const [regionFilter, setRegionFilter] = useState("");
   const [search, setSearch] = useState("");
+  const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [deleteName, setDeleteName] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     let mounted = true;
@@ -64,6 +67,23 @@ export default function AdminOnboardingListPage() {
       return true;
     });
   }, [items, statusFilter, regionFilter, search]);
+
+  const confirmDelete = async () => {
+    if (!deleteId) return;
+    setDeleting(true);
+    try {
+      const res = await fetch(`/api/admin/onboarding/${deleteId}`, { method: "DELETE" });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json?.error || "삭제 실패");
+      setItems((prev) => prev.filter((item) => item.id !== deleteId));
+      setDeleteId(null);
+      setDeleteName(null);
+    } catch (e: any) {
+      setError(e.message ?? "오류가 발생했습니다.");
+    } finally {
+      setDeleting(false);
+    }
+  };
 
   return (
     <main className="min-h-screen bg-[#F7F9FC] px-4 py-8">
@@ -171,12 +191,24 @@ export default function AdminOnboardingListPage() {
                         <td className="px-4 py-3 text-xs text-[#1C5DFF] font-semibold">{statusToLabel(row.step_status)}</td>
                         <td className="px-4 py-3 text-xs text-[#6b7280]">{row.updated_at ? new Date(row.updated_at).toLocaleString() : "-"}</td>
                         <td className="px-4 py-3 text-right">
-                          <Link
-                            href={adminPath}
-                            className="inline-flex items-center px-3 py-1.5 rounded-lg border border-[#1C5DFF] text-[#1C5DFF] text-xs font-semibold"
-                          >
-                            열기
-                          </Link>
+                          <div className="inline-flex items-center gap-2">
+                            <Link
+                              href={adminPath}
+                              className="inline-flex items-center px-3 py-1.5 rounded-lg border border-[#1C5DFF] text-[#1C5DFF] text-xs font-semibold"
+                            >
+                              열기
+                            </Link>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setDeleteId(row.id);
+                                setDeleteName(row.stadium_name || row.owner_name || "요청");
+                              }}
+                              className="inline-flex items-center px-3 py-1.5 rounded-lg border border-[#EF4444] text-[#EF4444] text-xs font-semibold"
+                            >
+                              삭제
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     );
@@ -187,6 +219,38 @@ export default function AdminOnboardingListPage() {
           </div>
         </section>
       </div>
+
+      {deleteId && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
+          <div className="w-full max-w-sm rounded-xl bg-white border border-[#E3E6EC] shadow-lg p-5 space-y-4">
+            <div className="text-lg font-semibold text-[#111827]">삭제할까요?</div>
+            <div className="text-sm text-[#6b7280]">
+              {deleteName ? `${deleteName} 요청을 삭제합니다.` : "요청을 삭제합니다."}
+            </div>
+            <div className="flex justify-end gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  if (deleting) return;
+                  setDeleteId(null);
+                  setDeleteName(null);
+                }}
+                className="px-3 py-2 text-sm rounded-lg border border-[#E3E6EC] text-[#6b7280]"
+              >
+                취소
+              </button>
+              <button
+                type="button"
+                onClick={confirmDelete}
+                className="px-3 py-2 text-sm rounded-lg bg-[#EF4444] text-white font-semibold disabled:opacity-60"
+                disabled={deleting}
+              >
+                {deleting ? "삭제 중..." : "삭제"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   );
 }

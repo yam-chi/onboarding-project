@@ -11,7 +11,7 @@ export async function POST(req: NextRequest, context: { params: Promise<{ id: st
     const docType = req.nextUrl.searchParams.get("doc_type");
 
     if (!id || !uuidRegex.test(id)) return NextResponse.json({ error: "invalid_id" }, { status: 400 });
-    if (!docType || !["business_registration", "bankbook"].includes(docType)) {
+    if (!docType || !["business_registration", "bankbook", "lease_contract"].includes(docType)) {
       return NextResponse.json({ error: "invalid_doc_type" }, { status: 400 });
     }
 

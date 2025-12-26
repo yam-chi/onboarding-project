@@ -17,6 +17,7 @@ export async function GET(_req: NextRequest, context: { params: Promise<{ id: st
         id,
         step_status,
         temp_code,
+        stadium_name,
         owner_name,
         owner_email,
         contact,
