@@ -348,6 +348,8 @@ export default function AdminOnboardingDetailPage() {
           { label: "구장 정보 승인", next: "step1_approved" as OnboardingState },
         ]
       : [];
+  const isStep1Active =
+    !!info && ["step1_pending", "step1_submitted", "step1_need_fix", "step4_submitted"].includes(info.step_status);
   // 서류 검토 패널은 스텝2 패널에 통합되었으므로 별도 액션 없음
   const step5Actions =
     info && ["step4_complete", "step5_submitted", "step5_complete"].includes(info.step_status)
@@ -554,7 +556,7 @@ export default function AdminOnboardingDetailPage() {
         )}
         <ActionPanel
           title="STEP2 · 구장 정보 검토"
-          active
+          active={isStep1Active}
           actions={step1Actions}
           doAction={doAction}
           saving={saving}

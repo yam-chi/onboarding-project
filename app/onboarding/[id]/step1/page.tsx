@@ -61,7 +61,7 @@ export default function Step1SettlementPage() {
     const s = info.step_status;
     if (s === "step3_proposed") return "정산안이 제안되어 승인 대기 중입니다.";
     if (s === "step3_approved") return "정산안이 승인되었습니다. 다음 단계로 진행하세요.";
-    if (s === "step2_done") return "전화 안내가 완료되었습니다. 정산안을 확인한 뒤 승인해 주세요.";
+    if (s === "step2_done") return "전화 안내가 완료되었습니다.\n담당자가 정산안을 업데이트하면 확인 및 승인 후 다음 단계에서 구장 상세 정보를 작성해주세요.";
     return "현재 상태에서 정산안을 확인할 수 있습니다.";
   }, [info]);
 
@@ -104,7 +104,15 @@ export default function Step1SettlementPage() {
     <main className="min-h-screen bg-[#F7F9FC] px-4 py-8">
       <div className="max-w-5xl mx-auto space-y-4">
         <header className="bg-white border border-[#E3E6EC] rounded-xl shadow-sm p-6 space-y-2">
-          <h1 className="text-xl font-semibold text-[#111827]">2. 정산안 확인</h1>
+          <div className="flex items-center justify-between gap-4">
+            <h1 className="text-xl font-semibold text-[#111827]">2. 정산안 확인</h1>
+            <Link
+              href="/"
+              className="inline-flex items-center px-3 py-1.5 rounded-lg border border-[#E3E6EC] text-sm font-semibold text-[#374151]"
+            >
+              로그아웃
+            </Link>
+          </div>
           {info && (
             <div className="text-xs text-[#6b7280]">
               현재 상태: <span className="text-[#1C5DFF] font-semibold">전화 안내 완료</span>
