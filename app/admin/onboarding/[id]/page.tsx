@@ -121,6 +121,7 @@ export default function AdminOnboardingDetailPage() {
   const [stadiumSaving, setStadiumSaving] = useState(false);
   const [businessUrl, setBusinessUrl] = useState<string | null>(null);
   const [bankbookUrl, setBankbookUrl] = useState<string | null>(null);
+  const [leaseUrl, setLeaseUrl] = useState<string | null>(null);
   const [times, setTimes] = useState<TimeRow[]>([]);
   const [uploading, setUploading] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
@@ -200,8 +201,10 @@ export default function AdminOnboardingDetailPage() {
       if (!res.ok) throw new Error(json?.error || "서류 불러오기 실패");
       const b = (json.documents || []).find((d: DocRow) => d.doc_type === "business_registration");
       const bank = (json.documents || []).find((d: DocRow) => d.doc_type === "bankbook");
+      const lease = (json.documents || []).find((d: DocRow) => d.doc_type === "lease_contract");
       setBusinessUrl(b?.file_url || null);
       setBankbookUrl(bank?.file_url || null);
+      setLeaseUrl(lease?.file_url || null);
     } catch {
       // ignore
     }
@@ -707,10 +710,11 @@ export default function AdminOnboardingDetailPage() {
                 </div>
                 <div className="text-sm text-[#374151] space-y-2">
                   <div className="font-semibold">서류 확인</div>
-                  {businessUrl || bankbookUrl ? (
+                  {businessUrl || bankbookUrl || leaseUrl ? (
                     <div className="grid md:grid-cols-2 gap-3">
                       <DocThumb label="사업자등록증" url={businessUrl} onPreview={setPreviewImage} />
                       <DocThumb label="통장 사본" url={bankbookUrl} onPreview={setPreviewImage} />
+                      <DocThumb label="임대차 계약서" url={leaseUrl} onPreview={setPreviewImage} />
                     </div>
                   ) : (
                     <div className="text-sm text-[#6b7280]">구장주 서류 제출 대기중입니다.</div>

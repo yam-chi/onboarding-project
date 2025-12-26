@@ -2,7 +2,6 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { useParams } from "next/navigation";
 import { OnboardingState, statusToPath } from "@/lib/onboarding";
 
@@ -65,10 +64,6 @@ export default function Step2Page() {
   const [error, setError] = useState<string | null>(null);
   const [banner, setBanner] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
-  const [businessUrl, setBusinessUrl] = useState<string | null>(null);
-  const [bankbookUrl, setBankbookUrl] = useState<string | null>(null);
-  const [uploadingType, setUploadingType] = useState<string | null>(null);
-  const [previewImage, setPreviewImage] = useState<string | null>(null);
 
   useEffect(() => {
     let mounted = true;
@@ -87,15 +82,6 @@ export default function Step2Page() {
             ? prev
             : [{ court_name: "", size_x: null, size_y: null, floor_type: "", indoor_outdoor: "" }];
         });
-        // 기존 서류 업로드 데이터 동기화
-        const docsRes = await fetch(`/api/onboarding/${id}/step3`);
-        const docsJson = await docsRes.json();
-        if (docsRes.ok && docsJson?.documents) {
-          const biz = docsJson.documents.find((d: any) => d.doc_type === "business_registration");
-          const bank = docsJson.documents.find((d: any) => d.doc_type === "bankbook");
-          setBusinessUrl(biz?.file_url || null);
-          setBankbookUrl(bank?.file_url || null);
-        }
       } catch (e: any) {
         if (mounted) setError(e.message ?? "오류가 발생했습니다.");
       } finally {
@@ -134,39 +120,12 @@ export default function Step2Page() {
       return next;
     });
 
-  const handleUpload = async (file: File, docType: "business_registration" | "bankbook") => {
-    if (!id) return;
-    setUploadingType(docType);
-    setError(null);
-    try {
-      const form = new FormData();
-      form.append("file", file);
-      const res = await fetch(`/api/onboarding/${id}/step3/upload?doc_type=${docType}`, {
-        method: "POST",
-        body: form,
-      });
-      const json = await res.json();
-      if (!res.ok) throw new Error(json?.error || "업로드 실패");
-      if (docType === "business_registration") setBusinessUrl(json.url);
-      else setBankbookUrl(json.url);
-    } catch (e: any) {
-      setError(e.message ?? "업로드 오류");
-    } finally {
-      setUploadingType(null);
-    }
-  };
-
   const save = async (submit: boolean) => {
     if (!id) return;
     setError(null);
     setBanner(null);
     setSaving(true);
     try {
-      if (submit && (!businessUrl || !bankbookUrl)) {
-        setSaving(false);
-        setError("사업자등록증과 통장 사본을 모두 업로드해주세요.");
-        return;
-      }
       const res = await fetch(`/api/onboarding/${id}/step2`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
@@ -175,16 +134,6 @@ export default function Step2Page() {
       const json = await res.json();
       if (!res.ok) throw new Error(json?.error || "저장 실패");
       let nextStatus = json.step_status as OnboardingState;
-
-      if (submit) {
-        const docRes = await fetch(`/api/onboarding/${id}/step3`, {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ business_url: businessUrl, bankbook_url: bankbookUrl, skip_status: true }),
-        });
-        const docJson = await docRes.json();
-        if (!docRes.ok) throw new Error(docJson?.error || "서류 저장에 실패했습니다.");
-      }
 
       setStatus(nextStatus);
       setBanner(submit ? "제출되었습니다. 담당자 검토 후 안내됩니다." : "임시 저장 완료");
@@ -319,28 +268,6 @@ export default function Step2Page() {
           </button>
         </section>
 
-        <section className="bg-white border border-[#E3E6EC] rounded-xl shadow-sm p-6 space-y-4">
-          <h2 className="text-lg font-semibold text-[#111827]">서류 업로드</h2>
-          <p className="text-sm text-[#4b5563]">사업자등록증과 통장사본을 모두 업로드해주세요. (JPG/PNG/PDF)</p>
-          <UploadField
-            label="사업자등록증 사본"
-            url={businessUrl}
-            uploading={uploadingType === "business_registration"}
-            onFile={(file) => handleUpload(file, "business_registration")}
-            required
-            note="사업자등록증 상 대표자명과 동일해야 합니다. (차명계좌 불가)"
-            onPreview={setPreviewImage}
-          />
-          <UploadField
-            label="통장 사본"
-            url={bankbookUrl}
-            uploading={uploadingType === "bankbook"}
-            onFile={(file) => handleUpload(file, "bankbook")}
-            required
-            onPreview={setPreviewImage}
-          />
-        </section>
-
         <section className="bg-white border border-[#E3E6EC] rounded-xl shadow-sm p-6 space-y-3">
           <h2 className="text-lg font-semibold text-[#111827]">희망 운영 시간</h2>
           <p className="text-sm text-[#6b7280]">요일/시간대를 자유롭게 적어주세요. 예) 평일 18~22시 운영 가능</p>
@@ -351,15 +278,6 @@ export default function Step2Page() {
             placeholder="예: 월~금 18~22시, 토/일 14~20시 운영 가능"
           />
         </section>
-
-        {previewImage && (
-          <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50" onClick={() => setPreviewImage(null)}>
-            <div className="bg-white p-3 rounded-lg max-w-3xl max-h-[80vh] overflow-auto" onClick={(e) => e.stopPropagation()}>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={previewImage} alt="preview" className="max-h-[70vh] max-w-full object-contain" />
-            </div>
-          </div>
-        )}
 
         {banner && <div className="bg-green-100 text-green-800 px-4 py-3 rounded-lg text-sm">{banner}</div>}
         {error && <div className="bg-red-100 text-red-800 px-4 py-3 rounded-lg text-sm">{error}</div>}
@@ -440,63 +358,5 @@ function Toggle({ label, checked, onChange }: { label: string; checked: boolean;
       <input type="checkbox" checked={checked} onChange={(e) => onChange(e.target.checked)} />
       <span>{label}</span>
     </label>
-  );
-}
-
-function UploadField({
-  label,
-  url,
-  uploading,
-  onFile,
-  required,
-  note,
-  onPreview,
-}: {
-  label: string;
-  url: string | null;
-  uploading: boolean;
-  onFile: (file: File) => void;
-  required?: boolean;
-  note?: string;
-  onPreview: (url: string) => void;
-}) {
-  return (
-    <div className="space-y-2">
-      <div className="flex items-center justify-between gap-2">
-        <div className="text-sm text-[#1C1E26] font-semibold">
-          {label} {required && <span className="text-red-500">*</span>}
-        </div>
-        <label className="text-xs text-[#1C5DFF] font-semibold cursor-pointer">
-          <input
-            type="file"
-            accept=".png,.jpg,.jpeg,.pdf"
-            className="hidden"
-            onChange={(e) => {
-              const file = e.target.files?.[0];
-              if (file) onFile(file);
-            }}
-          />
-          {uploading ? "업로드 중..." : "파일 선택/업로드"}
-        </label>
-      </div>
-      {note && <p className="text-xs text-[#6b7280]">{note}</p>}
-      {url ? (
-        <div className="flex items-center gap-3 text-xs text-[#4b5563]">
-          <button
-            type="button"
-            onClick={() => onPreview(url)}
-            className="border border-[#E3E6EC] rounded-lg overflow-hidden"
-            title="미리보기"
-          >
-            <Image src={url} alt={label} width={140} height={90} className="w-[140px] h-[90px] object-cover" />
-          </button>
-          <a href={url} target="_blank" rel="noreferrer" className="text-[#1C5DFF] underline">
-            원본 보기
-          </a>
-        </div>
-      ) : (
-        <div className="text-xs text-[#9ca3af]">아직 업로드되지 않았습니다.</div>
-      )}
-    </div>
   );
 }

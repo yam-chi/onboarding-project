@@ -62,8 +62,8 @@ export async function PATCH(req: NextRequest, context: { params: Promise<{ id: s
     if (!id || !uuidRegex.test(id)) return NextResponse.json({ error: "invalid_id" }, { status: 400 });
 
     const body = await req.json().catch(() => ({}));
-    const { business_url, bankbook_url, skip_status } = body || {};
-    if (!business_url || !bankbook_url) {
+    const { business_url, bankbook_url, lease_contract_url, skip_status } = body || {};
+    if (!business_url || !bankbook_url || !lease_contract_url) {
       return NextResponse.json({ error: "missing_documents" }, { status: 400 });
     }
 
@@ -94,7 +94,7 @@ export async function PATCH(req: NextRequest, context: { params: Promise<{ id: s
       .from("onboarding_documents")
       .delete()
       .eq("onboarding_request_id", id)
-      .in("doc_type", ["business_registration", "bankbook"]);
+      .in("doc_type", ["business_registration", "bankbook", "lease_contract"]);
 
     const insertRows = [
       {
@@ -106,6 +106,11 @@ export async function PATCH(req: NextRequest, context: { params: Promise<{ id: s
         onboarding_request_id: id,
         doc_type: "bankbook",
         file_url: bankbook_url,
+      },
+      {
+        onboarding_request_id: id,
+        doc_type: "lease_contract",
+        file_url: lease_contract_url,
       },
     ];
 
