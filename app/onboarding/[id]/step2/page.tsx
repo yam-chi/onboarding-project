@@ -506,7 +506,7 @@ export default function Step2Page() {
             <Input label="무료 주차 대수" value={stadium.parking_count ?? ""} onChange={(v) => handleStadium("parking_count", Number(v) || null)} />
             <Input label="주차 등록 연락처" value={stadium.parking_contact || ""} onChange={(v) => handleStadium("parking_contact", v)} />
             <Input label="주차 요금" value={stadium.parking_fee || ""} onChange={(v) => handleStadium("parking_fee", v)} />
-            <div className="grid md:grid-cols-2 gap-3">
+            <div className="grid md:grid-cols-[30%_70%] gap-3">
               <Select
                 label="샤워장"
                 value={stadium.shower_available === true ? "예" : stadium.shower_available === false ? "아니오" : ""}
@@ -516,7 +516,7 @@ export default function Step2Page() {
               />
               <Input label="샤워 메모" value={stadium.shower_memo || ""} onChange={(v) => handleStadium("shower_memo", v)} />
             </div>
-            <div className="grid md:grid-cols-2 gap-3">
+            <div className="grid md:grid-cols-[30%_70%] gap-3">
               <Select
                 label="풋살화 대여"
                 value={stadium.shoes_available === true ? "예" : stadium.shoes_available === false ? "아니오" : ""}
@@ -526,7 +526,7 @@ export default function Step2Page() {
               />
               <Input label="풋살화 메모" value={stadium.shoes_memo || ""} onChange={(v) => handleStadium("shoes_memo", v)} />
             </div>
-            <div className="grid md:grid-cols-2 gap-3">
+            <div className="grid md:grid-cols-[30%_70%] gap-3">
               <Select
                 label="화장실"
                 value={stadium.toilet_available === true ? "예" : stadium.toilet_available === false ? "아니오" : ""}
@@ -536,7 +536,7 @@ export default function Step2Page() {
               />
               <Input label="화장실 메모" value={stadium.toilet_memo || ""} onChange={(v) => handleStadium("toilet_memo", v)} />
             </div>
-            <div className="grid md:grid-cols-2 gap-3">
+            <div className="grid md:grid-cols-[30%_70%] gap-3">
               <Select
                 label="음료"
                 value={stadium.drinks_available === true ? "예" : stadium.drinks_available === false ? "아니오" : ""}
@@ -564,7 +564,7 @@ export default function Step2Page() {
             <Input label="대관 특이사항" value={stadium.rental_note || ""} onChange={(v) => handleStadium("rental_note", v)} />
             <Input label="꼭 지켜주세요" value={stadium.rental_warning || ""} onChange={(v) => handleStadium("rental_warning", v)} />
             <Input label="구장 예약 알림톡" value={stadium.rental_message || ""} onChange={(v) => handleStadium("rental_message", v)} />
-            <div className="grid md:grid-cols-2 gap-3">
+            <div className="grid md:grid-cols-[30%_70%] gap-3">
               <Select
                 label="조끼 제공"
                 value={stadium.vest_available === true ? "예" : stadium.vest_available === false ? "아니오" : ""}
@@ -574,7 +574,7 @@ export default function Step2Page() {
               />
               <Input label="조끼 메모" value={stadium.vest_memo || ""} onChange={(v) => handleStadium("vest_memo", v)} />
             </div>
-            <div className="grid md:grid-cols-2 gap-3">
+            <div className="grid md:grid-cols-[30%_70%] gap-3">
               <Select
                 label="공 제공"
                 value={stadium.ball_available === true ? "예" : stadium.ball_available === false ? "아니오" : ""}
@@ -593,16 +593,15 @@ export default function Step2Page() {
           <div className="space-y-3">
             {courts.map((c, idx) => (
               <div key={idx} className="border border-[#E3E6EC] rounded-lg p-4 space-y-2 bg-[#F9FAFB]">
-                <div className="flex items-center justify-between text-sm">
-                  <span className="font-semibold">면 {idx + 1}</span>
+                <div className="flex items-start justify-between gap-3 text-sm">
+                  <Input label={`면 ${idx + 1} 이름`} value={c.court_name || ""} onChange={(v) => updateCourt(idx, "court_name", v)} />
                   {courts.length > 1 && (
-                    <button onClick={() => removeCourt(idx)} className="text-red-500 text-xs font-semibold">
+                    <button onClick={() => removeCourt(idx)} className="text-red-500 text-xs font-semibold mt-6">
                       삭제
                     </button>
                   )}
                 </div>
                 <div className="grid md:grid-cols-2 gap-3">
-                  <Input label="면 이름" value={c.court_name || ""} onChange={(v) => updateCourt(idx, "court_name", v)} />
                   <Input label="면 가로 길이 (예: 40m)" value={c.size_x ?? ""} onChange={(v) => updateCourt(idx, "size_x", Number(v) || null)} />
                   <Input label="면 세로 길이 (예: 20m)" value={c.size_y ?? ""} onChange={(v) => updateCourt(idx, "size_y", Number(v) || null)} />
                   <Input label="구장유형(예: 잔디, 인도어)" value={c.floor_type || ""} onChange={(v) => updateCourt(idx, "floor_type", v)} />
