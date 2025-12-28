@@ -376,22 +376,80 @@ export default function AdminOnboardingDetailPage() {
         </header>
 
         {info && (
-          <section className="bg-white border border-[#E3E6EC] rounded-xl shadow-sm p-5 space-y-2 text-sm text-[#4b5563]">
+          <section className="bg-white border border-[#E3E6EC] rounded-xl shadow-sm p-5 space-y-4 text-sm text-[#4b5563]">
             <div className="text-sm text-[#111827] font-semibold">구장 정보</div>
             <div className="grid md:grid-cols-2 gap-3">
-              <InfoLine label="구장명" value={info.stadium_name || adminStadium?.stadium_name} />
-              <InfoLine label="성함" value={info.owner_name} />
-              <InfoLine label="연락처" value={info.contact || info.temp_code} />
-              <InfoLine label="지역" value={info.region} />
-              <InfoLine label="주소" value={[info.address, info.address_detail].filter(Boolean).join(" ")} />
-              <InfoLine label="운영 상태" value={info.operating_status} />
-              <InfoLine label="면 수" value={info.facility_count} />
-              <InfoLine label="규격/실내외" value={info.size_info} />
-              <InfoLine label="희망 서비스" value={info.service_types?.join(", ")} />
-              <InfoLine label="사용 중 서비스" value={info.other_services} />
-              <InfoLine label="유입 경로" value={info.source} />
-              <InfoLine label="기타 메모" value={info.memo} className="md:col-span-2" />
+              <InfoLine label="계정 이메일" value={adminStadium?.account_email} />
+              <InfoLine label="지역" value={adminStadium?.region || info.region} />
+              <InfoLine label="구장명" value={adminStadium?.stadium_name || info.stadium_name} />
+              <InfoLine label="주소" value={adminStadium?.address || info.address} />
+              <InfoLine label="구장 유형" value={adminStadium?.stadium_type} />
+              <InfoLine label="실내/실외" value={adminStadium?.indoor_outdoor} />
+              <InfoLine label="구장 연락처" value={adminStadium?.stadium_contact || info.contact || info.temp_code} />
+              <InfoLine label="런드리 연락처" value={adminStadium?.laundry_contact} />
             </div>
+            <div className="border-t border-[#E3E6EC] pt-3" />
+
+            <div className="flex flex-col gap-3 pt-2">
+              <InfoLine label="공지사항" value={adminStadium?.notice} />
+              <InfoLine label="주차 가능" value={formatYesNo(adminStadium?.parking_available)} />
+              <InfoLine label="무료 주차" value={formatYesNo(adminStadium?.parking_free)} />
+              <InfoLine label="무료 주차 대수" value={adminStadium?.parking_count} />
+              <InfoLine label="주차 등록 연락처" value={adminStadium?.parking_contact} />
+              <InfoLine label="주차 요금" value={adminStadium?.parking_fee} />
+              <div className="grid md:grid-cols-2 gap-3">
+                <EditableSelect
+                  label="샤워장"
+                  value={adminStadium?.shower_available === true ? "예" : adminStadium?.shower_available === false ? "아니오" : ""}
+                  options={["예", "아니오"]}
+                  onChange={(v) =>
+                    setAdminStadium({
+                      ...adminStadium,
+                      shower_available: v === "" ? null : v === "예",
+                    })
+                  }
+                />
+                <EditableInput
+                  label="샤워 메모"
+                  value={adminStadium?.shower_memo || ""}
+                  onChange={(v) => setAdminStadium({ ...adminStadium, shower_memo: v })}
+                />
+              </div>
+              <div className="grid md:grid-cols-2 gap-3">
+                <InfoLine label="풋살화 대여" value={formatYesNo(adminStadium?.shoes_available)} />
+                <InfoLine label="풋살화 메모" value={adminStadium?.shoes_memo} />
+              </div>
+              <div className="grid md:grid-cols-2 gap-3">
+                <InfoLine label="화장실" value={formatYesNo(adminStadium?.toilet_available)} />
+                <InfoLine label="화장실 메모" value={adminStadium?.toilet_memo} />
+              </div>
+              <div className="grid md:grid-cols-2 gap-3">
+                <InfoLine label="음료" value={formatYesNo(adminStadium?.drinks_available)} />
+                <InfoLine label="음료 메모" value={adminStadium?.drinks_memo} />
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-3 pt-2">
+              <InfoLine label="소셜매치 특이사항" value={adminStadium?.social_special} />
+              <InfoLine label="소셜매치 알림톡" value={adminStadium?.social_message} />
+              <InfoLine label="매니저 특이사항" value={adminStadium?.manager_note} />
+            </div>
+
+            <div className="flex flex-col gap-3 pt-2">
+              <InfoLine label="대관 특이사항" value={adminStadium?.rental_note} />
+              <InfoLine label="꼭 지켜주세요" value={adminStadium?.rental_warning} />
+              <InfoLine label="구장 예약 알림톡" value={adminStadium?.rental_message} />
+              <div className="grid md:grid-cols-2 gap-3">
+                <InfoLine label="조끼 제공" value={formatYesNo(adminStadium?.vest_available)} />
+                <InfoLine label="조끼 메모" value={adminStadium?.vest_memo} />
+              </div>
+              <div className="grid md:grid-cols-2 gap-3">
+                <InfoLine label="공 제공" value={formatYesNo(adminStadium?.ball_available)} />
+                <InfoLine label="공 메모" value={adminStadium?.ball_memo} />
+              </div>
+              <InfoLine label="희망 운영 시간" value={adminStadium?.hoped_times_note} />
+            </div>
+
             <div className="pt-3 space-y-2">
               <div className="text-sm text-[#374151] font-semibold">서류 확인</div>
               {businessUrl || bankbookUrl || leaseUrl ? (
@@ -560,6 +618,7 @@ export default function AdminOnboardingDetailPage() {
           actions={step1Actions}
           doAction={doAction}
           saving={saving}
+          hideActions
           extraContent={
             adminStadium ? (
               <div className="mt-2 space-y-3">
@@ -572,158 +631,8 @@ export default function AdminOnboardingDetailPage() {
                     placeholder="예: owner@example.com"
                   />
                 </div>
-                <div className="grid md:grid-cols-2 gap-3 text-sm text-[#374151]">
-                  <EditableInput
-                    label="구장명"
-                    value={adminStadium.stadium_name || ""}
-                    onChange={(v) => setAdminStadium({ ...adminStadium, stadium_name: v })}
-                  />
-                  <EditableInput label="지역" value={adminStadium.region || ""} onChange={(v) => setAdminStadium({ ...adminStadium, region: v })} />
-                  <EditableInput
-                    label="주소"
-                    value={adminStadium.address || ""}
-                    onChange={(v) => setAdminStadium({ ...adminStadium, address: v })}
-                  />
-                  <EditableInput
-                    label="상세 주소"
-                    value={adminStadium.address_detail || ""}
-                    onChange={(v) => setAdminStadium({ ...adminStadium, address_detail: v })}
-                  />
-                  <EditableInput
-                    label="구장 유형"
-                    value={adminStadium.stadium_type || ""}
-                    onChange={(v) => setAdminStadium({ ...adminStadium, stadium_type: v })}
-                    placeholder="예: 실내, 실외"
-                  />
-                  <EditableInput
-                    label="구장 연락처"
-                    value={adminStadium.stadium_contact || ""}
-                    onChange={(v) => setAdminStadium({ ...adminStadium, stadium_contact: v })}
-                  />
-                  <EditableInput
-                    label="런드리 연락처"
-                    value={adminStadium.laundry_contact || ""}
-                    onChange={(v) => setAdminStadium({ ...adminStadium, laundry_contact: v })}
-                  />
-                  <EditableToggle
-                    label="인조잔디 여부"
-                    checked={!!adminStadium.artificial_grass}
-                    onChange={(v) => setAdminStadium({ ...adminStadium, artificial_grass: v })}
-                  />
-                  <EditableToggle
-                    label="주차 가능"
-                    checked={!!adminStadium.parking_available}
-                    onChange={(v) => setAdminStadium({ ...adminStadium, parking_available: v })}
-                  />
-                  <EditableToggle
-                    label="무료 주차"
-                    checked={!!adminStadium.parking_free}
-                    onChange={(v) => setAdminStadium({ ...adminStadium, parking_free: v })}
-                  />
-                  <EditableInput
-                    label="무료 주차 대수"
-                    value={adminStadium.parking_count ?? ""}
-                    onChange={(v) => setAdminStadium({ ...adminStadium, parking_count: Number(v) || null })}
-                  />
-                  <EditableInput
-                    label="주차 연락처"
-                    value={adminStadium.parking_contact || ""}
-                    onChange={(v) => setAdminStadium({ ...adminStadium, parking_contact: v })}
-                  />
-                  <EditableInput
-                    label="주차 요금"
-                    value={adminStadium.parking_fee || ""}
-                    onChange={(v) => setAdminStadium({ ...adminStadium, parking_fee: v })}
-                  />
-                  <EditableToggle
-                    label="샤워장"
-                    checked={!!adminStadium.shower_available}
-                    onChange={(v) => setAdminStadium({ ...adminStadium, shower_available: v })}
-                  />
-                  <EditableInput
-                    label="샤워 메모"
-                    value={adminStadium.shower_memo || ""}
-                    onChange={(v) => setAdminStadium({ ...adminStadium, shower_memo: v })}
-                  />
-                  <EditableToggle
-                    label="풋살화 대여"
-                    checked={!!adminStadium.shoes_available}
-                    onChange={(v) => setAdminStadium({ ...adminStadium, shoes_available: v })}
-                  />
-                  <EditableInput
-                    label="풋살화 메모"
-                    value={adminStadium.shoes_memo || ""}
-                    onChange={(v) => setAdminStadium({ ...adminStadium, shoes_memo: v })}
-                  />
-                  <EditableToggle
-                    label="화장실"
-                    checked={!!adminStadium.toilet_available}
-                    onChange={(v) => setAdminStadium({ ...adminStadium, toilet_available: v })}
-                  />
-                  <EditableInput
-                    label="화장실 메모"
-                    value={adminStadium.toilet_memo || ""}
-                    onChange={(v) => setAdminStadium({ ...adminStadium, toilet_memo: v })}
-                  />
-                  <EditableToggle
-                    label="음료"
-                    checked={!!adminStadium.drinks_available}
-                    onChange={(v) => setAdminStadium({ ...adminStadium, drinks_available: v })}
-                  />
-                  <EditableInput
-                    label="음료 메모"
-                    value={adminStadium.drinks_memo || ""}
-                    onChange={(v) => setAdminStadium({ ...adminStadium, drinks_memo: v })}
-                  />
-                  <EditableInput
-                    label="소셜 특이사항"
-                    value={adminStadium.social_special || ""}
-                    onChange={(v) => setAdminStadium({ ...adminStadium, social_special: v })}
-                  />
-                  <EditableInput
-                    label="소셜 알림"
-                    value={adminStadium.social_message || ""}
-                    onChange={(v) => setAdminStadium({ ...adminStadium, social_message: v })}
-                  />
-                  <EditableInput
-                    label="매니저 노트"
-                    value={adminStadium.manager_note || ""}
-                    onChange={(v) => setAdminStadium({ ...adminStadium, manager_note: v })}
-                  />
-                  <EditableInput
-                    label="대관 특이사항"
-                    value={adminStadium.rental_note || ""}
-                    onChange={(v) => setAdminStadium({ ...adminStadium, rental_note: v })}
-                  />
-                  <EditableInput
-                    label="꼭 지켜주세요"
-                    value={adminStadium.rental_warning || ""}
-                    onChange={(v) => setAdminStadium({ ...adminStadium, rental_warning: v })}
-                  />
-                  <EditableInput
-                    label="대관 알림"
-                    value={adminStadium.rental_message || ""}
-                    onChange={(v) => setAdminStadium({ ...adminStadium, rental_message: v })}
-                  />
-                  <EditableToggle
-                    label="조끼 제공"
-                    checked={!!adminStadium.vest_available}
-                    onChange={(v) => setAdminStadium({ ...adminStadium, vest_available: v })}
-                  />
-                  <EditableInput
-                    label="조끼 메모"
-                    value={adminStadium.vest_memo || ""}
-                    onChange={(v) => setAdminStadium({ ...adminStadium, vest_memo: v })}
-                  />
-                  <EditableToggle
-                    label="공 제공"
-                    checked={!!adminStadium.ball_available}
-                    onChange={(v) => setAdminStadium({ ...adminStadium, ball_available: v })}
-                  />
-                  <EditableInput label="공 메모" value={adminStadium.ball_memo || ""} onChange={(v) => setAdminStadium({ ...adminStadium, ball_memo: v })} />
-                </div>
                 <div className="space-y-2">
-                  <div className="text-sm text-[#374151] font-semibold">구장주 계정 정보 (STEP5 표시)</div>
+                  <div className="text-sm text-[#374151] font-semibold">구관사 계정 정보 (구장구 공유용)</div>
                   <div className="grid md:grid-cols-2 gap-2">
                     <label className="text-xs text-[#6b7280] flex flex-col gap-1">
                       계정(ID)
@@ -746,17 +655,234 @@ export default function AdminOnboardingDetailPage() {
                   </div>
                   <div className="text-[11px] text-[#9CA3AF]">세팅 완료 처리 시 함께 저장됩니다.</div>
                 </div>
-                <div className="text-sm text-[#374151] space-y-2">
-                  <div className="font-semibold">희망 운영 시간</div>
-                  <div className="border border-[#E3E6EC] rounded-lg px-3 py-2 bg-[#F9FAFB] min-h-[48px]">
-                    {adminStadium.hoped_times_note && adminStadium.hoped_times_note.trim().length > 0
-                      ? adminStadium.hoped_times_note
-                      : "구장주가 입력한 희망 시간이 없습니다."}
+                <div className="flex flex-col gap-3 text-sm text-[#374151]">
+                  <EditableInput label="지역" value={adminStadium.region || ""} onChange={(v) => setAdminStadium({ ...adminStadium, region: v })} />
+                  <EditableInput
+                    label="구장명"
+                    value={adminStadium.stadium_name || ""}
+                    onChange={(v) => setAdminStadium({ ...adminStadium, stadium_name: v })}
+                  />
+                  <EditableInput
+                    label="주소"
+                    value={adminStadium.address || ""}
+                    onChange={(v) => setAdminStadium({ ...adminStadium, address: v })}
+                  />
+                  <EditableInput
+                    label="구장 유형"
+                    value={adminStadium.stadium_type || ""}
+                    onChange={(v) => setAdminStadium({ ...adminStadium, stadium_type: v })}
+                  />
+                  <EditableInput
+                    label="실내/실외"
+                    value={adminStadium.indoor_outdoor || ""}
+                    onChange={(v) => setAdminStadium({ ...adminStadium, indoor_outdoor: v })}
+                  />
+                  <EditableInput
+                    label="구장 연락처"
+                    value={adminStadium.stadium_contact || ""}
+                    onChange={(v) => setAdminStadium({ ...adminStadium, stadium_contact: v })}
+                  />
+                  <EditableInput
+                    label="런드리 연락처"
+                    value={adminStadium.laundry_contact || ""}
+                    onChange={(v) => setAdminStadium({ ...adminStadium, laundry_contact: v })}
+                  />
+                  <div className="border-t border-[#E3E6EC] pt-3 text-sm font-semibold text-[#111827]">공통 정보</div>
+                  <EditableInput
+                    label="공지사항"
+                    value={adminStadium.notice || ""}
+                    onChange={(v) => setAdminStadium({ ...adminStadium, notice: v })}
+                  />
+                  <EditableSelect
+                    label="주차 가능"
+                    value={adminStadium.parking_available === true ? "예" : adminStadium.parking_available === false ? "아니오" : ""}
+                    options={["예", "아니오"]}
+                    onChange={(v) =>
+                      setAdminStadium({
+                        ...adminStadium,
+                        parking_available: v === "" ? null : v === "예",
+                      })
+                    }
+                  />
+                  <EditableSelect
+                    label="무료 주차"
+                    value={adminStadium.parking_free === true ? "예" : adminStadium.parking_free === false ? "아니오" : ""}
+                    options={["예", "아니오"]}
+                    onChange={(v) =>
+                      setAdminStadium({
+                        ...adminStadium,
+                        parking_free: v === "" ? null : v === "예",
+                      })
+                    }
+                  />
+                  <EditableInput
+                    label="무료 주차 대수"
+                    value={adminStadium.parking_count ?? ""}
+                    onChange={(v) => setAdminStadium({ ...adminStadium, parking_count: Number(v) || null })}
+                  />
+                  <EditableInput
+                    label="주차 연락처"
+                    value={adminStadium.parking_contact || ""}
+                    onChange={(v) => setAdminStadium({ ...adminStadium, parking_contact: v })}
+                  />
+                  <EditableInput
+                    label="주차 요금"
+                    value={adminStadium.parking_fee || ""}
+                    onChange={(v) => setAdminStadium({ ...adminStadium, parking_fee: v })}
+                  />
+                  <div className="grid md:grid-cols-2 gap-3">
+                    <EditableSelect
+                      label="샤워장"
+                      value={adminStadium?.shower_available === true ? "예" : adminStadium?.shower_available === false ? "아니오" : ""}
+                      options={["예", "아니오"]}
+                      onChange={(v) =>
+                        setAdminStadium({
+                          ...adminStadium,
+                          shower_available: v === "" ? null : v === "예",
+                        })
+                      }
+                    />
+                    <EditableInput
+                      label="샤워 메모"
+                      value={adminStadium.shower_memo || ""}
+                      onChange={(v) => setAdminStadium({ ...adminStadium, shower_memo: v })}
+                    />
                   </div>
+                  <div className="grid md:grid-cols-2 gap-3">
+                    <EditableSelect
+                      label="풋살화 대여"
+                      value={adminStadium?.shoes_available === true ? "예" : adminStadium?.shoes_available === false ? "아니오" : ""}
+                      options={["예", "아니오"]}
+                      onChange={(v) =>
+                        setAdminStadium({
+                          ...adminStadium,
+                          shoes_available: v === "" ? null : v === "예",
+                        })
+                      }
+                    />
+                    <EditableInput
+                      label="풋살화 메모"
+                      value={adminStadium.shoes_memo || ""}
+                      onChange={(v) => setAdminStadium({ ...adminStadium, shoes_memo: v })}
+                    />
+                  </div>
+                  <div className="grid md:grid-cols-2 gap-3">
+                    <EditableSelect
+                      label="화장실"
+                      value={adminStadium?.toilet_available === true ? "예" : adminStadium?.toilet_available === false ? "아니오" : ""}
+                      options={["예", "아니오"]}
+                      onChange={(v) =>
+                        setAdminStadium({
+                          ...adminStadium,
+                          toilet_available: v === "" ? null : v === "예",
+                        })
+                      }
+                    />
+                    <EditableInput
+                      label="화장실 메모"
+                      value={adminStadium.toilet_memo || ""}
+                      onChange={(v) => setAdminStadium({ ...adminStadium, toilet_memo: v })}
+                    />
+                  </div>
+                  <div className="grid md:grid-cols-2 gap-3">
+                    <EditableSelect
+                      label="음료"
+                      value={adminStadium?.drinks_available === true ? "예" : adminStadium?.drinks_available === false ? "아니오" : ""}
+                      options={["예", "아니오"]}
+                      onChange={(v) =>
+                        setAdminStadium({
+                          ...adminStadium,
+                          drinks_available: v === "" ? null : v === "예",
+                        })
+                      }
+                    />
+                    <EditableInput
+                      label="음료 메모"
+                      value={adminStadium.drinks_memo || ""}
+                      onChange={(v) => setAdminStadium({ ...adminStadium, drinks_memo: v })}
+                    />
+                  </div>
+                  <div className="border-t border-[#E3E6EC] pt-3 text-sm font-semibold text-[#111827]">소셜 매치</div>
+                  <EditableInput
+                    label="소셜 특이사항"
+                    value={adminStadium.social_special || ""}
+                    onChange={(v) => setAdminStadium({ ...adminStadium, social_special: v })}
+                  />
+                  <EditableInput
+                    label="소셜 알림"
+                    value={adminStadium.social_message || ""}
+                    onChange={(v) => setAdminStadium({ ...adminStadium, social_message: v })}
+                  />
+                  <EditableInput
+                    label="매니저 노트"
+                    value={adminStadium.manager_note || ""}
+                    onChange={(v) => setAdminStadium({ ...adminStadium, manager_note: v })}
+                  />
+                  <div className="border-t border-[#E3E6EC] pt-3 text-sm font-semibold text-[#111827]">구장 예약</div>
+                  <EditableInput
+                    label="대관 특이사항"
+                    value={adminStadium.rental_note || ""}
+                    onChange={(v) => setAdminStadium({ ...adminStadium, rental_note: v })}
+                  />
+                  <EditableInput
+                    label="꼭 지켜주세요"
+                    value={adminStadium.rental_warning || ""}
+                    onChange={(v) => setAdminStadium({ ...adminStadium, rental_warning: v })}
+                  />
+                  <EditableInput
+                    label="대관 알림"
+                    value={adminStadium.rental_message || ""}
+                    onChange={(v) => setAdminStadium({ ...adminStadium, rental_message: v })}
+                  />
+                  <div className="grid md:grid-cols-2 gap-3">
+                    <EditableSelect
+                      label="조끼 제공"
+                      value={adminStadium?.vest_available === true ? "예" : adminStadium?.vest_available === false ? "아니오" : ""}
+                      options={["예", "아니오"]}
+                      onChange={(v) =>
+                        setAdminStadium({
+                          ...adminStadium,
+                          vest_available: v === "" ? null : v === "예",
+                        })
+                      }
+                    />
+                    <EditableInput
+                      label="조끼 메모"
+                      value={adminStadium.vest_memo || ""}
+                      onChange={(v) => setAdminStadium({ ...adminStadium, vest_memo: v })}
+                    />
+                  </div>
+                  <div className="grid md:grid-cols-2 gap-3">
+                    <EditableSelect
+                      label="공 제공"
+                      value={adminStadium?.ball_available === true ? "예" : adminStadium?.ball_available === false ? "아니오" : ""}
+                      options={["예", "아니오"]}
+                      onChange={(v) =>
+                        setAdminStadium({
+                          ...adminStadium,
+                          ball_available: v === "" ? null : v === "예",
+                        })
+                      }
+                    />
+                    <EditableInput
+                      label="공 메모"
+                      value={adminStadium.ball_memo || ""}
+                      onChange={(v) => setAdminStadium({ ...adminStadium, ball_memo: v })}
+                    />
+                  </div>
+                  <div className="border-t border-[#E3E6EC] pt-3" />
                 </div>
-
                 <div className="space-y-2">
-                  <div className="text-xs text-[#6b7280]">면 정보</div>
+                  <div className="flex items-center justify-between">
+                    <div className="text-sm font-semibold text-[#111827]">면 정보</div>
+                    <button
+                      type="button"
+                      onClick={() => setAdminCourts((prev) => [...prev, { court_name: "", size_x: null, size_y: null, floor_type: "", indoor_outdoor: "" }])}
+                      className="px-2 py-1 rounded border border-[#1C5DFF] text-[#1C5DFF] text-xs font-semibold"
+                    >
+                      면 추가
+                    </button>
+                  </div>
                   {adminCourts && adminCourts.length > 0 ? (
                     <div className="space-y-2">
                       {adminCourts
@@ -826,20 +952,21 @@ export default function AdminOnboardingDetailPage() {
                         ))}
                     </div>
                   ) : (
-                    <div className="text-sm text-[#6b7280]">면 정보가 아직 없습니다.</div>
+                    <div className="text-sm text-[#111827]">면 정보가 아직 없습니다.</div>
                   )}
-                  <button
-                    type="button"
-                    onClick={() => setAdminCourts((prev) => [...prev, { court_name: "", size_x: null, size_y: null, floor_type: "", indoor_outdoor: "" }])}
-                    className="px-3 py-2 rounded border border-[#1C5DFF] text-[#1C5DFF] text-sm font-semibold"
-                  >
-                    면 추가
-                  </button>
+                </div>
+                <div className="text-sm text-[#374151] space-y-2">
+                  <div className="font-semibold">희망 운영 시간</div>
+                  <div className="border border-[#E3E6EC] rounded-lg px-3 py-2 bg-[#F9FAFB] min-h-[48px]">
+                    {adminStadium.hoped_times_note && adminStadium.hoped_times_note.trim().length > 0
+                      ? adminStadium.hoped_times_note
+                      : "구장주가 입력한 희망 시간이 없습니다."}
+                  </div>
                 </div>
 
                 {stadiumSaveMsg && <div className="bg-green-100 text-green-800 px-3 py-2 rounded-lg text-sm">{stadiumSaveMsg}</div>}
                 {stadiumSaveErr && <div className="bg-red-100 text-red-800 px-3 py-2 rounded-lg text-sm">{stadiumSaveErr}</div>}
-                <div className="flex justify-end gap-2">
+                <div className="flex flex-wrap items-center justify-between gap-2">
                   <button
                     type="button"
                     onClick={async () => {
@@ -864,10 +991,23 @@ export default function AdminOnboardingDetailPage() {
                       }
                     }}
                     disabled={stadiumSaving}
-                    className="px-4 py-2 rounded-lg border border-[#1C5DFF] text-[#1C5DFF] font-semibold"
+                    className="px-3 py-2 rounded-lg border border-[#1C5DFF] text-[#1C5DFF] text-sm font-semibold"
                   >
                     {stadiumSaving ? "저장 중…" : "수정 내용 저장"}
                   </button>
+                  <div className="flex flex-wrap gap-2">
+                    {step1Actions.map((b) => (
+                      <button
+                        key={b.next}
+                        type="button"
+                        disabled={saving}
+                        onClick={() => doAction(b.next)}
+                        className="px-3 py-2 rounded-lg border border-[#1C5DFF] text-[#1C5DFF] text-sm font-semibold"
+                      >
+                        {saving ? "처리 중…" : b.label}
+                      </button>
+                    ))}
+                  </div>
                 </div>
               </div>
             ) : (
@@ -978,6 +1118,12 @@ function InfoLine({ label, value, className }: { label: string; value?: string |
   );
 }
 
+function formatYesNo(value?: boolean | null) {
+  if (value === true) return "예";
+  if (value === false) return "아니오";
+  return "-";
+}
+
 function EditableInput({
   label,
   value,
@@ -1002,6 +1148,36 @@ function EditableInput({
   );
 }
 
+function EditableSelect({
+  label,
+  value,
+  options,
+  onChange,
+}: {
+  label: string;
+  value: string;
+  options: string[];
+  onChange: (v: string) => void;
+}) {
+  return (
+    <label className="flex flex-col gap-1 text-xs text-[#6b7280]">
+      <span>{label}</span>
+      <select
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="border border-[#E3E6EC] rounded-lg px-3 py-2 text-sm text-[#111827] bg-white"
+      >
+        <option value="">선택하세요</option>
+        {options.map((opt) => (
+          <option key={opt} value={opt}>
+            {opt}
+          </option>
+        ))}
+      </select>
+    </label>
+  );
+}
+
 function EditableToggle({ label, checked, onChange }: { label: string; checked: boolean; onChange: (v: boolean) => void }) {
   return (
     <label className="inline-flex items-center gap-2 text-xs text-[#6b7280]">
@@ -1017,6 +1193,7 @@ function ActionPanel({
   actions,
   doAction,
   saving,
+  hideActions,
   memoValue,
   onMemoChange,
   showMemo,
@@ -1027,6 +1204,7 @@ function ActionPanel({
   actions: { label: string; next: OnboardingState }[];
   doAction: (next: OnboardingState) => Promise<void>;
   saving: boolean;
+  hideActions?: boolean;
   memoValue?: string;
   onMemoChange?: (v: string) => void;
   showMemo?: boolean;
@@ -1043,23 +1221,24 @@ function ActionPanel({
         <div className="w-2 h-2 rounded-full" style={{ background: active ? "#1C5DFF" : "#E3E6EC" }} />
         <div className="text-sm text-[#111827] font-semibold">{title}</div>
       </div>
-      {actions.length === 0 ? (
-        <div className="text-sm text-[#6b7280]">현재 상태에서 실행할 액션이 없습니다.</div>
-      ) : (
-        <div className="flex flex-wrap gap-2">
-          {actions.map((b) => (
-            <button
-              key={b.next}
-              type="button"
-              disabled={saving}
-              onClick={() => doAction(b.next)}
-              className="px-3 py-2 rounded-lg border border-[#1C5DFF] text-[#1C5DFF] text-sm font-semibold"
-            >
-              {saving ? "처리 중…" : b.label}
-            </button>
-          ))}
-        </div>
-      )}
+      {!hideActions &&
+        (actions.length === 0 ? (
+          <div className="text-sm text-[#6b7280]">현재 상태에서 실행할 액션이 없습니다.</div>
+        ) : (
+          <div className="flex flex-wrap gap-2">
+            {actions.map((b) => (
+              <button
+                key={b.next}
+                type="button"
+                disabled={saving}
+                onClick={() => doAction(b.next)}
+                className="px-3 py-2 rounded-lg border border-[#1C5DFF] text-[#1C5DFF] text-sm font-semibold"
+              >
+                {saving ? "처리 중…" : b.label}
+              </button>
+            ))}
+          </div>
+        ))}
       {showMemo && onMemoChange && (
         <div className="space-y-1 pt-2 w-full md:w-2/3">
           <label className="text-xs text-[#6b7280]">반려 사유 (반려 시 기록)</label>
