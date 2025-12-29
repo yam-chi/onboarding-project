@@ -323,63 +323,69 @@ export default function Step0New() {
           사업자등록증, 통장사본, 부동산/임대차 계약서를 모두 업로드해주세요. (JPG/PNG/PDF)
         </p>
         <div className="flex flex-col gap-3 max-w-md">
-          <FileInput
-            label="사업자등록증 사본"
-            required
-            fileName={businessFile?.name || ""}
-            previewUrl={previewUrls.business}
-            onPreview={(url) => setPreviewImage(url)}
-            onChange={(file) => {
-              setBusinessFile(file);
-              setPreviewUrls((prev) => ({ ...prev, business: URL.createObjectURL(file) }));
-            }}
-            onClear={() => {
-              setBusinessFile(null);
-              setPreviewUrls((prev) => {
-                if (prev.business) URL.revokeObjectURL(prev.business);
-                const { business, ...rest } = prev;
-                return rest;
-              });
-            }}
-          />
-          <FileInput
-            label="통장 사본"
-            required
-            fileName={bankbookFile?.name || ""}
-            previewUrl={previewUrls.bankbook}
-            onPreview={(url) => setPreviewImage(url)}
-            onChange={(file) => {
-              setBankbookFile(file);
-              setPreviewUrls((prev) => ({ ...prev, bankbook: URL.createObjectURL(file) }));
-            }}
-            onClear={() => {
-              setBankbookFile(null);
-              setPreviewUrls((prev) => {
-                if (prev.bankbook) URL.revokeObjectURL(prev.bankbook);
-                const { bankbook, ...rest } = prev;
-                return rest;
-              });
-            }}
-          />
-          <FileInput
-            label="부동산/임대차 계약서"
-            required
-            fileName={leaseFile?.name || ""}
-            previewUrl={previewUrls.lease}
-            onPreview={(url) => setPreviewImage(url)}
-            onChange={(file) => {
-              setLeaseFile(file);
-              setPreviewUrls((prev) => ({ ...prev, lease: URL.createObjectURL(file) }));
-            }}
-            onClear={() => {
-              setLeaseFile(null);
-              setPreviewUrls((prev) => {
-                if (prev.lease) URL.revokeObjectURL(prev.lease);
-                const { lease, ...rest } = prev;
-                return rest;
-              });
-            }}
-          />
+          <div className="border border-[#E3E6EC] rounded-lg p-3 bg-white">
+            <FileInput
+              label="사업자등록증 사본"
+              required
+              fileName={businessFile?.name || ""}
+              previewUrl={previewUrls.business}
+              onPreview={(url) => setPreviewImage(url)}
+              onChange={(file) => {
+                setBusinessFile(file);
+                setPreviewUrls((prev) => ({ ...prev, business: URL.createObjectURL(file) }));
+              }}
+              onClear={() => {
+                setBusinessFile(null);
+                setPreviewUrls((prev) => {
+                  if (prev.business) URL.revokeObjectURL(prev.business);
+                  const { business, ...rest } = prev;
+                  return rest;
+                });
+              }}
+            />
+          </div>
+          <div className="border border-[#E3E6EC] rounded-lg p-3 bg-white">
+            <FileInput
+              label="통장 사본"
+              required
+              fileName={bankbookFile?.name || ""}
+              previewUrl={previewUrls.bankbook}
+              onPreview={(url) => setPreviewImage(url)}
+              onChange={(file) => {
+                setBankbookFile(file);
+                setPreviewUrls((prev) => ({ ...prev, bankbook: URL.createObjectURL(file) }));
+              }}
+              onClear={() => {
+                setBankbookFile(null);
+                setPreviewUrls((prev) => {
+                  if (prev.bankbook) URL.revokeObjectURL(prev.bankbook);
+                  const { bankbook, ...rest } = prev;
+                  return rest;
+                });
+              }}
+            />
+          </div>
+          <div className="border border-[#E3E6EC] rounded-lg p-3 bg-white">
+            <FileInput
+              label="부동산/임대차 계약서"
+              required
+              fileName={leaseFile?.name || ""}
+              previewUrl={previewUrls.lease}
+              onPreview={(url) => setPreviewImage(url)}
+              onChange={(file) => {
+                setLeaseFile(file);
+                setPreviewUrls((prev) => ({ ...prev, lease: URL.createObjectURL(file) }));
+              }}
+              onClear={() => {
+                setLeaseFile(null);
+                setPreviewUrls((prev) => {
+                  if (prev.lease) URL.revokeObjectURL(prev.lease);
+                  const { lease, ...rest } = prev;
+                  return rest;
+                });
+              }}
+            />
+          </div>
         </div>
         <p className="text-xs text-[#C96A4A]">
           사업자등록증 상 대표자명과 동일해야 합니다. (차명계좌 불가)
