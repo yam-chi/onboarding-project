@@ -118,6 +118,7 @@ export default function AdminOnboardingDetailPage() {
   const [adminCourts, setAdminCourts] = useState<CourtInfo[]>([]);
   const [stadiumSaveMsg, setStadiumSaveMsg] = useState<string | null>(null);
   const [stadiumSaveErr, setStadiumSaveErr] = useState<string | null>(null);
+  const [step1ApproveMsg, setStep1ApproveMsg] = useState<string | null>(null);
   const [stadiumSaving, setStadiumSaving] = useState(false);
   const [businessUrl, setBusinessUrl] = useState<string | null>(null);
   const [bankbookUrl, setBankbookUrl] = useState<string | null>(null);
@@ -128,6 +129,7 @@ export default function AdminOnboardingDetailPage() {
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [finalAccount, setFinalAccount] = useState("");
   const [finalPassword, setFinalPassword] = useState("");
+  const [stadiumPanelOpen, setStadiumPanelOpen] = useState(false);
 
   const fetchData = async () => {
     setError(null);
@@ -302,6 +304,7 @@ export default function AdminOnboardingDetailPage() {
     setSaving(true);
     setBanner(null);
     setError(null);
+    setStep1ApproveMsg(null);
     try {
       const res = await fetch(`/api/admin/onboarding/${id}/status`, {
         method: "PATCH",
@@ -315,6 +318,9 @@ export default function AdminOnboardingDetailPage() {
       });
       const json = await res.json();
       if (!res.ok) throw new Error(json?.error || "상태 변경 실패");
+      if (next === "step1_approved") {
+        setStep1ApproveMsg("승인 완료");
+      }
       setBanner(`상태가 ${statusToLabel(next)}(으)로 변경되었습니다.`);
       await fetchData();
     } catch (e: any) {
@@ -619,6 +625,8 @@ export default function AdminOnboardingDetailPage() {
           doAction={doAction}
           saving={saving}
           hideActions
+          collapsed={!stadiumPanelOpen}
+          onToggleCollapse={() => setStadiumPanelOpen((prev) => !prev)}
           extraContent={
             adminStadium ? (
               <div className="mt-2 space-y-3">
@@ -965,36 +973,42 @@ export default function AdminOnboardingDetailPage() {
                 </div>
 
                 {stadiumSaveMsg && <div className="bg-green-100 text-green-800 px-3 py-2 rounded-lg text-sm">{stadiumSaveMsg}</div>}
+                {step1ApproveMsg && <div className="bg-green-100 text-green-800 px-3 py-2 rounded-lg text-sm">{step1ApproveMsg}</div>}
                 {stadiumSaveErr && <div className="bg-red-100 text-red-800 px-3 py-2 rounded-lg text-sm">{stadiumSaveErr}</div>}
-                <div className="flex flex-wrap items-center justify-between gap-2">
-                  <button
-                    type="button"
-                    onClick={async () => {
-                      if (!id || !adminStadium) return;
-                      setStadiumSaveErr(null);
-                      setStadiumSaveMsg(null);
-                      setStadiumSaving(true);
-                      try {
-                        const res = await fetch(`/api/onboarding/${id}/step2`, {
-                          method: "PUT",
-                          headers: { "Content-Type": "application/json" },
-                          body: JSON.stringify({ stadium: adminStadium, courts: adminCourts, submit: false }),
-                        });
-                        const json = await res.json();
-                        if (!res.ok) throw new Error(json?.error || "저장 실패");
-                        setStadiumSaveMsg("저장되었습니다. 구장주 화면에도 반영되었습니다.");
-                        loadStadiumInfo();
-                      } catch (e: any) {
-                        setStadiumSaveErr(e.message ?? "저장 중 오류가 발생했습니다.");
-                      } finally {
-                        setStadiumSaving(false);
-                      }
-                    }}
-                    disabled={stadiumSaving}
-                    className="px-3 py-2 rounded-lg border border-[#1C5DFF] text-[#1C5DFF] text-sm font-semibold"
-                  >
-                    {stadiumSaving ? "저장 중…" : "수정 내용 저장"}
-                  </button>
+                <div className="flex flex-wrap items-end justify-between gap-2">
+                  <div className="flex items-center gap-3">
+                    <button
+                      type="button"
+                      onClick={async () => {
+                        if (!id || !adminStadium) return;
+                        setStadiumSaveErr(null);
+                        setStadiumSaveMsg(null);
+                        setStadiumSaving(true);
+                        try {
+                          const res = await fetch(`/api/onboarding/${id}/step2`, {
+                            method: "PUT",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ stadium: adminStadium, courts: adminCourts, submit: false }),
+                          });
+                          const json = await res.json();
+                          if (!res.ok) throw new Error(json?.error || "저장 실패");
+                          setStadiumSaveMsg("저장되었습니다. 구장주 화면에도 반영되었습니다.");
+                          loadStadiumInfo();
+                        } catch (e: any) {
+                          setStadiumSaveErr(e.message ?? "저장 중 오류가 발생했습니다.");
+                        } finally {
+                          setStadiumSaving(false);
+                        }
+                      }}
+                      disabled={stadiumSaving}
+                      className="px-3 py-2 rounded-lg border border-[#1C5DFF] text-[#1C5DFF] text-sm font-semibold"
+                    >
+                      {stadiumSaving ? "저장 중…" : "수정 내용 저장"}
+                    </button>
+                    {info?.step_status === "step1_approved" && (
+                      <span className="text-sm text-[#6b7280]">승인 완료</span>
+                    )}
+                  </div>
                   <div className="flex flex-wrap gap-2">
                     {step1Actions.map((b) => (
                       <button
@@ -1015,75 +1029,14 @@ export default function AdminOnboardingDetailPage() {
             )
           }
         />
-        <ActionPanel
-          title="STEP4 · 세팅 완료 처리"
-          active={["step4_complete", "step5_submitted", "step5_complete"].includes(info?.step_status || "")}
-          actions={step5Actions}
-          doAction={doAction}
-          saving={saving}
-          extraContent={
-            times && times.length > 0 ? (
-              <div className="space-y-4 text-sm text-[#4b5563]">
-                <div className="text-xs text-[#6b7280]">제출된 세팅 가능 시간</div>
-                <div className="border border-[#E3E6EC] rounded-lg overflow-hidden">
-                  <table className="w-full text-xs">
-                    <thead className="bg-[#F3F4F6] text-[#1C1E26]">
-                      <tr>
-                        <th className="px-3 py-2 text-left">요일</th>
-                        <th className="px-3 py-2 text-left">시간</th>
-                        <th className="px-3 py-2 text-left">메모</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {times
-                        .slice()
-                        .sort((a, b) => a.day_of_week.localeCompare(b.day_of_week) || a.start_time.localeCompare(b.start_time))
-                        .map((t, idx) => (
-                          <tr key={`${t.day_of_week}-${t.start_time}-${idx}`} className="border-t border-[#E3E6EC]">
-                            <td className="px-3 py-2">{t.day_of_week}</td>
-                            <td className="px-3 py-2">
-                              {t.start_time} ~ {t.end_time}
-                            </td>
-                            <td className="px-3 py-2 text-[#6b7280]">{t.note || "-"}</td>
-                          </tr>
-                        ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            ) : (
-              <div className="space-y-2 text-sm text-[#6b7280]">
-                <div>구장주가 제출한 세팅 시간이 없습니다.</div>
-              </div>
-            )
-          }
-        />
-
-        {info && (
-          <section className="bg-white border border-[#E3E6EC] rounded-xl shadow-sm p-5 space-y-3 text-sm text-[#4b5563]">
-            <div className="text-sm text-[#111827] font-semibold">링크</div>
-            <div className="flex flex-col gap-2">
-              <div>
-                <div className="text-xs text-[#6b7280]">관리자 상세</div>
-                <div className="text-sm font-semibold text-[#1C5DFF]">{`/admin/onboarding/${info.id}`}</div>
-              </div>
-              <div>
-                <div className="text-xs text-[#6b7280]">구장주 화면(현재 스텝)</div>
-                <Link href={statusToPath(info.id, info.step_status)} className="text-[#1C5DFF] underline text-sm">
-                  {statusToPath(info.id, info.step_status)}
-                </Link>
-              </div>
-              <div>
-                <Link
-                  href="/admin/onboarding"
-                  className="inline-flex items-center px-3 py-1.5 rounded-lg border border-[#E3E6EC] text-[#1C5DFF] text-xs font-semibold"
-                >
-                  리스트로 돌아가기
-                </Link>
-              </div>
-            </div>
-          </section>
-        )}
+        <div className="flex justify-end">
+          <Link
+            href="/admin/onboarding"
+            className="inline-flex items-center px-3 py-1.5 rounded-lg border border-[#E3E6EC] text-[#1C5DFF] text-xs font-semibold"
+          >
+            리스트로 돌아가기
+          </Link>
+        </div>
         </div>
       </main>
 
@@ -1194,6 +1147,8 @@ function ActionPanel({
   doAction,
   saving,
   hideActions,
+  collapsed,
+  onToggleCollapse,
   memoValue,
   onMemoChange,
   showMemo,
@@ -1205,6 +1160,8 @@ function ActionPanel({
   doAction: (next: OnboardingState) => Promise<void>;
   saving: boolean;
   hideActions?: boolean;
+  collapsed?: boolean;
+  onToggleCollapse?: () => void;
   memoValue?: string;
   onMemoChange?: (v: string) => void;
   showMemo?: boolean;
@@ -1220,38 +1177,52 @@ function ActionPanel({
       <div className="flex items-center gap-2">
         <div className="w-2 h-2 rounded-full" style={{ background: active ? "#1C5DFF" : "#E3E6EC" }} />
         <div className="text-sm text-[#111827] font-semibold">{title}</div>
+        {onToggleCollapse && (
+          <button
+            type="button"
+            onClick={onToggleCollapse}
+            className="text-[#6b7280] text-sm hover:text-[#1C5DFF] cursor-pointer"
+            aria-label={collapsed ? "열기" : "접기"}
+          >
+            <span aria-hidden>{collapsed ? "▶" : "▼"}</span>
+          </button>
+        )}
       </div>
-      {!hideActions &&
-        (actions.length === 0 ? (
-          <div className="text-sm text-[#6b7280]">현재 상태에서 실행할 액션이 없습니다.</div>
-        ) : (
-          <div className="flex flex-wrap gap-2">
-            {actions.map((b) => (
-              <button
-                key={b.next}
-                type="button"
-                disabled={saving}
-                onClick={() => doAction(b.next)}
-                className="px-3 py-2 rounded-lg border border-[#1C5DFF] text-[#1C5DFF] text-sm font-semibold"
-              >
-                {saving ? "처리 중…" : b.label}
-              </button>
+      {collapsed ? null : (
+        <>
+          {!hideActions &&
+            (actions.length === 0 ? (
+              <div className="text-sm text-[#6b7280]">현재 상태에서 실행할 액션이 없습니다.</div>
+            ) : (
+              <div className="flex flex-wrap gap-2">
+                {actions.map((b) => (
+                  <button
+                    key={b.next}
+                    type="button"
+                    disabled={saving}
+                    onClick={() => doAction(b.next)}
+                    className="px-3 py-2 rounded-lg border border-[#1C5DFF] text-[#1C5DFF] text-sm font-semibold"
+                  >
+                    {saving ? "처리 중…" : b.label}
+                  </button>
+                ))}
+              </div>
             ))}
-          </div>
-        ))}
-      {showMemo && onMemoChange && (
-        <div className="space-y-1 pt-2 w-full md:w-2/3">
-          <label className="text-xs text-[#6b7280]">반려 사유 (반려 시 기록)</label>
-          <textarea
-            value={memoValue || ""}
-            onChange={(e) => onMemoChange(e.target.value)}
-            className="w-full border border-[#E3E6EC] rounded-lg px-3 py-2 text-sm"
-            rows={3}
-            placeholder="반려 사유를 입력하세요."
-          />
-        </div>
+          {showMemo && onMemoChange && (
+            <div className="space-y-1 pt-2 w-full md:w-2/3">
+              <label className="text-xs text-[#6b7280]">반려 사유 (반려 시 기록)</label>
+              <textarea
+                value={memoValue || ""}
+                onChange={(e) => onMemoChange(e.target.value)}
+                className="w-full border border-[#E3E6EC] rounded-lg px-3 py-2 text-sm"
+                rows={3}
+                placeholder="반려 사유를 입력하세요."
+              />
+            </div>
+          )}
+          {extraContent}
+        </>
       )}
-      {extraContent}
     </section>
   );
 }

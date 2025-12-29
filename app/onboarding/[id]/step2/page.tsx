@@ -633,7 +633,8 @@ export default function Step2Page() {
         {banner && <div className="bg-green-100 text-green-800 px-4 py-3 rounded-lg text-sm">{banner}</div>}
         {error && <div className="bg-red-100 text-red-800 px-4 py-3 rounded-lg text-sm">{error}</div>}
 
-        <div className="flex justify-end gap-2">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <div className="flex flex-wrap gap-2">
           <button
             type="button"
             onClick={() => save(false)}
@@ -649,14 +650,14 @@ export default function Step2Page() {
             className="px-4 py-2 rounded-lg text-white font-semibold"
             style={{ background: "#1C5DFF" }}
           >
-            {saving ? "제출 중..." : "제출하기"}
+            {saving ? "제출 중..." : status === "step1_submitted" ? "수정하기" : "제출하기"}
           </button>
-        </div>
-
-        <nav className="flex items-center justify-between">
+          </div>
+          <div className="flex flex-wrap gap-2">
           <Link
             href={id ? `/onboarding/${id}/step1` : "/onboarding"}
-            className="px-4 py-2 rounded-lg border border-[#E3E6EC] text-[#6b7280]"
+            className="px-4 py-2 rounded-lg text-white font-semibold"
+            style={{ background: "#1C5DFF" }}
           >
             이전 단계로
           </Link>
@@ -666,10 +667,11 @@ export default function Step2Page() {
             </Link>
           ) : (
             <button className="px-4 py-2 rounded-lg border border-[#E3E6EC] text-[#6b7280]" disabled>
-              다음 단계 준비 중
+              담당자 검토 중
             </button>
           )}
-        </nav>
+          </div>
+        </div>
       </div>
     </main>
   );
