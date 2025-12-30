@@ -47,6 +47,7 @@ type StadiumInfo = {
   address_detail?: string;
   account_email?: string;
   stadium_type?: string;
+  indoor_outdoor?: string;
   artificial_grass?: boolean;
   stadium_contact?: string;
   laundry_contact?: string;
@@ -385,75 +386,18 @@ export default function AdminOnboardingDetailPage() {
           <section className="bg-white border border-[#E3E6EC] rounded-xl shadow-sm p-5 space-y-4 text-sm text-[#4b5563]">
             <div className="text-sm text-[#111827] font-semibold">구장 정보</div>
             <div className="grid md:grid-cols-2 gap-3">
-              <InfoLine label="계정 이메일" value={adminStadium?.account_email} />
-              <InfoLine label="지역" value={adminStadium?.region || info.region} />
-              <InfoLine label="구장명" value={adminStadium?.stadium_name || info.stadium_name} />
-              <InfoLine label="주소" value={adminStadium?.address || info.address} />
-              <InfoLine label="구장 유형" value={adminStadium?.stadium_type} />
-              <InfoLine label="실내/실외" value={adminStadium?.indoor_outdoor} />
-              <InfoLine label="구장 연락처" value={adminStadium?.stadium_contact || info.contact || info.temp_code} />
-              <InfoLine label="런드리 연락처" value={adminStadium?.laundry_contact} />
-            </div>
-            <div className="border-t border-[#E3E6EC] pt-3" />
-
-            <div className="flex flex-col gap-3 pt-2">
-              <InfoLine label="공지사항" value={adminStadium?.notice} />
-              <InfoLine label="주차 가능" value={formatYesNo(adminStadium?.parking_available)} />
-              <InfoLine label="무료 주차" value={formatYesNo(adminStadium?.parking_free)} />
-              <InfoLine label="무료 주차 대수" value={adminStadium?.parking_count} />
-              <InfoLine label="주차 등록 연락처" value={adminStadium?.parking_contact} />
-              <InfoLine label="주차 요금" value={adminStadium?.parking_fee} />
-              <div className="grid md:grid-cols-2 gap-3">
-                <EditableSelect
-                  label="샤워장"
-                  value={adminStadium?.shower_available === true ? "예" : adminStadium?.shower_available === false ? "아니오" : ""}
-                  options={["예", "아니오"]}
-                  onChange={(v) =>
-                    setAdminStadium({
-                      ...adminStadium,
-                      shower_available: v === "" ? null : v === "예",
-                    })
-                  }
-                />
-                <EditableInput
-                  label="샤워 메모"
-                  value={adminStadium?.shower_memo || ""}
-                  onChange={(v) => setAdminStadium({ ...adminStadium, shower_memo: v })}
-                />
-              </div>
-              <div className="grid md:grid-cols-2 gap-3">
-                <InfoLine label="풋살화 대여" value={formatYesNo(adminStadium?.shoes_available)} />
-                <InfoLine label="풋살화 메모" value={adminStadium?.shoes_memo} />
-              </div>
-              <div className="grid md:grid-cols-2 gap-3">
-                <InfoLine label="화장실" value={formatYesNo(adminStadium?.toilet_available)} />
-                <InfoLine label="화장실 메모" value={adminStadium?.toilet_memo} />
-              </div>
-              <div className="grid md:grid-cols-2 gap-3">
-                <InfoLine label="음료" value={formatYesNo(adminStadium?.drinks_available)} />
-                <InfoLine label="음료 메모" value={adminStadium?.drinks_memo} />
-              </div>
-            </div>
-
-            <div className="flex flex-col gap-3 pt-2">
-              <InfoLine label="소셜매치 특이사항" value={adminStadium?.social_special} />
-              <InfoLine label="소셜매치 알림톡" value={adminStadium?.social_message} />
-              <InfoLine label="매니저 특이사항" value={adminStadium?.manager_note} />
-            </div>
-
-            <div className="flex flex-col gap-3 pt-2">
-              <InfoLine label="대관 특이사항" value={adminStadium?.rental_note} />
-              <InfoLine label="꼭 지켜주세요" value={adminStadium?.rental_warning} />
-              <InfoLine label="구장 예약 알림톡" value={adminStadium?.rental_message} />
-              <div className="grid md:grid-cols-2 gap-3">
-                <InfoLine label="조끼 제공" value={formatYesNo(adminStadium?.vest_available)} />
-                <InfoLine label="조끼 메모" value={adminStadium?.vest_memo} />
-              </div>
-              <div className="grid md:grid-cols-2 gap-3">
-                <InfoLine label="공 제공" value={formatYesNo(adminStadium?.ball_available)} />
-                <InfoLine label="공 메모" value={adminStadium?.ball_memo} />
-              </div>
-              <InfoLine label="희망 운영 시간" value={adminStadium?.hoped_times_note} />
+              <InfoLine label="구장명" value={info.stadium_name} />
+              <InfoLine label="구장주 성함" value={info.owner_name} />
+              <InfoLine label="연락처" value={info.contact || info.temp_code} />
+              <InfoLine label="지역" value={info.region} />
+              <InfoLine label="주소" value={info.address} />
+              <InfoLine label="운영 상태" value={info.operating_status} />
+              <InfoLine label="면 개수" value={info.facility_count} />
+              <InfoLine label="규격/실내외" value={info.size_info} />
+              <InfoLine label="희망 제휴 서비스" value={formatServiceTypes(info.service_types)} />
+              <InfoLine label="사용 중 서비스" value={info.other_services} />
+              <InfoLine label="유입 경로" value={info.source} />
+              <InfoLine label="기타 참고사항" value={info.memo} />
             </div>
 
             <div className="pt-3 space-y-2">
@@ -472,7 +416,7 @@ export default function AdminOnboardingDetailPage() {
         )}
 
         <ActionPanel
-          title="STEP0 · 제휴 요청 검토"
+          title="01 · 제휴 요청 검토"
           active={info?.step_status === "step0_pending"}
           actions={step0Actions}
           doAction={doAction}
@@ -482,7 +426,7 @@ export default function AdminOnboardingDetailPage() {
           showMemo={info?.step_status === "step0_pending"}
         />
         <ActionPanel
-          title="STEP0 승인 후 · 전화 안내"
+          title="01 · 승인 후 전화 안내"
           active={info?.step_status === "step0_approved"}
           actions={step0ApprovedActions}
           doAction={doAction}
@@ -492,7 +436,7 @@ export default function AdminOnboardingDetailPage() {
           showMemo={info?.step_status === "step0_approved"}
         />
         <ActionPanel
-          title="STEP1 · 정산안 업로드/제안"
+          title="02 · 정산안 업로드/제안"
           active={["step2_done", "step3_proposed", "step3_approved"].includes(info?.step_status || "")}
           actions={[]}
           doAction={doAction}
@@ -619,7 +563,7 @@ export default function AdminOnboardingDetailPage() {
           </section>
         )}
         <ActionPanel
-          title="STEP2 · 구장 정보 검토"
+          title="03 · 구장 정보 검토"
           active={isStep1Active}
           actions={step1Actions}
           doAction={doAction}
@@ -1075,6 +1019,17 @@ function formatYesNo(value?: boolean | null) {
   if (value === true) return "예";
   if (value === false) return "아니오";
   return "-";
+}
+
+function formatServiceTypes(types?: string[] | null) {
+  if (!types || types.length === 0) return "-";
+  return types
+    .map((t) => {
+      if (t === "social_match") return "소셜 매치";
+      if (t === "rental") return "구장 예약";
+      return t;
+    })
+    .join(", ");
 }
 
 function EditableInput({
