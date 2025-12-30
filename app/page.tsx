@@ -2,14 +2,15 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 
 export default function Home() {
   return (
     <main className="min-h-screen bg-[#F7F9FC] flex flex-col items-center justify-center px-4 space-y-4">
-      <header className="text-center space-y-2">
-        <h1 className="text-3xl font-semibold text-[#111827]">PLAB 제휴 신청</h1>
-      </header>
-
+      <div className="w-full max-w-md flex flex-col items-center">
+        <Image src="/plab-logo3.png" alt="PLAB" width={165} height={60} priority />
+        <div className="text-xs text-[#9CA3AF] mt-1">구장 제휴 요청</div>
+      </div>
       <section className="mx-auto max-w-md border border-[#E3E6EC] rounded-lg p-6 space-y-4 bg-white shadow-sm text-left">
         <div className="text-lg font-semibold text-[#111827]">로그인</div>
         <p className="text-xs text-[#6b7280] text-left">임시 ID/PW는 아래 ‘제휴 요청 시작’ 완료 후 발급됩니다.</p>
