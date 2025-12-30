@@ -12,6 +12,7 @@ type Row = {
   step_status: OnboardingState;
   updated_at?: string | null;
   stadium_name?: string | null;
+  manager_done?: boolean | null;
 };
 
 export default function AdminOnboardingListPage() {
@@ -25,6 +26,7 @@ export default function AdminOnboardingListPage() {
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [deleteName, setDeleteName] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
+  const [markingId, setMarkingId] = useState<string | null>(null);
 
   useEffect(() => {
     let mounted = true;
@@ -82,6 +84,25 @@ export default function AdminOnboardingListPage() {
       setError(e.message ?? "오류가 발생했습니다.");
     } finally {
       setDeleting(false);
+    }
+  };
+
+  const toggleDone = async (row: Row) => {
+    setError(null);
+    setMarkingId(row.id);
+    try {
+      const res = await fetch(`/api/admin/onboarding/${row.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ manager_done: !row.manager_done }),
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json?.error || "완료 처리 실패");
+      setItems((prev) => prev.map((item) => (item.id === row.id ? { ...item, manager_done: json.manager_done } : item)));
+    } catch (e: any) {
+      setError(e.message ?? "오류가 발생했습니다.");
+    } finally {
+      setMarkingId(null);
     }
   };
 
@@ -181,7 +202,10 @@ export default function AdminOnboardingListPage() {
                   filtered.map((row) => {
                     const adminPath = `/admin/onboarding/${row.id}`;
                     return (
-                      <tr key={row.id} className="border-t border-[#E3E6EC] text-[#111827]">
+                      <tr
+                        key={row.id}
+                        className={`border-t border-[#E3E6EC] text-[#111827] ${row.manager_done ? "bg-[#F3F4F6]" : ""}`}
+                      >
                         <td className="px-4 py-3">{row.stadium_name || "-"}</td>
                         <td className="px-4 py-3">{row.region || "-"}</td>
                         <td className="px-4 py-3">
@@ -198,6 +222,18 @@ export default function AdminOnboardingListPage() {
                             >
                               열기
                             </Link>
+                            <button
+                              type="button"
+                              onClick={() => toggleDone(row)}
+                              disabled={markingId === row.id}
+                              className={`inline-flex items-center px-3 py-1.5 rounded-lg border text-xs font-semibold disabled:opacity-60 ${
+                                row.manager_done
+                                  ? "border-[#16A34A] text-[#16A34A]"
+                                  : "border-[#9CA3AF] text-[#6b7280]"
+                              }`}
+                            >
+                              {row.manager_done ? "완료됨" : "완료"}
+                            </button>
                             <button
                               type="button"
                               onClick={() => {
