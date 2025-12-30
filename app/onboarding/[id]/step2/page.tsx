@@ -244,6 +244,7 @@ type StadiumInfo = {
   address_detail?: string;
   account_email?: string;
   stadium_type?: string;
+  indoor_outdoor?: string;
   artificial_grass?: boolean;
   stadium_contact?: string;
   laundry_contact?: string;
