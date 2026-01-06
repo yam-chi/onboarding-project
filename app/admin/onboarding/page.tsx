@@ -232,7 +232,7 @@ export default function AdminOnboardingListPage() {
                                   : "border-[#9CA3AF] text-[#6b7280]"
                               }`}
                             >
-                              {row.manager_done ? "완료됨" : "완료"}
+                              완료
                             </button>
                             <button
                               type="button"

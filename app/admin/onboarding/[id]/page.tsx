@@ -644,6 +644,7 @@ export default function AdminOnboardingDetailPage() {
                     label="공지사항"
                     value={adminStadium.notice || ""}
                     onChange={(v) => setAdminStadium({ ...adminStadium, notice: v })}
+                    help={"구장 페이지 상단(구장명 아래)에만 노출됩니다.\n소셜 매치 신청 페이지에는 노출되지 않습니다."}
                   />
                   <EditableSelect
                     label="주차 가능"
@@ -671,6 +672,7 @@ export default function AdminOnboardingDetailPage() {
                     label="무료 주차 대수"
                     value={adminStadium.parking_count ?? ""}
                     onChange={(v) => setAdminStadium({ ...adminStadium, parking_count: Number(v) || null })}
+                    help={"주차 어려움이 없다면 0으로 적어주세요."}
                   />
                   <EditableInput
                     label="주차 연락처"
@@ -694,11 +696,12 @@ export default function AdminOnboardingDetailPage() {
                         })
                       }
                     />
-                    <EditableInput
-                      label="샤워 메모"
-                      value={adminStadium.shower_memo || ""}
-                      onChange={(v) => setAdminStadium({ ...adminStadium, shower_memo: v })}
-                    />
+                  <EditableInput
+                    label="샤워 메모"
+                    value={adminStadium.shower_memo || ""}
+                    onChange={(v) => setAdminStadium({ ...adminStadium, shower_memo: v })}
+                    help={"클릭 시 표시되는 짧은 안내입니다. 한 문장으로 적어주세요."}
+                  />
                   </div>
                   <div className="grid md:grid-cols-2 gap-3">
                     <EditableSelect
@@ -712,11 +715,12 @@ export default function AdminOnboardingDetailPage() {
                         })
                       }
                     />
-                    <EditableInput
-                      label="풋살화 메모"
-                      value={adminStadium.shoes_memo || ""}
-                      onChange={(v) => setAdminStadium({ ...adminStadium, shoes_memo: v })}
-                    />
+                  <EditableInput
+                    label="풋살화 메모"
+                    value={adminStadium.shoes_memo || ""}
+                    onChange={(v) => setAdminStadium({ ...adminStadium, shoes_memo: v })}
+                    help={"클릭 시 표시되는 짧은 안내입니다. 한 문장으로 적어주세요."}
+                  />
                   </div>
                   <div className="grid md:grid-cols-2 gap-3">
                     <EditableSelect
@@ -730,11 +734,12 @@ export default function AdminOnboardingDetailPage() {
                         })
                       }
                     />
-                    <EditableInput
-                      label="화장실 메모"
-                      value={adminStadium.toilet_memo || ""}
-                      onChange={(v) => setAdminStadium({ ...adminStadium, toilet_memo: v })}
-                    />
+                  <EditableInput
+                    label="화장실 메모"
+                    value={adminStadium.toilet_memo || ""}
+                    onChange={(v) => setAdminStadium({ ...adminStadium, toilet_memo: v })}
+                    help={"클릭 시 표시되는 짧은 안내입니다. 한 문장으로 적어주세요."}
+                  />
                   </div>
                   <div className="grid md:grid-cols-2 gap-3">
                     <EditableSelect
@@ -748,25 +753,26 @@ export default function AdminOnboardingDetailPage() {
                         })
                       }
                     />
-                    <EditableInput
-                      label="음료 메모"
-                      value={adminStadium.drinks_memo || ""}
-                      onChange={(v) => setAdminStadium({ ...adminStadium, drinks_memo: v })}
-                    />
+                  <EditableInput
+                    label="음료 메모"
+                    value={adminStadium.drinks_memo || ""}
+                    onChange={(v) => setAdminStadium({ ...adminStadium, drinks_memo: v })}
+                    help={"클릭 시 표시되는 짧은 안내입니다. 한 문장으로 적어주세요."}
+                  />
                   </div>
                   <div className="border-t border-[#E3E6EC] pt-3 text-sm font-semibold text-[#111827]">소셜 매치</div>
                   <EditableInput
-                    label="소셜 특이사항"
+                    label="소셜매치 특이사항"
                     value={adminStadium.social_special || ""}
                     onChange={(v) => setAdminStadium({ ...adminStadium, social_special: v })}
                   />
                   <EditableInput
-                    label="소셜 알림"
+                    label="소셜매치 알림톡"
                     value={adminStadium.social_message || ""}
                     onChange={(v) => setAdminStadium({ ...adminStadium, social_message: v })}
                   />
                   <EditableInput
-                    label="매니저 노트"
+                    label="매니저 특이사항"
                     value={adminStadium.manager_note || ""}
                     onChange={(v) => setAdminStadium({ ...adminStadium, manager_note: v })}
                   />
@@ -798,11 +804,12 @@ export default function AdminOnboardingDetailPage() {
                         })
                       }
                     />
-                    <EditableInput
-                      label="조끼 메모"
-                      value={adminStadium.vest_memo || ""}
-                      onChange={(v) => setAdminStadium({ ...adminStadium, vest_memo: v })}
-                    />
+                  <EditableInput
+                    label="조끼 메모"
+                    value={adminStadium.vest_memo || ""}
+                    onChange={(v) => setAdminStadium({ ...adminStadium, vest_memo: v })}
+                    help={"클릭 시 표시되는 짧은 안내입니다. 한 문장으로 적어주세요."}
+                  />
                   </div>
                   <div className="grid md:grid-cols-2 gap-3">
                     <EditableSelect
@@ -816,11 +823,12 @@ export default function AdminOnboardingDetailPage() {
                         })
                       }
                     />
-                    <EditableInput
-                      label="공 메모"
-                      value={adminStadium.ball_memo || ""}
-                      onChange={(v) => setAdminStadium({ ...adminStadium, ball_memo: v })}
-                    />
+                  <EditableInput
+                    label="공 메모"
+                    value={adminStadium.ball_memo || ""}
+                    onChange={(v) => setAdminStadium({ ...adminStadium, ball_memo: v })}
+                    help={"클릭 시 표시되는 짧은 안내입니다. 한 문장으로 적어주세요."}
+                  />
                   </div>
                   <div className="border-t border-[#E3E6EC] pt-3" />
                 </div>
@@ -1037,15 +1045,27 @@ function EditableInput({
   value,
   onChange,
   placeholder,
+  help,
 }: {
   label: string;
   value: string | number | null | undefined;
   onChange: (v: string) => void;
   placeholder?: string;
+  help?: string;
 }) {
   return (
     <label className="flex flex-col gap-1 text-xs text-[#6b7280]">
-      <span>{label}</span>
+      <span className="inline-flex items-center gap-1">
+        {label}
+        {help && (
+          <span className="relative inline-flex items-center text-[#9CA3AF] cursor-help group">
+            <span className="inline-flex items-center justify-center w-4 h-4 rounded-full border border-[#D1D5DB] text-[10px]">?</span>
+            <span className="pointer-events-none absolute left-5 top-0 translate-y-1 w-64 rounded-md border border-[#E3E6EC] bg-white px-2 py-1 text-[11px] text-[#6b7280] shadow-sm opacity-0 transition-opacity group-hover:opacity-100 whitespace-pre-line">
+              {help}
+            </span>
+          </span>
+        )}
+      </span>
       <input
         value={value ?? ""}
         onChange={(e) => onChange(e.target.value)}

@@ -473,7 +473,12 @@ export default function Step2Page() {
         <section className="bg-white border border-[#E3E6EC] rounded-xl shadow-sm p-6 space-y-4">
           <h2 className="text-lg font-semibold text-[#111827]">공통 정보</h2>
           <div className="flex flex-col gap-3 max-w-[420px]">
-            <Input label="공지사항" value={stadium.notice || ""} onChange={(v) => handleStadium("notice", v)} />
+            <Input
+              label="공지사항"
+              value={stadium.notice || ""}
+              onChange={(v) => handleStadium("notice", v)}
+              help={"구장 페이지 상단(구장명 아래)에만 노출됩니다.\n소셜 매치 신청 페이지에는 노출되지 않습니다."}
+            />
             <Select
               label="주차 가능"
               value={
@@ -504,7 +509,12 @@ export default function Step2Page() {
               options={["예", "아니오"]}
               placeholder="선택하세요"
             />
-            <Input label="무료 주차 대수" value={stadium.parking_count ?? ""} onChange={(v) => handleStadium("parking_count", Number(v) || null)} />
+            <Input
+              label="무료 주차 대수"
+              value={stadium.parking_count ?? ""}
+              onChange={(v) => handleStadium("parking_count", Number(v) || null)}
+              help={"주차 어려움이 없다면 0으로 적어주세요."}
+            />
             <Input label="주차 등록 연락처" value={stadium.parking_contact || ""} onChange={(v) => handleStadium("parking_contact", v)} />
             <Input label="주차 요금" value={stadium.parking_fee || ""} onChange={(v) => handleStadium("parking_fee", v)} />
             <div className="grid md:grid-cols-[30%_70%] gap-3">
@@ -515,7 +525,12 @@ export default function Step2Page() {
                 options={["예", "아니오"]}
                 placeholder="선택하세요"
               />
-              <Input label="샤워 메모" value={stadium.shower_memo || ""} onChange={(v) => handleStadium("shower_memo", v)} />
+              <Input
+                label="샤워 메모"
+                value={stadium.shower_memo || ""}
+                onChange={(v) => handleStadium("shower_memo", v)}
+                help={"클릭 시 표시되는 짧은 안내입니다. 한 문장으로 적어주세요."}
+              />
             </div>
             <div className="grid md:grid-cols-[30%_70%] gap-3">
               <Select
@@ -525,7 +540,12 @@ export default function Step2Page() {
                 options={["예", "아니오"]}
                 placeholder="선택하세요"
               />
-              <Input label="풋살화 메모" value={stadium.shoes_memo || ""} onChange={(v) => handleStadium("shoes_memo", v)} />
+              <Input
+                label="풋살화 메모"
+                value={stadium.shoes_memo || ""}
+                onChange={(v) => handleStadium("shoes_memo", v)}
+                help={"클릭 시 표시되는 짧은 안내입니다. 한 문장으로 적어주세요."}
+              />
             </div>
             <div className="grid md:grid-cols-[30%_70%] gap-3">
               <Select
@@ -535,7 +555,12 @@ export default function Step2Page() {
                 options={["예", "아니오"]}
                 placeholder="선택하세요"
               />
-              <Input label="화장실 메모" value={stadium.toilet_memo || ""} onChange={(v) => handleStadium("toilet_memo", v)} />
+              <Input
+                label="화장실 메모"
+                value={stadium.toilet_memo || ""}
+                onChange={(v) => handleStadium("toilet_memo", v)}
+                help={"클릭 시 표시되는 짧은 안내입니다. 한 문장으로 적어주세요."}
+              />
             </div>
             <div className="grid md:grid-cols-[30%_70%] gap-3">
               <Select
@@ -545,7 +570,12 @@ export default function Step2Page() {
                 options={["예", "아니오"]}
                 placeholder="선택하세요"
               />
-              <Input label="음료 메모" value={stadium.drinks_memo || ""} onChange={(v) => handleStadium("drinks_memo", v)} />
+              <Input
+                label="음료 메모"
+                value={stadium.drinks_memo || ""}
+                onChange={(v) => handleStadium("drinks_memo", v)}
+                help={"클릭 시 표시되는 짧은 안내입니다. 한 문장으로 적어주세요."}
+              />
             </div>
           </div>
         </section>
@@ -573,7 +603,12 @@ export default function Step2Page() {
                 options={["예", "아니오"]}
                 placeholder="선택하세요"
               />
-              <Input label="조끼 메모" value={stadium.vest_memo || ""} onChange={(v) => handleStadium("vest_memo", v)} />
+              <Input
+                label="조끼 메모"
+                value={stadium.vest_memo || ""}
+                onChange={(v) => handleStadium("vest_memo", v)}
+                help={"클릭 시 표시되는 짧은 안내입니다. 한 문장으로 적어주세요."}
+              />
             </div>
             <div className="grid md:grid-cols-[30%_70%] gap-3">
               <Select
@@ -583,7 +618,12 @@ export default function Step2Page() {
                 options={["예", "아니오"]}
                 placeholder="선택하세요"
               />
-              <Input label="공 메모" value={stadium.ball_memo || ""} onChange={(v) => handleStadium("ball_memo", v)} />
+              <Input
+                label="공 메모"
+                value={stadium.ball_memo || ""}
+                onChange={(v) => handleStadium("ball_memo", v)}
+                help={"클릭 시 표시되는 짧은 안내입니다. 한 문장으로 적어주세요."}
+              />
             </div>
           </div>
         </section>
@@ -684,17 +724,27 @@ function Input({
   onChange,
   required,
   placeholder,
+  help,
 }: {
   label: string;
   value: any;
   onChange: (v: any) => void;
   required?: boolean;
   placeholder?: string;
+  help?: string;
 }) {
   return (
     <label className="flex flex-col gap-1 text-sm text-[#1C1E26]">
-      <span>
+      <span className="inline-flex items-center gap-1">
         {label} {required && <span className="text-red-500">*</span>}
+        {help && (
+          <span className="relative inline-flex items-center text-[#9CA3AF] cursor-help group">
+            <span className="inline-flex items-center justify-center w-4 h-4 rounded-full border border-[#D1D5DB] text-[10px]">?</span>
+            <span className="pointer-events-none absolute left-5 top-0 translate-y-1 w-64 rounded-md border border-[#E3E6EC] bg-white px-2 py-1 text-[11px] text-[#6b7280] shadow-sm opacity-0 transition-opacity group-hover:opacity-100 whitespace-pre-line">
+              {help}
+            </span>
+          </span>
+        )}
       </span>
       <input
         value={value ?? ""}

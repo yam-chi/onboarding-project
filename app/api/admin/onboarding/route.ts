@@ -14,6 +14,7 @@ export async function GET() {
           stadium_name,
           region,
           step_status,
+          manager_done,
           updated_at
         `)
       .order("updated_at", { ascending: false });

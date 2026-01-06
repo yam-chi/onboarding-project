@@ -24,3 +24,27 @@ export async function DELETE(_req: NextRequest, context: { params: Promise<{ id:
     return NextResponse.json({ error: e.message ?? "server_error" }, { status: 500 });
   }
 }
+
+export async function PATCH(req: NextRequest, context: { params: Promise<{ id: string }> }) {
+  try {
+    if (!supabaseClient) throw new Error("Supabase 설정이 필요합니다.");
+    const { id } = await context.params;
+    if (!id || !uuidRegex.test(id)) return NextResponse.json({ error: "invalid_id" }, { status: 400 });
+
+    const body = await req.json();
+    const manager_done = !!body?.manager_done;
+
+    const { data, error } = await supabaseClient
+      .from("onboarding_requests")
+      .update({ manager_done })
+      .eq("id", id)
+      .select("manager_done")
+      .single();
+
+    if (error) throw error;
+
+    return NextResponse.json({ ok: true, manager_done: data.manager_done });
+  } catch (e: any) {
+    return NextResponse.json({ error: e.message ?? "server_error" }, { status: 500 });
+  }
+}
