@@ -765,6 +765,7 @@ export default function AdminOnboardingDetailPage() {
                     label="소셜매치 특이사항"
                     value={adminStadium.social_special || ""}
                     onChange={(v) => setAdminStadium({ ...adminStadium, social_special: v })}
+                    help={"소셜 신청 페이지에만 노출됩니다."}
                   />
                   <EditableInput
                     label="소셜매치 알림톡"

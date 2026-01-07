@@ -583,7 +583,12 @@ export default function Step2Page() {
         <section className="bg-white border border-[#E3E6EC] rounded-xl shadow-sm p-6 space-y-4">
           <h2 className="text-lg font-semibold text-[#111827]">소셜 매치 정보</h2>
           <div className="flex flex-col gap-3 max-w-[420px]">
-            <Input label="소셜매치 특이사항" value={stadium.social_special || ""} onChange={(v) => handleStadium("social_special", v)} />
+            <Input
+              label="소셜매치 특이사항"
+              value={stadium.social_special || ""}
+              onChange={(v) => handleStadium("social_special", v)}
+              help={"소셜 신청 페이지에만 노출됩니다."}
+            />
             <Input label="소셜매치 알림톡" value={stadium.social_message || ""} onChange={(v) => handleStadium("social_message", v)} />
             <Input label="매니저 특이사항" value={stadium.manager_note || ""} onChange={(v) => handleStadium("manager_note", v)} />
           </div>

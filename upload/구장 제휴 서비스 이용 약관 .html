@@ -1,0 +1,733 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>구장 제휴 서비스 이용 약관</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+/* Override strong tags inside headings to maintain consistent weight */
+h1 strong,
+h2 strong,
+h3 strong {
+	font-weight: 600;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 10px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.collection-content td {
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+	margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.callout img.notion-static-icon {
+	width: 1em;
+	height: 1em;
+}
+
+.callout p {
+	margin: 0;
+}
+
+.callout h1,
+.callout h2,
+.callout h3 {
+	margin: 0 0 0.6rem;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+blockquote.quote-large {
+	font-size: 1.25em;
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.highlight-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.highlight-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.highlight-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.highlight-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.highlight-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.highlight-default_background {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray_background {
+	background: rgba(42, 28, 0, 0.07);
+}
+.highlight-brown_background {
+	background: rgba(139, 46, 0, 0.086);
+}
+.highlight-orange_background {
+	background: rgba(224, 101, 1, 0.129);
+}
+.highlight-yellow_background {
+	background: rgba(211, 168, 0, 0.137);
+}
+.highlight-teal_background {
+	background: rgba(0, 100, 45, 0.09);
+}
+.highlight-blue_background {
+	background: rgba(0, 124, 215, 0.094);
+}
+.highlight-purple_background {
+	background: rgba(102, 0, 178, 0.078);
+}
+.highlight-pink_background {
+	background: rgba(197, 0, 93, 0.086);
+}
+.highlight-red_background {
+	background: rgba(223, 22, 0, 0.094);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.block-color-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.block-color-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.block-color-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.block-color-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.block-color-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.block-color-default_background {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray_background {
+	background: rgba(240, 239, 237, 1);
+}
+.block-color-brown_background {
+	background: rgba(245, 237, 233, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 235, 222, 1);
+}
+.block-color-yellow_background {
+	background: rgba(249, 243, 220, 1);
+}
+.block-color-teal_background {
+	background: rgba(232, 241, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(229, 242, 252, 1);
+}
+.block-color-purple_background {
+	background: rgba(243, 235, 249, 1);
+}
+.block-color-pink_background {
+	background: rgba(250, 233, 241, 1);
+}
+.block-color-red_background {
+	background: rgba(252, 233, 231, 1);
+}
+.select-value-color-default { background-color: rgba(42, 28, 0, 0.07); }
+.select-value-color-gray { background-color: rgba(28, 19, 1, 0.11); }
+.select-value-color-brown { background-color: rgba(127, 51, 0, 0.156); }
+.select-value-color-orange { background-color: rgba(196, 88, 0, 0.203); }
+.select-value-color-yellow { background-color: rgba(209, 156, 0, 0.282); }
+.select-value-color-green { background-color: rgba(0, 96, 38, 0.156); }
+.select-value-color-blue { background-color: rgba(0, 118, 217, 0.203); }
+.select-value-color-purple { background-color: rgba(92, 0, 163, 0.141); }
+.select-value-color-pink { background-color: rgba(183, 0, 78, 0.152); }
+.select-value-color-red { background-color: rgba(206, 24, 0, 0.164); }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="2d88d253-2450-80ec-b0cd-e249b398dda4" class="page sans"><header><h1 class="page-title" dir="auto">구장 제휴 서비스 이용 약관</h1><p class="page-description" dir="auto"></p><table class="properties"><tbody><tr class="property-row property-row-rollup"><th><span class="icon property-icon"><img src="https://www.notion.so/icons/search_gray.svg" style="width:14px;height:14px;display:block"/></span>롤업</th><td>1.0.0,1.0.0,1.0.0,1.0.0</td></tr><tr class="property-row property-row-relation"><th><span class="icon property-icon"><img src="https://www.notion.so/icons/arrow-northeast_gray.svg" style="width:14px;height:14px;display:block"/></span>세부 정책 버전 히스토리 DB</th><td><a href="https://www.notion.so/2d88d25324508005a571f2b216b5f870?pvs=21">구장 소셜 매치 일정 추가 및 취소 정책</a>, <a href="https://www.notion.so/2d88d2532450805f90bbd29463ff7f4e?pvs=21">구장 제휴 세부 정책 </a>, <a href="https://www.notion.so/2d88d253245080d39cdad54e1f3d8fa4?pvs=21">구장 런드리 서비스 정책</a>, <a href="https://www.notion.so/2d88d253245080d7a045e11c9b8cb0ec?pvs=21">구장 회원의 이용자 및 매니저 보상 정책</a></td></tr><tr class="property-row property-row-select"><th><span class="icon property-icon"><img src="https://www.notion.so/icons/arrow-circle-down_gray.svg" style="width:14px;height:14px;display:block"/></span>약관 버전</th><td><span class="selected-value select-value-color-green">1.0.0</span></td></tr><tr class="property-row property-row-date"><th><span class="icon property-icon"><img src="https://www.notion.so/icons/calendar_gray.svg" style="width:14px;height:14px;display:block"/></span>적용 날짜</th><td><time>@2026년 1월 1일</time></td></tr><tr class="property-row property-row-text"><th><span class="icon property-icon"><img src="https://www.notion.so/icons/description_gray.svg" style="width:14px;height:14px;display:block"/></span>주요 내용</th><td>최초 도입</td></tr></tbody></table></header><div class="page-body"><div style="display:contents" dir="auto"><p id="2d88d253-2450-8085-8b1f-f7367c6547e0" class="block-color-default"><strong>제 1 조 (목적)</strong></p></div><div style="display:contents" dir="auto"><p id="2d88d253-2450-8056-8713-edbed1eed5c0" class="block-color-default">본 약관은 (주)마이플레이컴퍼니(이하 “회사”라 한다)가 스포츠 시설을 운영하는 자(이하 “구장 회원”이라 한다)의 스포츠 시설을 활용하여 각종 구장 제휴 서비스(이하 “구장 제휴 서비스”라 한다)를 제공하고 “구장 회원”에게 이에 따른 구장료 등을 원활히 지급하기 위해 “회사”와 “구장 회원” 간의 권리, 의무 및 책임사항 등 기타 필요한 사항을 규정하는 것을 목적으로 한다.</p></div><div style="display:contents" dir="auto"><p id="2d88d253-2450-806c-a017-df5bf57d9ed6" class="block-color-default">
+</p></div><div style="display:contents" dir="auto"><p id="2d88d253-2450-80c4-a523-d1c1cd586c8b" class="block-color-default"><strong>제 2 조 (정의)</strong></p></div><div style="display:contents" dir="auto"><p id="2d88d253-2450-8091-a903-f65c30f5cd55" class="block-color-default">본 약관에서 사용하는 용어의 정의는 다음과 같다.</p></div><div style="display:contents" dir="auto"><ol type="1" id="2d88d253-2450-800b-928f-e94509397057" class="block-color-default numbered-list" start="1"><li>“플랩 서비스” 또는 “서비스”란 “회사”가 PC용 웹사이트, 모바일용 어플리케이션 등을 통해 ”구장 회원” 및 “이용자”에게 제공하는 각종 제반 서비스를 말한다.</li></ol></div><div style="display:contents" dir="auto"><ol type="1" id="2d88d253-2450-8049-9690-edb7fb89f46e" class="block-color-default numbered-list" start="2"><li>“이용자”란 “회사”와 서비스 이용계약을 체결하고 ”회사”가 제공하는 “플랩 서비스”를 이용하는 모든 사람, 단체 등의 일반 소비자를 말한다.</li></ol></div><div style="display:contents" dir="auto"><ol type="1" id="2d88d253-2450-80aa-aa01-fe8261355632" class="block-color-default numbered-list" start="3"><li>“스포츠 시설”은 다양한 스포츠 활동 또는 경기 따위를 할 수 있게 만든 장소, 기구 및 각종 부대시설, 부속시설을 포함한다.</li></ol></div><div style="display:contents" dir="auto"><ol type="1" id="2d88d253-2450-80a0-8ed2-e3514d2daf45" class="block-color-default numbered-list" start="4"><li>“구장”은 “구장 회원”이 소유하거나 운영하고 있는 “스포츠 시설”을 말한다.</li></ol></div><div style="display:contents" dir="auto"><ol type="1" id="2d88d253-2450-80bb-bbe2-d37fc3422560" class="block-color-default numbered-list" start="5"><li>“구장 제휴 서비스&quot;는 ”이용자”가 “구장 회원”의 “구장”을 원활히 이용할 수 있도록 중개하기 위하여 “회사”가 ”구장 회원” 및 “이용자”에게 제공하는 서비스로, “구장 예약 중개 서비스&quot;, “소셜 매치 진행 서비스&quot;, “레슨 서비스&quot;, “대회 서비스&quot;, “리그 서비스”를 포함한다.</li></ol></div><div style="display:contents" dir="auto"><ol type="1" id="2d88d253-2450-800a-a670-d187c73ca315" class="block-color-default numbered-list" start="6"><li>“구장 예약 서비스&quot;는 “이용자”가 “구장 회원”의 “구장”을 예약할 수 있도록 “회사&quot;가 이를 중개하는 것을 말한다.</li></ol></div><div style="display:contents" dir="auto"><ol type="1" id="2d88d253-2450-80bb-970f-e388e19fcff8" class="block-color-default numbered-list" start="7"><li>“소셜 매치 진행 서비스&quot;는 “회사”가 “이용자”를 모집하여 “구장 회원”의 “구장”에서 운영 및 진행하는 스포츠 활동 및 경기를 말한다.</li></ol></div><div style="display:contents" dir="auto"><ol type="1" id="2d88d253-2450-8057-a45d-f4435ec7212d" class="block-color-default numbered-list" start="8"><li>“레슨 서비스&quot;는 “구장 회원&quot;의 “구장”에서 진행되는 개인 및 단체 교습 성격의 스포츠 활동 및 경기를 말한다.</li></ol></div><div style="display:contents" dir="auto"><ol type="1" id="2d88d253-2450-80c0-a758-f2f6e8218764" class="block-color-default numbered-list" start="9"><li>“대회 서비스”는 “구장 회원&quot;의 “구장”에서 진행되는 개인 및 단체 대회 성격의 스포츠 활동 및 경기를 말한다.</li></ol></div><div style="display:contents" dir="auto"><ol type="1" id="2d88d253-2450-8062-baac-c0dfa8a6f866" class="block-color-default numbered-list" start="10"><li>“리그 서비스”는 “구장 회원&quot;의 “구장”에서 진행되는 개인 및 단체 리그 성격의 스포츠 활동 및 경기를 말한다.</li></ol></div><div style="display:contents" dir="auto"><ol type="1" id="2d88d253-2450-805a-b220-d5f750b2cdab" class="block-color-default numbered-list" start="11"><li>“구장 관리 사이트”는 “회사”가 “구장 회원”의 “구장”을 활용하여 “구장 제휴 서비스”를 제공하기 위해 ”구장 회원” 및 “이용자”가 이용하여야 하는 일정 관리 서비스를 말한다.</li></ol></div><div style="display:contents" dir="auto"><ol type="1" id="2d88d253-2450-80fe-ade7-fe6f4b526c1f" class="block-color-default numbered-list" start="12"><li>&quot;플랩 매니저&quot; 또는 “매니저”는 ”회사”의 &quot;구장 제휴 서비스&quot; 운영을 대행하는 운영자를 말한다.</li></ol></div><div style="display:contents" dir="auto"><ol type="1" id="2d88d253-2450-80e5-933e-f65427822a76" class="block-color-default numbered-list" start="13"><li>&quot;대기 매치&quot;는 &quot;소셜 매치 진행 서비스&quot; 진행 준비를 위해 아직 &quot;이용자&quot;에게 공개되지 않은 일정의 매치를 말한다.</li></ol></div><div style="display:contents" dir="auto"><ol type="1" id="2d88d253-2450-8000-8d41-cec7c14ac17b" class="block-color-default numbered-list" start="14"><li>&quot;공개 매치&quot;는 &quot;소셜 매치 진행 서비스&quot; 진행이 예정되어 &quot;이용자&quot;에게 공개된 일정의 매치를 말한다.</li></ol></div><div style="display:contents" dir="auto"><ol type="1" id="2d88d253-2450-80f0-9d15-ffeaa1b9de90" class="block-color-default numbered-list" start="15"><li>“구장 예약 중개 서비스 수수료”는 “구장 회원”이 “구장 예약 서비스” 이용의 대가로 “회사”에 지급하는 금액으로 중개이용료, 결제정산수수료, 카드결제수수료 등을 포함한다.</li></ol></div><div style="display:contents" dir="auto"><p id="2d88d253-2450-80b0-b660-e061cc0644d0" class="block-color-default">
+</p></div><div style="display:contents" dir="auto"><p id="2d88d253-2450-80ac-908c-c3fad213d5ad" class="block-color-default"><strong>제 3 조 (서비스 이용 계약 기간)</strong></p></div><div style="display:contents" dir="auto"><ol type="1" id="2d88d253-2450-80fc-85ed-dbd02ba44784" class="block-color-default numbered-list" start="1"><li>본 약관에 따른 “회사”와 “구장 회원” 간 서비스 이용계약은 “구장 회원”이 본 약관에 동의한 날(이하 “약관 동의일”)에 효력이 발생하며 계약 기간은 약관 동의일부터 “약관 동의일”이 속한 연도의 다음 해 12월 31일까지로 한다.</li></ol></div><div style="display:contents" dir="auto"><ol type="1" id="2d88d253-2450-804b-9245-db529fb60cb1" class="numbered-list" start="2"><li>다만, 본 약관 동의 이전에 “회사”와 전자 방식의 제휴 계약서(이하 “기존 전자 계약서”)를 체결한 “구장 회원”의 경우, 본 약관의 적용 시점(효력 적용일) 은 다음 각 호에 따른다.<div style="display:contents" dir="auto"><ol type="a" id="2d88d253-2450-80e8-82ac-e0dfebcb7efb" class="numbered-list" start="1"><li>“기존 전자 계약서”의 종료일이 2025년 12월 31일 이하인 경우, 본 약관은 2026년 1월 1일부터 적용된다.</li></ol></div><div style="display:contents" dir="auto"><ol type="a" id="2d88d253-2450-807b-b563-d9ffd3ab542b" class="numbered-list" start="2"><li>“기존 전자 계약서”의 종료일이 2026년 1월 1일 이후인 경우, 약관 동의일이 2026년 1월 1일 이전이면 본 약관은 2026년 1월 1일부터, 약관 동의일이 2026년 1월 1일 이후이면 약관 동의일부터 적용된다.</li></ol></div></li></ol></div><div style="display:contents" dir="auto"><ol type="1" id="2d88d253-2450-8035-a3a2-fe63dda36ea3" class="numbered-list" start="3"><li>본 조에서 말하는 “기존 전자 계약서”란, “구장 회원”이 본 약관 동의 이전에 “회사”와 체결한 모든 전자 방식의 제휴 계약서를 의미한다.</li></ol></div><div style="display:contents" dir="auto"><ol type="1" id="2d88d253-2450-8041-a810-d0adebba90e7" class="block-color-default numbered-list" start="4"><li>“구장 회원”이 서비스 이용 계약 기간 만료일로부터 30일 전까지 명시적인 서비스 중단 또는 회원 탈퇴의 의사를 밝히지 않을 경우, 서비스 이용 계약 기간은 자동으로 1년씩 연장된다.</li></ol></div><div style="display:contents" dir="auto"><p id="2d88d253-2450-804f-8f0d-f7f2bba39733" class="block-color-default">
+</p></div><div style="display:contents" dir="auto"><p id="2d88d253-2450-80c6-80aa-e3a21c2cb5b2" class="block-color-default"><strong>제 4 조 (“구장 회원”의 의무 및 책임)</strong></p></div><div style="display:contents" dir="auto"><ol type="1" id="2d88d253-2450-8009-9ff1-fae33a4f50e8" class="block-color-default numbered-list" start="1"><li>“구장 회원&quot;은 자신이 소유 또는 운영하는 “구장” 및 “스포츠 시설” 중 “이용자&quot;의 부상을 초래할 수 있는 구조물 및 시설물(인조 잔디, 골대, 그물 등을 포함하며 이에 한정되지 아니함)의 파손, 노후, 손상, 훼손을 방지하고 수리하여 안전성과 편의성을 유지할 의무 및 책임이 있다.</li></ol></div><div style="display:contents" dir="auto"><ol type="1" id="2d88d253-2450-8029-aee7-cfd865a22cc8" class="block-color-default numbered-list" start="2"><li>“구장 회원”은 “이용자&quot;의 원활한 구장 이용을 위하여 조명, 구장 시설 개폐에 문제가 없도록 하여야 하고, 쓰레기 처리 및 구장의 청결 관리에 대한 의무 및 책임이 있다.</li></ol></div><div style="display:contents" dir="auto"><ol type="1" id="2d88d253-2450-809f-80a2-e7dab0a3b636" class="block-color-default numbered-list" start="3"><li>&quot;구장 회원&quot;은 기상 상황으로 인한 부상을 예방하고 시설 이용에 지장이 발생하지 않도록, 해빙, 제설, 배수, 낙상 방지 작업 등을 수행할 의무 및 책임이 있다.</li></ol></div><div style="display:contents" dir="auto"><ol type="1" id="2d88d253-2450-80cd-a711-d3ccfe99ec85" class="block-color-default numbered-list" start="4"><li>”구장 회원“은 ”이용자“에게 주차 안내 및 관련 문제 처리에 대한 지원을 제공할 의무 및 책임이 있다.</li></ol></div><div style="display:contents" dir="auto"><ol type="1" id="2d88d253-2450-8008-9424-d089cf8ddf04" class="block-color-default numbered-list" start="5"><li>“구장 회원”은 “이용자”의 원활한 스포츠 활동 및 경기를 위하여, 어떠한 사유로든 구장 이용이 불가능한 경우, 그 사실을 “회사&quot; 혹은 “이용자”에게 “스포츠 시설” 사용 최소 2시간 전까지 알릴 의무 및 책임이 있다.</li></ol></div><div style="display:contents" dir="auto"><ol type="1" id="2d88d253-2450-80ab-bc40-eb9cf24b0abf" class="block-color-default numbered-list" start="6"><li>“구장 회원”은 철저한 구장 예약 현황 파악 및 예약 관리를 통해 일정 누락, 중복 예약 등의 문제가 발생하지 않도록 해야 할 의무 및 책임이 있다.</li></ol></div><div style="display:contents" dir="auto"><ol type="1" id="2d88d253-2450-8049-aa04-f90ee95ff772" class="block-color-default numbered-list" start="7"><li><mark class="highlight-default"><mark class="highlight-default_background">“구장 회원”은 특별한 사유 없이 “회사”와 사전 협의한 구장 사용 일정을 임의로 변경할 수 없으며, 천재지변, 시설 사용 불가 등 불가피한 사유로 인해 구장 사용 일정 변경이 필요할 경우 최소 14일 전에 “회사”와의 사전 합의를 거쳐야 한다. 단, 구체적인 사용 일정 변경 절차는 “플랩풋볼 제휴 세부 정책”에 규정된 바에 따른다.</mark></mark></li></ol></div><div style="display:contents" dir="auto"><ol type="1" id="2d88d253-2450-801d-9594-c1f38bc3a1e4" class="block-color-default numbered-list" start="8"><li>“구장 회원”은 “이용자”의 “구장” 사용에 따라 현장에서 발생하는 민원(소음, 도난, 시설 파손, 부상, 화재, 상해 등)에 대한 관리 의무 책임을 부담한다. 단, 해당 민원을 해결하기 위해 “회사”의 협력이 필요할 경우 “회사”는 이에 적극 협조한다.</li></ol></div><div style="display:contents" dir="auto"><ol type="1" id="2d88d253-2450-803f-b823-e32057287795" class="block-color-default numbered-list" start="9"><li><mark class="highlight-default"><mark class="highlight-default_background">“구장 회원”은 “구장” 등 시설물로 인해 발생하는 손해를 담보하기 위해 시설 보험 등에 가입하여야 하며, “이용자”가 “구장 회원”의 “구장”에서 서비스를 이용하는 과정에서 “구장” 또는 시설물로 인해 부상 등 손해를 입는 경우 “구장 회원”은 보험을 적용하여 “이용자”에게 발생한 손해를 배상하여야 한다. 단, 만일 보험에 가입하지 않은 경우 또는 “구장 회원”이 가입한 보험의 배상 범위에 포함되지 않으나 “구장 회원”의 시설물 관리책임이 존재하는 경우에는 “회사”가 “구장 회원”을 대신하여 “이용자”에게 발생한 손해를 배상할 수 있으며, “구장 회원”은 “회사”가 “이용자”에게 지급한 배상금에 해당하는 금액 및 이로 인해 “회사”가 입은 손해를 “회사”에 배상하여야 한다. </mark></mark></li></ol></div><div style="display:contents" dir="auto"><ol type="1" id="2d88d253-2450-80c4-a772-d84e3dd47a29" class="block-color-default numbered-list" start="10"><li><mark class="highlight-default"><mark class="highlight-default_background">“구장 회원”은 “이용자”의 분실물이 있는 경우 자신의 책임으로 이를 보관하여야 하며, “이용자”의 분실물 관련 문의가 있는 경우 이에 성실히 대응하여야 한다. </mark></mark></li></ol></div><div style="display:contents" dir="auto"><ol type="1" id="2d88d253-2450-8034-b307-e1a9d219d2d6" class="block-color-default numbered-list" start="11"><li><mark class="highlight-default"><mark class="highlight-default_background">“회사”는 “구장 회원”의 “구장” 및 “스포츠 시설”에 대해 “이용자”가 평가하는 구장 만족도 지표를 통해 “구장 회원”에게 본 조에 따른 “구장” 및 “스포츠 시설”의 추가 관리 등을 요구할 수 있으며, “구장 회원”은 이를 수행하기 현저히 어려운 부득이한 사정이 없는 한 “회사”의 요구에 응해야 한다. </mark></mark></li></ol></div><div style="display:contents" dir="auto"><ol type="1" id="2d88d253-2450-80e2-ac71-de8ce0ab09e0" class="block-color-default numbered-list" start="12"><li><mark class="highlight-default"><mark class="highlight-default_background">본 조에서 규정한 “구장 회원”의 의무 및 세부 기준은 “플랩풋볼 제휴 세부 정책”에서 구체적으로 정할 수 있으며, 이를 위반할 경우 “구장 회원”은 이로 인해 “회사”, “이용자” 및 제3자에게 발생한 손해를 배상하고 “회사”에 “플랩풋볼 제휴 세부 정책”에서 정한 위약벌을 지급해야 한다.  </mark></mark></li></ol></div><div style="display:contents" dir="auto"><p id="2d88d253-2450-80f6-ac97-f34a2eb0859a" class="block-color-default">
+</p></div><div style="display:contents" dir="auto"><p id="2d88d253-2450-801a-b4c5-df9a7363b3e6" class="block-color-default"><mark class="highlight-default_background"><strong>제 5 조 (”구장 회원”의 확인 및 보증사항)</strong></mark></p></div><div style="display:contents" dir="auto"><ol type="1" id="2d88d253-2450-80ac-b095-fe4dcfafda05" class="block-color-default numbered-list" start="1"><li>“구장 회원”은 다음 각 호의 사항이 모두 사실과 정확히 일치함을 확인 및 보증하며, 이에 반하는 사실이 발견된 경우 본 약관 및 관계 법령에 따른 모든 법적책임을 부담한다.<div style="display:contents" dir="auto"><ol type="a" id="2d88d253-2450-8006-9cfe-f4b1ba8a2677" class="numbered-list" start="1"><li>“구장 회원”은 대한민국에 주소 또는 거소를 두고 있는 개인이거나, 적법하게 설립되어 유효하게 존속하는 대한민국의 법인이며, 사업자의 경우 적법한 사업자등록 절차를 마치거나 해외에 정식으로 등록하고 있다는 사실</li></ol></div><div style="display:contents" dir="auto"><ol type="a" id="2d88d253-2450-808c-8e5f-e105d31e474a" class="numbered-list" start="2"><li>“구장 회원”이 운영하는 자신의 “스포츠 시설” 및 “구장”의 상태 및 예약 일정, 예약 가능 여부 등에 대해 “회사” 및 “이용자”에게 공지한 내용 모두가 사실과 일치하는 정보이며 항상 최신 업데이트된 정보라는 사실</li></ol></div><div style="display:contents" dir="auto"><ol type="a" id="2d88d253-2450-80c7-bc1a-cedaf03d9b3e" class="numbered-list" start="3"><li>“구장 회원”이 본 약관을 통해 “회사”에게 제공하는 “스포츠 시설” 및 “구장” 등의 적법한 소유자 또는 운영할 수 있는 권리를 가진 자로서 이를 “회사” 및 “이용자”에게 대관 또는 이용하도록 하기 위해 취득하여야 하는 관계 법령상 인허가, 기타 계약상 권한 등 모든 적법한 자격을 갖춘 자라는 사실</li></ol></div></li></ol></div><div style="display:contents" dir="auto"><ol type="1" id="2d88d253-2450-809a-871f-ef26aec5fff1" class="block-color-default numbered-list" start="2"><li>“회사”는 제1항의 확인 및 보증사항을 검증하기 위하여 “구장 회원”에게 이와 관련된 증빙자료(사업자등록증, 법인등기부등본, 부동산 등기부등본, 각종 권리 확인을 위한 계약서 등을 포함하며 이에 한정되지 아니함)의 제출을 요구할 수 있고, 다음 각 호의 정보 제출을 요청하거나 공인인증기관 또는 신용정보회사 등을 통하여 확인할 수 있다.<div style="display:contents" dir="auto"><ol type="a" id="2d88d253-2450-8055-a794-edc9a5eace93" class="numbered-list" start="1"><li>사업자인 “구장 회원”: 사업자의 성명(법인인 경우 대표자의 성명), 상호, 주소, 전화번호, 이메일주소, 신원정보, 신<mark class="highlight-default">용도, 사업자등록번호, 기타 사업자 관련 정보 등</mark></li></ol></div><div style="display:contents" dir="auto"><ol type="a" id="2d88d253-2450-806d-add6-fc2cc4c610f4" class="numbered-list" start="2"><li><mark class="highlight-default">사업자가 아닌 “구장 회원”: 성명, 생년월일, 주소, 전화번호, 이메일주소, 신원정보, 신용도 등</mark></li></ol></div></li></ol></div><div style="display:contents" dir="auto"><ol type="1" id="2d88d253-2450-8056-86d1-ea8c61518407" class="block-color-default numbered-list" start="3"><li><mark class="highlight-default">“구장 회원”은 제2항의 요청을 받은 즉시 지체 없이 “회사”에게 요청 받은 자료를 제공하여야 하며, 정당한 사유 없이 이를 거절한 경우 “회사”는 본 약관에 따른 서비스 이용계약을 해지하고 “구장 회원”은 즉시 회원 자격을 상실한다. </mark></li></ol></div><div style="display:contents" dir="auto"><ol type="1" id="2d88d253-2450-8002-8f47-c4e7be9dcaf6" class="block-color-default numbered-list" start="4"><li><mark class="highlight-default">제3항에 따라 본 약관에 따른 서비스 이용계약이 해지될 경우, “구장 회원”은 이를 이유로 회사에게 손해배상 등 어떠한 책임도 물을 수 없다.</mark></li></ol></div><div style="display:contents" dir="auto"><ol type="1" id="2d88d253-2450-8069-8d7b-f8ffc4d29ed8" class="block-color-default numbered-list" start="5"><li><mark class="highlight-default">“구장 회원”이 본 조에 따라 “회사”에게 제공한 정보가 변경(개인사업자가 법인사업자으로 변경되거나 그 반대의 경우를 포함하며 이에 한정되지 아니함)되거나 본 약관에 따른 의무 내용에 중대한 변경을 초래할 수 있는 사유가 발생한 경우 지체 없이 이메일 또는 서면으로 “회사”에 통보하여야 한다.</mark></li></ol></div><div style="display:contents" dir="auto"><ol type="1" id="2d88d253-2450-8088-99aa-ded8fd322601" class="block-color-default numbered-list" start="6"><li><mark class="highlight-default">본 조에서 규정한 “구장 회원”의 확인 및 보증사항은 “플랩풋볼 제휴 세부 정책”에서 구체적으로 정할 수 있으며, 이를 위반할 경우 “구장 회원”은 이로 인해 “회사”, “이용자” 및 제3자에게 발생한 손해를 배상하고 “회사”에 “플랩풋볼 제휴 세부 정책”에서 정한 위약벌을 지급해야 한다.  </mark></li></ol></div><div style="display:contents" dir="auto"><p id="2d88d253-2450-805e-9416-db828501c9a3" class="block-color-default">
+</p></div><div style="display:contents" dir="auto"><p id="2d88d253-2450-8001-a3e0-fe36689d0b60" class="block-color-default"><mark class="highlight-default"><mark class="highlight-default_background"><strong>제 6 조 (”구장 회원”의 금지행위)</strong></mark></mark></p></div><div style="display:contents" dir="auto"><p id="2d88d253-2450-805e-8dcb-c8f6e49dd728" class="block-color-default"><mark class="highlight-default"><mark class="highlight-default_background">“구장 회원”은 다음 각 호에 해당하는 행위를 하여서는 아니 되며 이를 위반한 경우 “회사”는 본 약관에 따른 서비스의 정지, 손해배상 청구, 위약벌 청구 및 서비스 이용계약의 해제/해지 등의 조치를 취할 수 있다. 단, 이와 관련된 구체적인 기준 등에 대해서는 ”플랩풋볼 제휴 세부 정책” 등 관련 하위 정책에서 정한다.</mark></mark></p></div><div style="display:contents" dir="auto"><ol type="1" id="2d88d253-2450-805c-989f-c0968b37c309" class="block-color-default numbered-list" start="1"><li><mark class="highlight-default">본 약관에서 규정된 “구장 회원”의 의무 사항을 위반하는 행위</mark></li></ol></div><div style="display:contents" dir="auto"><ol type="1" id="2d88d253-2450-80c0-bd52-d486dbe6b4f2" class="block-color-default numbered-list" start="2"><li><mark class="highlight-default">개인정보 침해, 영업비밀 침해, 지식재산권 및 초상권, 인격권을 침해하는 행위 등을 포함하여 “회사”의 약관 및 정책을 위반하는 행위</mark></li></ol></div><div style="display:contents" dir="auto"><ol type="1" id="2d88d253-2450-8039-a972-e63c1274e48b" class="block-color-default numbered-list" start="3"><li>범죄 행위와 결부되는 모든 행위 및 기타 관계 법령에 위반되는 행위</li></ol></div><div style="display:contents" dir="auto"><ol type="1" id="2d88d253-2450-80e4-90de-c87f0d04cc63" class="block-color-default numbered-list" start="4"><li>“회사” 서비스를 방해하거나 장애를 발생시킬 수 있는 모든 행위</li></ol></div><div style="display:contents" dir="auto"><ol type="1" id="2d88d253-2450-8080-a3be-fb38c0a95a37" class="block-color-default numbered-list" start="5"><li>본 약관에 따른 권리∙의무를 “회사”의 사전 동의 없이 타인에게 양도, 증여하거나 이를 담보제공 하는 행위</li></ol></div><div style="display:contents" dir="auto"><ol type="1" id="2d88d253-2450-80f5-a0db-f6eb2805092d" class="block-color-default numbered-list" start="6"><li>본 약관 또는 이에 부수되는 하위 정책 등을 위반하여 “회사” 또는 “이용자”나 제3자에게 손해를 발생시키거나 발생시킬 우려가 있는 행위</li></ol></div><div style="display:contents" dir="auto"><p id="2d88d253-2450-80f9-9261-eff0f9c627ee" class="block-color-default">
+</p></div><div style="display:contents" dir="auto"><p id="2d88d253-2450-804b-9230-c7a35d89fc88" class="block-color-default"><mark class="highlight-default_background"><strong>제 7 조 (”구장 회원” 평가 시스템)</strong></mark></p></div><div style="display:contents" dir="auto"><ol type="1" id="2d88d253-2450-807b-9255-c9466c2f323b" class="block-color-default numbered-list" start="1"><li><mark class="highlight-default_background">“회사”는 “구장 회원”이 본 약관 및 본 약관의 내용을 구체적으로 정하는 하위 세부 정책에서 규정한 의무사항 준수 여부 및 그 정도를 평가하거나 “이용자”로 하여금 평가하도록 하는 시스템을 운영할 수 있다. </mark></li></ol></div><div style="display:contents" dir="auto"><ol type="1" id="2d88d253-2450-8038-97e0-db00909b30e7" class="block-color-default numbered-list" start="2"><li>“회사”는 제1항에 따른 평가 결과를 제8조의 정산 금액 산정에 반영하거나 본 약관에 따른 서비스 이용계약을 해지 또는 해제할 수 있으며, “구장 관리 사이트”를 운영하는 알고리즘 또는 기타 본 약관의 내용을 구체적으로 정하는 하위 세부 정책에 반영할 수 있다. </li></ol></div><div style="display:contents" dir="auto"><ol type="1" id="2d88d253-2450-80c4-94d1-c77890c4f170" class="block-color-default numbered-list" start="3"><li><mark class="highlight-default_background">“회사”는 제1항의 평가 시스템에 관한 평가 방법과 기준, 이익 및 불이익에 대한 사항을 본 약관 및 본 약관의 내용을 구체적으로 정하는 하위 세부 정책에서 정할 수 있으며, 필요한 경우 평가 결과를 여러 가지 형태로 공개할 수 있다.</mark></li></ol></div><div style="display:contents" dir="auto"><p id="2d88d253-2450-8001-8654-e2efe6b4fc93" class="block-color-default">
+</p></div><div style="display:contents" dir="auto"><p id="2d88d253-2450-8056-a736-da4e3c5d7023" class="block-color-default"><strong>제 8 조 (정산)</strong></p></div><div style="display:contents" dir="auto"><ol type="1" id="2d88d253-2450-80c0-b654-d95646106469" class="block-color-default numbered-list" start="1"><li><mark class="highlight-default"><mark class="highlight-default_background">“회사”는 “소셜 매치 진행 서비스”를 위해 사용한 구장료에 대해 ”플랩풋볼 제휴 세부 정책”에 따라 책정된 총 정산 금액을 “구장 회원”에게 지급한다.</mark></mark></li></ol></div><div style="display:contents" dir="auto"><ol type="1" id="2d88d253-2450-8021-879d-fa2d511b7a7f" class="block-color-default numbered-list" start="2"><li><mark class="highlight-default"><mark class="highlight-default_background">“회사”는 “구장 예약 중개 서비스”를 통해 결제된 판매 확정 금액에서 ”플랩풋볼 제휴 세부 정책” 및 별도 합의에 따른 구장 예약 중개 서비스 수수료와 기타 결제 수수료를 공제한 정산 금액을 “구장 회원”에게 지급한다.</mark></mark></li></ol></div><div style="display:contents" dir="auto"><ol type="1" id="2d88d253-2450-80ac-a2d4-e5fe4b7de5a9" class="block-color-default numbered-list" start="3"><li><mark class="highlight-default"><mark class="highlight-default_background">“회사”는 매월 1일에서 말일까지 “구장 제휴 서비스”를 통해 발생한 정산 금액에 대하여 익월 5일에 “구장 회원”에게 정산서를 발송한다. 단, 5일이 주말 혹은 휴일일 경우 전 영업일에 정산서를 발송하며, 1일부터 5일 내에 영업일이 없는 경우 다음 영업일에 정산서가 발송된다.</mark></mark></li></ol></div><div style="display:contents" dir="auto"><ol type="1" id="2d88d253-2450-8007-9502-eaf006132716" class="block-color-default numbered-list" start="4"><li><mark class="highlight-default"><mark class="highlight-default_background">“구장 회원&quot;은 “회사”에게 받은 정산서에 특별한 이의가 없을 경우 3영업일 내에 “소셜 매치 진행 서비스”의 정산 금액에 대해 “회사”에 세금계산서를 발행함으로써 입금을 요청하여야 하며, “회사”는 세금계산서 발급 3영업일 이내에 정산금을 지급한다.</mark></mark></li></ol></div><div style="display:contents" dir="auto"><ol type="1" id="2d88d253-2450-8093-a020-eec062e3ae97" class="block-color-default numbered-list" start="5"><li><mark class="highlight-default"><mark class="highlight-default_background">“구장 회원”이 “회사”에게 받은 정산서에 특별한 이의를 제기하지 않을 경우 ”회사”는 정산서 발행일로부터 3 영업일 내에 “구장 예약 중개 서비스”의 구장 예약 중개 서비스 수수료에 해당하는 금액에 대해 “구장 회원”에게 세금계산서를 발행하고 세금계산서 발급 3영업일 내에 정산금을 지급한다.</mark></mark></li></ol></div><div style="display:contents" dir="auto"><ol type="1" id="2d88d253-2450-801a-9b61-fbcfbbefab8e" class="block-color-default numbered-list" start="6"><li>“구장 회원”이 사업자 또는 정산 계좌를 변경할 경우 반드시 변경사항을 “회사”에게 미리 알려야 한다. 단, 이를 통지하지 않아 정산금이 오송금 되는 등의 문제가 발생할 경우 ”구장 회원”은 그에 대해 전적인 책임을 부담하며 이를 이유로 “회사”에 추가 정산 등을 요구할 수 없다.</li></ol></div><div style="display:contents" dir="auto"><ol type="1" id="2d88d253-2450-80a5-82bf-c260d408ce4e" class="block-color-default numbered-list" start="7"><li>“구장 회원”은 “회사”에게 정산 받은 금액에 대한 세금 신고의 의무를 부담하며, 이를 진행하지 않아 발생하는 일체의 책임은 “구장 회원”에게 있다.</li></ol></div><div style="display:contents" dir="auto"><ol type="1" id="2d88d253-2450-8041-af0b-c14f9236feb7" class="block-color-default numbered-list" start="8"><li><mark class="highlight-default"><mark class="highlight-default_background">“구장 회원”이 본 약관 및 본 약관의 내용을 구체적으로 정하는 하위 세부 정책에서 정한 손해배상, 보상액, 위약벌 등 기타 명칭을 불문하고 “회사” 또는 “이용자”에게 지급해야 할 금액이 있는 경우, “회사”는 해당 금액을 “구장 회원”에게 지급하여야 하는 본 조의 정산 금액에서 공제할 수 있다. 단, 이 때 “구장 회원”이 “이용자”에게 지급해야 하는 금액이 정산 금액에서 공제된 경우에는 “회사”가 “구장 회원”을 대신하여 해당 금액을 “이용자”에게 전달하여야 하며, “구장 회원”은 이로 인해 “이용자”에게 부담하는 손해배상액 또는 보상액 지급 채무를 면한다.</mark></mark></li></ol></div><div style="display:contents" dir="auto"><ol type="1" id="2d88d253-2450-8074-8130-ce7c8d42cd50" class="block-color-default numbered-list" start="9"><li><mark class="highlight-default_background">“회사”는 “플랩풋볼 제휴 세부 정책”에 따라 “구장 회원”에게 지급해야 하는 제1항 및 제2항의 정산 금액의 비율을 조정하거나 감액할 수 있다.</mark></li></ol></div><div style="display:contents" dir="auto"><p id="2d88d253-2450-8032-865e-c067e7753870" class="block-color-default">
+</p></div><div style="display:contents" dir="auto"><p id="2d88d253-2450-8019-a278-f7d95e6a2cc3" class="block-color-default"><strong>제 9 조 (손해배상 및 보상)</strong></p></div><div style="display:contents" dir="auto"><ol type="1" id="2d88d253-2450-8029-be77-fab876aa419e" class="block-color-default numbered-list" start="1"><li><mark class="highlight-default_background">“구장 회원”이 제4조 내지 제6조를 비롯한 본 약관 및 본 약관의 내용을 구체적으로 정하는 하위 세부 정책의 의무 및 책임을 다하지 못하여 “이용자”가 해당 구장 이용할 수 없게 되는 경우 이에 대한 손해배상으로 “회사”는 “구장 회원에게 정산금을 지급하지 않으며, 본 약관의 내용을 구체적으로 정하는 하위 세부 정책에서 규정한 이용자 보상 기준에 따른 보상액을 “이용자” 및 “회사”에게 지급하여야 한다.</mark></li></ol></div><div style="display:contents" dir="auto"><ol type="1" id="2d88d253-2450-80f4-acc5-f1a1bc3eb324" class="block-color-default numbered-list" start="2"><li><mark class="highlight-default_background">“회사” 또는 “구장 회원”이 본 약관 및 본 약관의 내용을 구체적으로 정하는 하위 세부 정책에서 정한 의무를 위반하거나 기타 고의 또는 과실로 상대방에게 손해가 발생하는 경우, 귀책 당사자는 이로 인해 상대방에게 발생한 손해 일체를 배상할 책임을 진다.</mark></li></ol></div><div style="display:contents" dir="auto"><ol type="1" id="2d88d253-2450-80ac-a1dc-c1ead103bdc1" class="block-color-default numbered-list" start="3"><li><mark class="highlight-default_background">“구장 회원”이 본 약관 및 본 약관의 내용을 구체적으로 정하는 하위 세부 정책에 따른 의무를 위반하여 “회사”가 “이용자” 또는 제3자로부터 손해배상 청구 등 소송 또는 기타 방법으로 이의 제기를 받는 경우, “구장 회원”은 자신의 비용으로 “회사”를 면책시켜야 하며 “회사”가 방어할 수 있는 모든 자료 및 정보를 제공함으로써 문제의 해결에 적극 협조하여야 한다.</mark></li></ol></div><div style="display:contents" dir="auto"><ol type="1" id="2d88d253-2450-805b-9fb9-ca6c8b75a07c" class="block-color-default numbered-list" start="4"><li><mark class="highlight-default_background">“회사”의 귀책 사유으로 인해 서비스가 중단되어 “구장 회원”에게 손해가 발생하는 경우, “회사”는 최대 금 [일백만원]의 범위 내에서 “구장 회원”에게 발생한 손해를 배상한다. 단, 이때 “구장 회원”은 발생한 손해에 대한 증빙을 “회사”에 제공하여야 한다.   </mark></li></ol></div><div style="display:contents" dir="auto"><ol type="1" id="2d88d253-2450-801b-941b-dd9c54107d65" class="block-color-default numbered-list" start="5"><li><mark class="highlight-default_background">“회사” 또는 “구장 회원”이 화</mark><mark class="highlight-default"><mark class="highlight-default_background">재, 홍수, 전염병 등의 천재지변이나 사고 또는 정부기관의 조치 기타 사회통념상 부득이한 경우(이하 “불가항력”이라 한다)에 최선의 노력을 하였음에도 불구하고 본 약관상의 의무를 이행하지 못했다고 인정된 때에는 해당 사유로 인한 손해배상 기타 책임을 부담하지 아니하나, 그러한 경우에도 “회사” 및 “구장 회원”은 본 약관의 목적 달성을 위한 방안을 수립하기 위해 최대한 노력하여야 한다. 단, 이때 “불가항력”의 구체적인 정의 및 상황은”플랩풋볼 제휴 세부 정책” 등 관련 하위 정책에서 구체적으로 정하는 바에 따른다.</mark></mark></li></ol></div><div style="display:contents" dir="auto"><p id="2d88d253-2450-8018-9f66-f7872e6a0f0f" class="block-color-default">
+</p></div><div style="display:contents" dir="auto"><p id="2d88d253-2450-8091-bbde-d860ec2b095a" class="block-color-default"><mark class="highlight-default"><mark class="highlight-default_background"><strong>제 10 조 (”회사”의 면책)</strong></mark></mark></p></div><div style="display:contents" dir="auto"><ol type="1" id="2d88d253-2450-8050-80e3-d4db4a5322cb" class="block-color-default numbered-list" start="1"><li><mark class="highlight-default">“회사”는 “구장 회원”이 제공하는 “구장” 등 “스포츠 시설” 일체를 “이용자”에게 직접 제공하는 자가 아니며, 아래 각 호의 사항을 포함하여 “구장 회원”이 제공하는 “구장” 등 “스포츠 시설”과 관련된 문제로 인해 “이용자”와 “구장 회원” 간에 발생하는 분쟁에 대해서 책임을 부담하지 않는다. 단, “회사”가 자신의 “서비스”를 제공하는 과정에서 “회사”의 고의 또는 중대한 과실이 인정되는 경우는 그러지 아니한다.</mark><div style="display:contents" dir="auto"><ol type="a" id="2d88d253-2450-80ac-9e7f-ca5e53608596" class="numbered-list" start="1"><li><mark class="highlight-default">“구장 회원”이 자신의 “구장” 등 “스포츠 시설”에 관하여 공지한 일정, 예약 정보, 관련자 연락처 등의 진실성, 정확성, 신뢰성 및 공시된 정보의 활용으로 인하여 야기되는 일체의 결</mark>과</li></ol></div><div style="display:contents" dir="auto"><ol type="a" id="2d88d253-2450-80df-beca-c07cd6a31792" class="numbered-list" start="2"><li><mark class="highlight-default_background">“구장 회원”이 고의 또는 과실로 본 약관 및 본 약관의 내용을 구체적으로 정하는 하위 세부 정책에서 규정한 내용의 일부 또는 전부를 이행하지 않거나, 다르게 이행함으로 인해 발생할 수 있는 모든 결과</mark></li></ol></div></li></ol></div><div style="display:contents" dir="auto"><ol type="1" id="2d88d253-2450-802e-bba8-cf086fecb2d1" class="block-color-default numbered-list" start="2"><li>“회사”는 “회사”의 고의 또는 과실이 없는 한 다음과 같은 사항으로부터 발생하는 손해에 대하여 책임을 지지 아니한다.<div style="display:contents" dir="auto"><ol type="a" id="2d88d253-2450-80df-9e41-ee7f41256e5b" class="numbered-list" start="1"><li>“회사”가 본 약관 및 본 약관의 내용을 구체적으로 정하는 하위 세부 정책에서 정하는 방식으로 “서비스”의 제공을 제한 또는 중지함에 따라 발생한 손해</li></ol></div><div style="display:contents" dir="auto"><ol type="a" id="2d88d253-2450-8061-9e2f-e13176789dd5" class="numbered-list" start="2"><li>“회사”가 운영하는 “구장 관리 사이트” 등에 대한 접속 및 이용과 관련하여 “구장 회원”의 고의 또는 과실로 인하여 “구장 회원”, “이용자” 및 제3자에게 발생한 손해</li></ol></div><div style="display:contents" dir="auto"><ol type="a" id="2d88d253-2450-8025-9b9d-f90f93bf682f" class="numbered-list" start="3"><li>“구장 회원”이 연락처, 전자우편 등 개인정보를 부실하게 기재하거나, 본 약관에 따라 입력하여야 하는 정보의 최신화 의무를 다하지 아니하여 “구장 회원”, “이용자” 및 “제3자에게 발생한 손해</li></ol></div></li></ol></div><div style="display:contents" dir="auto"><p id="2d88d253-2450-8073-837e-fa9c5416cdc5" class="block-color-default">
+</p></div><div style="display:contents" dir="auto"><p id="2d88d253-2450-80b9-928a-dcd0b1fca10d" class="block-color-default"><strong>제 11 조 (서비스 이용 계약의 양도)</strong></p></div><div style="display:contents" dir="auto"><ol type="1" id="2d88d253-2450-80b0-8f5d-e667833a7137" class="block-color-default numbered-list" start="1"><li>“구장 회원&quot;은 개인 사정, 경영 악화, 구장 인수 또는 이에 준하는 사유로 구장 영업이 종료되거나 타인에게 경영권이 넘어가는 경우, 구장 계약 종료일 혹은 구장 경영권이 타인에게 양도되는 날로부터 30일 이전에 “회사&quot;에게 관련 내용을 알릴 의무가 있다.</li></ol></div><div style="display:contents" dir="auto"><ol type="1" id="2d88d253-2450-804d-964f-c73d426bb45f" class="block-color-default numbered-list" start="2"><li>본 약관 동의에 따라 “회사”와 “구장 회원” 간에 체결된 서비스 이용 계약은 “회사”와 “구장 회원” 간의 사전 서면 합의 없이 타인에게 양도되지 않는다.</li></ol></div><div style="display:contents" dir="auto"><p id="2d88d253-2450-8032-8567-fcdf178ef96f" class="block-color-default">
+</p></div><div style="display:contents" dir="auto"><p id="2d88d253-2450-80f2-ad37-dea42a7a8794" class="block-color-default"><mark class="highlight-default"><strong>제 12조 (서비스 이용 계약의 해지)</strong></mark></p></div><div style="display:contents" dir="auto"><ol type="1" id="2d88d253-2450-80e9-b8dc-da259fafd7a0" class="block-color-default numbered-list" start="1"><li><mark class="highlight-default"><mark class="highlight-default_background">아래 각 호의 경우, “회사&quot;는 “구장 회원”에게 계약 해지 통보를 할 수 있으며, 그 즉시 본 약관에 따른 서비스 이용 계약은 해지되고 “구장 회원”은 회원 자격을 상실한다.</mark></mark><div style="display:contents" dir="auto"><ol type="a" id="2d88d253-2450-80c0-bc5f-dd96d0d7dbf4" class="numbered-list" start="1"><li><mark class="highlight-default">“구장 회원”의 귀책으로 인해 “회사&quot; 또는 “이용자&quot;가 정상적으로 구장 이용 및 활용이 불가능하거나 인적, 물적 손해 등이 발생한 경우</mark><div style="display:contents" dir="auto"><ol type="i" id="2d88d253-2450-80b6-8e4e-fc055bafbc3d" class="numbered-list" start="1"><li><mark class="highlight-default"><mark class="highlight-default_background">“구장 회원”의 귀책으로 인해 “회사”에 [1백만원] 이상의 손해가 발생한 경우</mark></mark></li></ol></div><div style="display:contents" dir="auto"><ol type="i" id="2d88d253-2450-8000-86e3-c13890a0882c" class="numbered-list" start="2"><li><mark class="highlight-default"><mark class="highlight-default_background">“구장 회원”의 귀책으로 인해 “회사”에 금액과는 무관하게 [1개월 내 3회] 이상의 손해가 발생한 경우</mark></mark></li></ol></div><div style="display:contents" dir="auto"><ol type="i" id="2d88d253-2450-8041-aa14-ca715fb0d374" class="numbered-list" start="3"><li><mark class="highlight-default"><mark class="highlight-default_background">“구장 회원”의 귀책으로 인해 “회사”에 금액과는 무관하게 [3개월 연속으로] 손해가 발생한 경우 </mark></mark></li></ol></div></li></ol></div><div style="display:contents" dir="auto"><ol type="a" id="2d88d253-2450-805d-b889-cbe6ce8e4e20" class="numbered-list" start="2"><li><mark class="highlight-default"><mark class="highlight-default_background">“구장 회원”의 귀책으로 인해 일정 누락, 중복 예약 등의 문제가 3회 이상 발생한 경우</mark></mark></li></ol></div><div style="display:contents" dir="auto"><ol type="a" id="2d88d253-2450-80e3-bdc9-c8250a6e41e6" class="numbered-list" start="3"><li><mark class="highlight-default"><mark class="highlight-default_background">“구장 회원”의 귀책으로 인해 “이용자”들의 컴플레인이 10회 이상 발생한 경우</mark></mark></li></ol></div><div style="display:contents" dir="auto"><ol type="a" id="2d88d253-2450-8063-b86f-c8e4223df7ce" class="numbered-list" start="4"><li><mark class="highlight-default"><mark class="highlight-default_background">“구장 제휴 서비스 이용약관” 또는 본 정책에서 규정된 “구장 회원”의 의무를 5회 이상 위반하는 경우</mark></mark></li></ol></div><div style="display:contents" dir="auto"><ol type="a" id="2d88d253-2450-80e2-9b74-e3d3249359d8" class="numbered-list" start="5"><li><mark class="highlight-default"><mark class="highlight-default_background">“회사”가 약관 및 정책에 근거한 명시적인 시정 요청을 하였음에도 5회 이상 이를 거부하거나 이행하지 않는 경우 </mark></mark></li></ol></div><div style="display:contents" dir="auto"><ol type="a" id="2d88d253-2450-80d3-88f6-d832dbb65b89" class="numbered-list" start="6"><li><mark class="highlight-default"><mark class="highlight-default_background">“구장 회원”이 “회사”와의 본 서비스 이용 계약 기간 중 타 대관 중개사이트 및 기타 “회사”가 제공하는 서비스와 동일, 혹은 유사한 서비스를 중복으로 이용하다가 “회사”에 손해 또는 어떠한 종류의 문제가 발생한 경우</mark></mark></li></ol></div><div style="display:contents" dir="auto"><ol type="a" id="2d88d253-2450-804e-9d95-eb5452c80920" class="numbered-list" start="7"><li><mark class="highlight-default_background">“구장 회원”이 압류 및 가압류 등 금융기관의 거래정지, 회생 및 파산절차의 개시, 어음이나 수표의 부도, 영업정지 및 취소 등의 행정처분, 주요 자산에 대한 보전처분, 영업양도 및 합병 등으로 본 계약의 이행이 불가능하다고 “회사”가 판단하는 경우</mark></li></ol></div></li></ol></div><div style="display:contents" dir="auto"><ol type="1" id="2d88d253-2450-802b-8cb0-ec102579357d" class="block-color-default numbered-list" start="2"><li><mark class="highlight-default"><mark class="highlight-default_background">“구장 회원”이 서비스 이용 계약 기간 중 계약 해지를 희망할 경우 “회사”에 위약벌을 지급하고 계약을 해지할 수 있으며, 이때 위약벌은 “회사”와의 서비스 이용계약에 따라 발생한 “구장 회원”의 직전 분기 월 평균 정산금액을 잔여 개월 수로 곱한 금액으로 하며, 직전 분기 월 평균 정산금액을 산정할 수 없는 경우에는 5백만원을 위약벌로 정한다. 단, 본조 제1항의 해지사유로 인해 “회사”가 “구장 회원”에게 계약 해지를 통보한 경우에도 “구장 회원”은 “회사”에 본항의 위약벌을 지급하여야 한다.</mark></mark></li></ol></div><div style="display:contents" dir="auto"><ol type="1" id="2d88d253-2450-80fb-a44e-e32e6acaddf2" class="block-color-default numbered-list" start="3"><li><mark class="highlight-default"><mark class="highlight-default_background">“구장 회원”이 서비스 이용 계약 기간이 종료되지 않았음에도 “회사”의 동의 없이 “구장”을 제3자에게 양도하거나 불가항력적인 이유로 “구장” 운영이 불가능하여 본 서비스 이용 계약을 해지해야 하는 경우에는 위제2항의 위약벌 지급 여부를 “회사”와 별도 합의하여야 한다. </mark></mark></li></ol></div><div style="display:contents" dir="auto"><ol type="1" id="2d88d253-2450-804c-966e-c3143c65f719" class="block-color-default numbered-list" start="4"><li><mark class="highlight-default_background">제2항에 의한 계약 해지의 효력은 “구장 회원”이 “회사”에 위약벌을 지급한 날로부터 10일 후에 발생한다.</mark></li></ol></div><div style="display:contents" dir="auto"><p id="2d88d253-2450-80c6-ac01-f3421f342ce0" class="block-color-default">
+</p></div><div style="display:contents" dir="auto"><p id="2d88d253-2450-806e-97c0-e34105ff9e5c" class="block-color-default"><mark class="highlight-default_background"><strong>제</strong></mark><mark class="highlight-default"><mark class="highlight-default_background"><strong> 13 조 (세부 정책의 운영)</strong></mark></mark></p></div><div style="display:contents" dir="auto"><p id="2d88d253-2450-80b7-9355-c2811e28b36c" class="block-color-default"><mark class="highlight-default"><mark class="highlight-default_background">“회사”는 아래와 같이 본 약관을 구성하는 하위 세부정책을 운영할 수 있으며, “구장 회원”은 아래 세부정책을 모두 준수하여야 한다. </mark></mark></p></div><div style="display:contents" dir="auto"><ol type="1" id="2d88d253-2450-80cb-871f-c006180640de" class="block-color-default numbered-list" start="1"><li><mark class="highlight-default"><mark class="highlight-default_background">“구장 제휴 세부 정책”</mark></mark></li></ol></div><div style="display:contents" dir="auto"><ol type="1" id="2d88d253-2450-80c6-8df3-e8e6a7610005" class="block-color-default numbered-list" start="2"><li><mark class="highlight-default"><mark class="highlight-default_background">“구장 소셜 매치 일정 추가 및 취소 정책”</mark></mark></li></ol></div><div style="display:contents" dir="auto"><ol type="1" id="2d88d253-2450-8066-9f3e-d7d7a63aba4a" class="block-color-default numbered-list" start="3"><li><mark class="highlight-default"><mark class="highlight-default_background">“구장 런드리 서비스 정책”</mark></mark></li></ol></div><div style="display:contents" dir="auto"><ol type="1" id="2d88d253-2450-805c-80d9-ea68a95fe498" class="block-color-default numbered-list" start="4"><li><mark class="highlight-default"><mark class="highlight-default_background">“구장 회원의 이용자 및 매니저 보상 정책”</mark></mark></li></ol></div><div style="display:contents" dir="auto"><ol type="1" id="2d88d253-2450-8019-a9a0-f1b7042f2c98" class="block-color-default numbered-list" start="5"><li><mark class="highlight-default"><mark class="highlight-default_background">“구장 정산 정책”</mark></mark></li></ol></div><div style="display:contents" dir="auto"><ol type="1" id="2d88d253-2450-80ab-aad9-f8b81f3c6bef" class="block-color-default numbered-list" start="6"><li><mark class="highlight-default"><mark class="highlight-default_background">기타 “회사”가 “서비스”를 운영하는 데 있어 필요한 내용을 규정한 정책</mark></mark></li></ol></div><div style="display:contents" dir="auto"><p id="2d88d253-2450-808d-a141-dd8bf8456dc2" class="block-color-default">
+</p></div><div style="display:contents" dir="auto"><p id="2d88d253-2450-8011-a352-cf1b1e5e2e1d" class="block-color-default"><mark class="highlight-default_background"><strong>제 14 조 (서비스의 일시 중단)</strong></mark></p></div><div style="display:contents" dir="auto"><ol type="1" id="2d88d253-2450-805f-b34f-fb1daa104ccb" class="block-color-default numbered-list" start="1"><li><mark class="highlight-default_background">“회사”는 통제할 수 없는 기술적 장애, 기간통신사업자 등 제3자의 귀책사유 및 천재지변, 국가비상사태 등의 사유로 인하여 “구장 관리 사이트” 등의 운영을 포함한 “서비스”의 일부 또는 전부의 제공이 불가능할 수 있으며, 이 경우 “서비스” 제공을 일시 중단할 수 있다.</mark></li></ol></div><div style="display:contents" dir="auto"><ol type="1" id="2d88d253-2450-8036-a084-fc66a2c1ac37" class="block-color-default numbered-list" start="2"><li><mark class="highlight-default_background">“회사”가 본 조에 따라 “서비스”를 중단하는 경우 이러한 사실을 “회사”가 운영하는 “구장 관리 사이트” 또는 연락처, 전자우편, 카카오톡 등의 방법으로 “구장 회원”에게 공지 또는 통지한다. 단, 기술적 장애 사유 등의 경우에는 사후에 통지할 수 있다.</mark></li></ol></div><div style="display:contents" dir="auto"><p id="2d88d253-2450-8037-a73c-ca0034cdde17" class="block-color-default">
+</p></div><div style="display:contents" dir="auto"><p id="2d88d253-2450-8054-b29a-f3d8dc691cb6" class="block-color-default"><mark class="highlight-default_background"><strong>제 15 조 (개인 정보)</strong></mark></p></div><div style="display:contents" dir="auto"><ol type="1" id="2d88d253-2450-8076-8ea4-cfe3303d60a9" class="block-color-default numbered-list" start="1"><li><mark class="highlight-default_background">“회사”와 “구장 회원”은 업무상 취득한 개인정보를 목적 범위 외에 사용할 수 없으며, 개인정보주체의 동의 없이 외부에 유출할 수 없다. </mark></li></ol></div><div style="display:contents" dir="auto"><ol type="1" id="2d88d253-2450-8022-8eac-d49adb985842" class="block-color-default numbered-list" start="2"><li><mark class="highlight-default"><mark class="highlight-default_background">&quot;회사&quot;는 원활한 &quot;구장 제휴 서비스&quot; 운영을 위해 필요하다고 판단 시 &quot;이용자&quot; 혹은 ”플랩 매니저” 등 필요한 인력에게 &quot;구장 회원&quot;이 소유하거나 운영하고 있는 &quot;스포츠 시설&quot;의 연락처, &quot;구장 회원&quot;의 개인 연락처, 혹은 &quot;구장 회원&quot;이 소유하거나 운영하고 있는 &quot;스포츠 시설&quot;의 관리 및 운영자 개인 연락처를 전달할 수 있으며, “구장 회원”은 “회사”가 해당 정보를 본 조에서 정한 범위에 한해 적법하게 사용할 수 있도록 관련자의 사전 동의를 획득하는 등 필요한 조치를 취할 의무를</mark></mark><mark class="highlight-default"><mark class="highlight-default_background"><strong> 부담한다. </strong></mark></mark></li></ol></div><div style="display:contents" dir="auto"><p id="2d88d253-2450-801f-9bd1-d170e2499a16" class="block-color-default">
+</p></div><div style="display:contents" dir="auto"><p id="2d88d253-2450-80e4-b8af-c0383c83e8e4" class="block-color-default"><mark class="highlight-default"><mark class="highlight-default_background"><strong>제 16 조 (비밀 유지)</strong></mark></mark></p></div><div style="display:contents" dir="auto"><ol type="1" id="2d88d253-2450-80bd-aa3c-d192489e767b" class="block-color-default numbered-list" start="1"><li><mark class="highlight-default"><mark class="highlight-default_background">“회사”와 “구장 회원”은 다음 각 호에서 정한 정보를 제외하고 본 약관을 체결하는 과정에서 인지 또는 취득한 </mark></mark><mark class="highlight-default"><mark class="highlight-default_background"><strong>본 서비스 이용 계약의 조건 및</strong></mark></mark><mark class="highlight-default"><mark class="highlight-default_background"> 경영정보, 기술정보, 제품정보 또는 영업비밀(이하 &quot;영업정보&quot;라 한다)를 비밀로 유지하여야 하며, 사전 서면동의 없이 제3자에게 이를 누설 또는 공개하거나 본 약관의 목적 이외의 용도로 사용하여서는 아니 된다.</mark></mark><div style="display:contents" dir="auto"><ol type="a" id="2d88d253-2450-8044-adc3-ced7b48a4290" class="numbered-list" start="1"><li><mark class="highlight-default"><mark class="highlight-default_background">본 약관 체결 이전에 이미 공지의 사실이 된 정보</mark></mark></li></ol></div><div style="display:contents" dir="auto"><ol type="a" id="2d88d253-2450-8015-893a-d8eadfbae35a" class="numbered-list" start="2"><li><mark class="highlight-default"><mark class="highlight-default_background">본 약관 체결 이후에 당사자의 귀책사유 없이 공지의 사</mark></mark><mark class="highlight-default_background">실이 된 정보</mark></li></ol></div><div style="display:contents" dir="auto"><ol type="a" id="2d88d253-2450-80c3-804b-db69d22d37ab" class="numbered-list" start="3"><li><mark class="highlight-default_background">정부의 명령이나 법원의 결정 기타 당사자 일방이 통제할 수 없는 사유로 인하여 공개된 정보</mark></li></ol></div></li></ol></div><div style="display:contents" dir="auto"><ol type="1" id="2d88d253-2450-804c-86ae-e21b30aa8a9d" class="block-color-default numbered-list" start="2"><li><mark class="highlight-default_background">제1항의 의무는 본 서비스 이용 계약의 종료 후에도 존속한다.</mark></li></ol></div><div style="display:contents" dir="auto"><ol type="1" id="2d88d253-2450-807a-a960-faee32586c0b" class="block-color-default numbered-list" start="3"><li><mark class="highlight-default_background">제1항의 “영업정보” 중 양 당사자 간의 합의로 이용 목적 달성 후에 반환하거나 파기하기로 한 정보가 있는 경우, “회사” 및 “구장 회원”은 이용 목적 달성 후 즉시 해당 정보를 반환 또는 파기하여야 한다.</mark></li></ol></div><div style="display:contents" dir="auto"><p id="2d88d253-2450-8052-b45d-e454b1a03007" class="block-color-default">
+</p></div><div style="display:contents" dir="auto"><p id="2d88d253-2450-80f3-b3a6-c9bd5afa5e5e" class="block-color-default"><mark class="highlight-default_background"><strong>제 17 조 (마케팅 활용 등)</strong></mark></p></div><div style="display:contents" dir="auto"><ol type="1" id="2d88d253-2450-80f4-8ff2-d398a9e9eb6d" class="block-color-default numbered-list" start="1"><li>“회사”는 “구장 회원”의 “구장” 및 “스포츠 시설” 등의 사진 및 기타 관련 정보(이하 “자료”라 함)를 “회사”가 제공하는 “서비스”의 홍보 및 마케팅, 그 외 “서비스”의 개선 등을 위해 “회사”의 “구장 관리 사이트” 또는 그 외의 곳에 게시하거나 기타 다른 방법으로 활용할 수 있다. </li></ol></div><div style="display:contents" dir="auto"><ol type="1" id="2d88d253-2450-8081-8cbf-c92be88fa60e" class="block-color-default numbered-list" start="2"><li>본 약관에 따른 서비스 이용계약이 종료되고 “구장 회원”의 명시적인 요청이 있는 경우, “회사”는 해당 “구장 회원”의 “자료” 활용을 중단한다.</li></ol></div><div style="display:contents" dir="auto"><p id="2d88d253-2450-8089-bd1a-e4f4e2828f38" class="block-color-default">
+</p></div><div style="display:contents" dir="auto"><p id="2d88d253-2450-806c-b74a-ef8af4b41204" class="block-color-default"><strong>제 18 조 (약관의 변경)</strong></p></div><div style="display:contents" dir="auto"><ol type="1" id="2d88d253-2450-8022-85f8-f8677dea4e23" class="block-color-default numbered-list" start="1"><li>“회사”는 관련 법령을 위배하지 않는 범위 내에서 본 약관을 개정할 수 있으며, 개정 내용과 적용 일자를 명시하여 “회사”가 제공하는 “구장 관리 사이트” 게시 혹은 개별 통지 등의 방법으로 그 적용일자로부터 최소 7일 전에 “구장 회원”에게 공지한다. 단, 개정 내용이 중대할 경우 약관 개정 최소 30일 전에 “구장 회원”에게 공지 혹은 통지한다.</li></ol></div><div style="display:contents" dir="auto"><ol type="1" id="2d88d253-2450-80ee-92fb-df5dafe5c6c5" class="block-color-default numbered-list" start="2"><li>“구장 회원”은 제1항에 따른 약관 개정에 동의하지 않을 경우 개정 약관 적용일 이전에 거부 의사를 표시하고 서비스 이용 계약의 해지를 요청할 수 있다. 단, 개정 약관 적용일까지 명시적인 거부 의사를 밝히지 않을 경우 변경된 약관에 동의한 것으로 간주한다.</li></ol></div><div style="display:contents" dir="auto"><p id="2d88d253-2450-807f-829b-ebcb28c59b6c" class="block-color-default">
+</p></div><div style="display:contents" dir="auto"><p id="2d88d253-2450-8027-9922-fdc7847d4028" class="block-color-default"><mark class="highlight-default_background"><strong>제 19 조 (통지)</strong></mark></p></div><div style="display:contents" dir="auto"><ol type="1" id="2d88d253-2450-809d-9d6f-f38f68c3f949" class="block-color-default numbered-list" start="1"><li><mark class="highlight-default_background">“회사”는 본 약관과 관련한 통지를 “구장 회원”이 제공한 전자우편, (휴대)전화번호, 카카오톡, “회사”의 “구장 관리 사이트” 초기 화면 등의 수단으로 할 수 있다.</mark></li></ol></div><div style="display:contents" dir="auto"><ol type="1" id="2d88d253-2450-80e3-a893-d397e17f6657" class="block-color-default numbered-list" start="2"><li><mark class="highlight-default_background">“회사”는 “구장 회원” 전체에 대한 통지의 경우 7일 이상 “회사”가 운영하는 “구장 관리 사이트”에 게시함으로써 제1항의 통지에 갈음할 수 있다. 단, “구장 회원”의 서비스 이용과 관련하여 중대한 영향을 미치는 사항에 대하여는 제1항의 통지 수단에 따른 방법으로 통지한다.</mark></li></ol></div><div style="display:contents" dir="auto"><ol type="1" id="2d88d253-2450-802f-8305-c951b9b87080" class="block-color-default numbered-list" start="3"><li><mark class="highlight-default_background">“구장 회원”은 “회사”에 실제로 연락이 가능한 전자우편, (휴대)전화번호 등의 정보를 제공하고 해당 정보들을 최신으로 유지하여야 하며, “회사”가 발송하는 통지사항을 성실히 확인하여야 한다.</mark></li></ol></div><div style="display:contents" dir="auto"><ol type="1" id="2d88d253-2450-8072-ad8f-cf9ad5adb9dc" class="block-color-default numbered-list" start="4"><li><mark class="highlight-default_background">“구장 회원”이 제3항의 의무를 소홀히 하여 발생한 불이익에 대해서는 보호받지 못한다.</mark></li></ol></div><div style="display:contents" dir="auto"><p id="2d88d253-2450-80cf-900e-c4b5f2d89178" class="block-color-default">
+</p></div><div style="display:contents" dir="auto"><p id="2d88d253-2450-8092-8c3c-cb348163bd3c" class="block-color-default"><mark class="highlight-default_background"><strong>제 20 조 (분쟁의 해결)</strong></mark></p></div><div style="display:contents" dir="auto"><p id="2d88d253-2450-808f-b0b4-d8a3fe1e871a" class="block-color-default"><mark class="highlight-default_background">본 약관에 따른 서비스 이용 계약과 관련하여 발생하는 모든 분쟁과 이에 따른 소송은 민사소송법상의 관할법원에서 해결한다.</mark></p></div><div style="display:contents" dir="auto"><p id="2d88d253-2450-80da-a6f6-d9d7984d550f" class="">
+</p></div></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>
