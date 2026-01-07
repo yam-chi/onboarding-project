@@ -611,6 +611,7 @@ export default function Step2Page() {
               value={stadium.social_special || ""}
               onChange={(v) => handleStadium("social_special", v)}
               help={"소셜 신청 페이지에만 노출됩니다."}
+              note="아래 가이드를 참고하여 소셜매치 특이사항을 입력해주세요. 따로 내용이 없다면 삭제하셔도 됩니다."
             />
             <div className="max-w-[420px]">
               <Input
@@ -718,13 +719,13 @@ export default function Step2Page() {
         </section>
 
         <section className="bg-white border border-[#E3E6EC] rounded-xl shadow-sm p-6 space-y-3">
-          <h2 className="text-lg font-semibold text-[#111827]">희망 운영 시간</h2>
-          <p className="text-sm text-[#6b7280]">요일/시간대를 자유롭게 적어주세요. 예) 평일 18~22시 운영 가능</p>
+          <h2 className="text-lg font-semibold text-[#111827]">운영 불가 시간</h2>
+          <p className="text-sm text-[#6b7280]">매치 세팅 불가능한 시간을 적어주세요 (아카데미, 장기대관 등)</p>
           <textarea
             value={stadium.hoped_times_note || ""}
             onChange={(e) => handleStadium("hoped_times_note", e.target.value)}
             className="w-full min-h-[120px] border border-[#E3E6EC] rounded-lg px-3 py-2 text-sm"
-            placeholder="예: 월~금 18~22시, 토/일 14~20시 운영 가능"
+            placeholder="예: 월~금 18~22시, 토/일 14~20시 운영 불가"
           />
         </section>
 
@@ -820,6 +821,7 @@ function Textarea({
   required,
   placeholder,
   help,
+  note,
   rows = 12,
 }: {
   label: string;
@@ -828,6 +830,7 @@ function Textarea({
   required?: boolean;
   placeholder?: string;
   help?: string;
+  note?: string;
   rows?: number;
 }) {
   return (
@@ -842,6 +845,7 @@ function Textarea({
             </span>
           </span>
         )}
+        {note && <span className="ml-2 text-[11px] text-[#9CA3AF]">{note}</span>}
       </span>
       <textarea
         value={value ?? ""}
