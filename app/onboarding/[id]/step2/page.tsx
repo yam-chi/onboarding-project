@@ -236,6 +236,25 @@ const REGION_OPTIONS = [
   "제주 서귀포시",
 ];
 
+const DEFAULT_SOCIAL_SPECIAL = `■ 구장 가는 길
+: 면 구분 방법, 엘리베이터 이용 방법, 입/퇴장 가능 시간
+
+■ 주차
+: 주차 가능 위치, 홈페이지 사전 등록 가능 댓수, 등록 가능 시간, 연타임 등록 가능 여부
+
+■ 흡연
+: 흡연 가능 여부
+a. 지정된 장소에서만 흡연 가능 (흡연 구역 외에서 흡연 적발 시 이후 서비스 이용에 제재가 있을 수 있습니다.)
+b. 전 구역 흡연 불가
+c. 전 구역 흡연 가능
+- 구체적인 흡연구역
+
+■ 대여/판매
+: 풋살화 대여(사이즈, 수량, 금액, 대여 방법 등) 음료
+
+■ 기타
+: 화장실/샤워실 위치, 기타 주의사항 등`;
+
 type StadiumInfo = {
   region?: string;
   home_filter_region?: string;
@@ -307,7 +326,11 @@ export default function Step2Page() {
         if (!res.ok) throw new Error(json?.error || "불러오기 실패");
         if (!mounted) return;
         setStatus(json.step_status);
-        setStadium(json.stadium || {});
+        const nextStadium = json.stadium || {};
+        if (!nextStadium.social_special) {
+          nextStadium.social_special = DEFAULT_SOCIAL_SPECIAL;
+        }
+        setStadium(nextStadium);
         setCourts((prev) => {
           if (json.courts?.length) return json.courts;
           return prev && Array.isArray(prev) && prev.length
@@ -582,24 +605,53 @@ export default function Step2Page() {
 
         <section className="bg-white border border-[#E3E6EC] rounded-xl shadow-sm p-6 space-y-4">
           <h2 className="text-lg font-semibold text-[#111827]">소셜 매치 정보</h2>
-          <div className="flex flex-col gap-3 max-w-[420px]">
-            <Input
+          <div className="flex flex-col gap-3">
+            <Textarea
               label="소셜매치 특이사항"
               value={stadium.social_special || ""}
               onChange={(v) => handleStadium("social_special", v)}
               help={"소셜 신청 페이지에만 노출됩니다."}
             />
-            <Input label="소셜매치 알림톡" value={stadium.social_message || ""} onChange={(v) => handleStadium("social_message", v)} />
-            <Input label="매니저 특이사항" value={stadium.manager_note || ""} onChange={(v) => handleStadium("manager_note", v)} />
+            <div className="max-w-[420px]">
+              <Input
+                label="소셜매치 알림톡"
+                value={stadium.social_message || ""}
+                onChange={(v) => handleStadium("social_message", v)}
+                help={"매치 확정 후 참여자 연락처로 안내되는 내용입니다."}
+              />
+            </div>
+            <div className="max-w-[420px]">
+              <Input
+                label="매니저 특이사항"
+                value={stadium.manager_note || ""}
+                onChange={(v) => handleStadium("manager_note", v)}
+                help={"매니저 앱에서 매치 선택 전 노출됩니다."}
+              />
+            </div>
           </div>
         </section>
 
         <section className="bg-white border border-[#E3E6EC] rounded-xl shadow-sm p-6 space-y-4">
           <h2 className="text-lg font-semibold text-[#111827]">구장 예약 정보</h2>
           <div className="flex flex-col gap-3 max-w-[420px]">
-            <Input label="대관 특이사항" value={stadium.rental_note || ""} onChange={(v) => handleStadium("rental_note", v)} />
-            <Input label="꼭 지켜주세요" value={stadium.rental_warning || ""} onChange={(v) => handleStadium("rental_warning", v)} />
-            <Input label="구장 예약 알림톡" value={stadium.rental_message || ""} onChange={(v) => handleStadium("rental_message", v)} />
+            <Input
+              label="대관 특이사항"
+              value={stadium.rental_note || ""}
+              onChange={(v) => handleStadium("rental_note", v)}
+              help={"구장 예약 신청 페이지에서 노출됩니다."}
+            />
+            <Input
+              label="꼭 지켜주세요"
+              value={stadium.rental_warning || ""}
+              onChange={(v) => handleStadium("rental_warning", v)}
+              help={"구장 예약 신청 페이지에서 노출됩니다."}
+            />
+            <Input
+              label="구장 예약 알림톡"
+              value={stadium.rental_message || ""}
+              onChange={(v) => handleStadium("rental_message", v)}
+              help={"구장 예약 신청 후 신청자 연락처로 안내되는 내용입니다."}
+            />
             <div className="grid md:grid-cols-[30%_70%] gap-3">
               <Select
                 label="조끼 제공"
@@ -755,6 +807,47 @@ function Input({
         value={value ?? ""}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
+        className="border border-[#E3E6EC] rounded-lg px-3 py-2 text-sm"
+      />
+    </label>
+  );
+}
+
+function Textarea({
+  label,
+  value,
+  onChange,
+  required,
+  placeholder,
+  help,
+  rows = 12,
+}: {
+  label: string;
+  value: any;
+  onChange: (v: any) => void;
+  required?: boolean;
+  placeholder?: string;
+  help?: string;
+  rows?: number;
+}) {
+  return (
+    <label className="flex flex-col gap-1 text-sm text-[#1C1E26]">
+      <span className="inline-flex items-center gap-1">
+        {label} {required && <span className="text-red-500">*</span>}
+        {help && (
+          <span className="relative inline-flex items-center text-[#9CA3AF] cursor-help group">
+            <span className="inline-flex items-center justify-center w-4 h-4 rounded-full border border-[#D1D5DB] text-[10px]">?</span>
+            <span className="pointer-events-none absolute left-5 top-0 translate-y-1 w-64 rounded-md border border-[#E3E6EC] bg-white px-2 py-1 text-[11px] text-[#6b7280] shadow-sm opacity-0 transition-opacity group-hover:opacity-100 whitespace-pre-line">
+              {help}
+            </span>
+          </span>
+        )}
+      </span>
+      <textarea
+        value={value ?? ""}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
+        rows={rows}
         className="border border-[#E3E6EC] rounded-lg px-3 py-2 text-sm"
       />
     </label>

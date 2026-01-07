@@ -771,27 +771,32 @@ export default function AdminOnboardingDetailPage() {
                     label="소셜매치 알림톡"
                     value={adminStadium.social_message || ""}
                     onChange={(v) => setAdminStadium({ ...adminStadium, social_message: v })}
+                    help={"매치 확정 후 참여자 연락처로 안내되는 내용입니다."}
                   />
                   <EditableInput
                     label="매니저 특이사항"
                     value={adminStadium.manager_note || ""}
                     onChange={(v) => setAdminStadium({ ...adminStadium, manager_note: v })}
+                    help={"매니저 앱에서 매치 선택 전 노출됩니다."}
                   />
                   <div className="border-t border-[#E3E6EC] pt-3 text-sm font-semibold text-[#111827]">구장 예약</div>
                   <EditableInput
                     label="대관 특이사항"
                     value={adminStadium.rental_note || ""}
                     onChange={(v) => setAdminStadium({ ...adminStadium, rental_note: v })}
+                    help={"구장 예약 신청 페이지에서 노출됩니다."}
                   />
                   <EditableInput
                     label="꼭 지켜주세요"
                     value={adminStadium.rental_warning || ""}
                     onChange={(v) => setAdminStadium({ ...adminStadium, rental_warning: v })}
+                    help={"구장 예약 신청 페이지에서 노출됩니다."}
                   />
                   <EditableInput
                     label="대관 알림"
                     value={adminStadium.rental_message || ""}
                     onChange={(v) => setAdminStadium({ ...adminStadium, rental_message: v })}
+                    help={"구장 예약 신청 후 신청자 연락처로 안내되는 내용입니다."}
                   />
                   <div className="grid md:grid-cols-2 gap-3">
                     <EditableSelect
