@@ -922,11 +922,11 @@ export default function AdminOnboardingDetailPage() {
                   )}
                 </div>
                 <div className="text-sm text-[#374151] space-y-2">
-                  <div className="font-semibold">희망 운영 시간</div>
+                  <div className="font-semibold">운영 불가 시간</div>
                   <div className="border border-[#E3E6EC] rounded-lg px-3 py-2 bg-[#F9FAFB] min-h-[48px]">
                     {adminStadium.hoped_times_note && adminStadium.hoped_times_note.trim().length > 0
                       ? adminStadium.hoped_times_note
-                      : "구장주가 입력한 희망 시간이 없습니다."}
+                      : "구장주가 입력한 운영 불가 시간이 없습니다."}
                   </div>
                 </div>
 
