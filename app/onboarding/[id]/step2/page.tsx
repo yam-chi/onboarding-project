@@ -277,7 +277,7 @@ type StadiumInfo = {
   shower_memo?: string | null;
   shoes_available?: boolean;
   shoes_memo?: string | null;
-  toilet_available?: boolean;
+  toilet_type?: string | null;
   toilet_memo?: string | null;
   drinks_available?: boolean;
   drinks_memo?: string | null;
@@ -535,7 +535,9 @@ export default function Step2Page() {
             <Input
               label="무료 주차 대수"
               value={stadium.parking_count ?? ""}
-              onChange={(v) => handleStadium("parking_count", Number(v) || null)}
+              onChange={(v) =>
+                handleStadium("parking_count", v === "" ? null : Number(v))
+              }
               help={"주차 어려움이 없다면 0으로 적어주세요."}
             />
             <Input label="주차 등록 연락처" value={stadium.parking_contact || ""} onChange={(v) => handleStadium("parking_contact", v)} />
@@ -573,9 +575,9 @@ export default function Step2Page() {
             <div className="grid md:grid-cols-[30%_70%] gap-3">
               <Select
                 label="화장실"
-                value={stadium.toilet_available === true ? "예" : stadium.toilet_available === false ? "아니오" : ""}
-                onChange={(v) => handleStadium("toilet_available", v === "" ? null : v === "예")}
-                options={["예", "아니오"]}
+                value={stadium.toilet_type || ""}
+                onChange={(v) => handleStadium("toilet_type", v === "" ? null : v)}
+                options={["남녀구분", "남녀공용", "아니요"]}
                 placeholder="선택하세요"
               />
               <Input
@@ -613,20 +615,22 @@ export default function Step2Page() {
               help={"소셜 신청 페이지에만 노출됩니다."}
               note="아래 가이드를 참고하여 소셜매치 특이사항을 입력해주세요. 따로 내용이 없다면 삭제하셔도 됩니다."
             />
-            <div className="max-w-[420px]">
-              <Input
+            <div>
+              <Textarea
                 label="소셜매치 알림톡"
                 value={stadium.social_message || ""}
                 onChange={(v) => handleStadium("social_message", v)}
                 help={"매치 확정 후 참여자 연락처로 안내되는 내용입니다."}
+                rows={4}
               />
             </div>
-            <div className="max-w-[420px]">
-              <Input
+            <div>
+              <Textarea
                 label="매니저 특이사항"
                 value={stadium.manager_note || ""}
                 onChange={(v) => handleStadium("manager_note", v)}
                 help={"매니저 앱에서 매치 선택 전 노출됩니다."}
+                rows={4}
               />
             </div>
           </div>
@@ -634,24 +638,27 @@ export default function Step2Page() {
 
         <section className="bg-white border border-[#E3E6EC] rounded-xl shadow-sm p-6 space-y-4">
           <h2 className="text-lg font-semibold text-[#111827]">구장 예약 정보</h2>
-          <div className="flex flex-col gap-3 max-w-[420px]">
-            <Input
+          <div className="flex flex-col gap-3">
+            <Textarea
               label="대관 특이사항"
               value={stadium.rental_note || ""}
               onChange={(v) => handleStadium("rental_note", v)}
               help={"구장 예약 신청 페이지에서 노출됩니다."}
+              rows={4}
             />
-            <Input
+            <Textarea
               label="꼭 지켜주세요"
               value={stadium.rental_warning || ""}
               onChange={(v) => handleStadium("rental_warning", v)}
               help={"구장 예약 신청 페이지에서 노출됩니다."}
+              rows={4}
             />
-            <Input
+            <Textarea
               label="구장 예약 알림톡"
               value={stadium.rental_message || ""}
               onChange={(v) => handleStadium("rental_message", v)}
               help={"구장 예약 신청 후 신청자 연락처로 안내되는 내용입니다."}
+              rows={4}
             />
             <div className="grid md:grid-cols-[30%_70%] gap-3">
               <Select

@@ -61,7 +61,7 @@ type StadiumInfo = {
   shower_memo?: string | null;
   shoes_available?: boolean | null;
   shoes_memo?: string | null;
-  toilet_available?: boolean | null;
+  toilet_type?: string | null;
   toilet_memo?: string | null;
   drinks_available?: boolean | null;
   drinks_memo?: string | null;
@@ -671,7 +671,12 @@ export default function AdminOnboardingDetailPage() {
                   <EditableInput
                     label="무료 주차 대수"
                     value={adminStadium.parking_count ?? ""}
-                    onChange={(v) => setAdminStadium({ ...adminStadium, parking_count: Number(v) || null })}
+                    onChange={(v) =>
+                      setAdminStadium({
+                        ...adminStadium,
+                        parking_count: v === "" ? null : Number(v),
+                      })
+                    }
                     help={"주차 어려움이 없다면 0으로 적어주세요."}
                   />
                   <EditableInput
@@ -725,12 +730,12 @@ export default function AdminOnboardingDetailPage() {
                   <div className="grid md:grid-cols-2 gap-3">
                     <EditableSelect
                       label="화장실"
-                      value={adminStadium?.toilet_available === true ? "예" : adminStadium?.toilet_available === false ? "아니오" : ""}
-                      options={["예", "아니오"]}
+                      value={adminStadium?.toilet_type || ""}
+                      options={["남녀구분", "남녀공용", "아니요"]}
                       onChange={(v) =>
                         setAdminStadium({
                           ...adminStadium,
-                          toilet_available: v === "" ? null : v === "예",
+                          toilet_type: v === "" ? null : v,
                         })
                       }
                     />
@@ -766,18 +771,21 @@ export default function AdminOnboardingDetailPage() {
                     value={adminStadium.social_special || ""}
                     onChange={(v) => setAdminStadium({ ...adminStadium, social_special: v })}
                     help={"소셜 신청 페이지에만 노출됩니다."}
+                    multiline
                   />
                   <EditableInput
                     label="소셜매치 알림톡"
                     value={adminStadium.social_message || ""}
                     onChange={(v) => setAdminStadium({ ...adminStadium, social_message: v })}
                     help={"매치 확정 후 참여자 연락처로 안내되는 내용입니다."}
+                    multiline
                   />
                   <EditableInput
                     label="매니저 특이사항"
                     value={adminStadium.manager_note || ""}
                     onChange={(v) => setAdminStadium({ ...adminStadium, manager_note: v })}
                     help={"매니저 앱에서 매치 선택 전 노출됩니다."}
+                    multiline
                   />
                   <div className="border-t border-[#E3E6EC] pt-3 text-sm font-semibold text-[#111827]">구장 예약</div>
                   <EditableInput
@@ -785,18 +793,21 @@ export default function AdminOnboardingDetailPage() {
                     value={adminStadium.rental_note || ""}
                     onChange={(v) => setAdminStadium({ ...adminStadium, rental_note: v })}
                     help={"구장 예약 신청 페이지에서 노출됩니다."}
+                    multiline
                   />
                   <EditableInput
                     label="꼭 지켜주세요"
                     value={adminStadium.rental_warning || ""}
                     onChange={(v) => setAdminStadium({ ...adminStadium, rental_warning: v })}
                     help={"구장 예약 신청 페이지에서 노출됩니다."}
+                    multiline
                   />
                   <EditableInput
                     label="대관 알림"
                     value={adminStadium.rental_message || ""}
                     onChange={(v) => setAdminStadium({ ...adminStadium, rental_message: v })}
                     help={"구장 예약 신청 후 신청자 연락처로 안내되는 내용입니다."}
+                    multiline
                   />
                   <div className="grid md:grid-cols-2 gap-3">
                     <EditableSelect
@@ -1052,12 +1063,14 @@ function EditableInput({
   onChange,
   placeholder,
   help,
+  multiline,
 }: {
   label: string;
   value: string | number | null | undefined;
   onChange: (v: string) => void;
   placeholder?: string;
   help?: string;
+  multiline?: boolean;
 }) {
   return (
     <label className="flex flex-col gap-1 text-xs text-[#6b7280]">
@@ -1072,12 +1085,22 @@ function EditableInput({
           </span>
         )}
       </span>
-      <input
-        value={value ?? ""}
-        onChange={(e) => onChange(e.target.value)}
-        placeholder={placeholder}
-        className="border border-[#E3E6EC] rounded-lg px-3 py-2 text-sm text-[#111827]"
-      />
+      {multiline ? (
+        <textarea
+          value={value ?? ""}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder={placeholder}
+          rows={4}
+          className="border border-[#E3E6EC] rounded-lg px-3 py-2 text-sm text-[#111827] whitespace-pre-wrap resize-y"
+        />
+      ) : (
+        <input
+          value={value ?? ""}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder={placeholder}
+          className="border border-[#E3E6EC] rounded-lg px-3 py-2 text-sm text-[#111827]"
+        />
+      )}
     </label>
   );
 }

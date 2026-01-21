@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { supabaseClient } from "@/lib/supabaseClient";
 
+export const runtime = "nodejs";
+
 // 간단 조회용 관리자 리스트 API (권한 가드는 추후 Auth 붙일 때 보완)
 export async function GET() {
   try {
@@ -23,6 +25,14 @@ export async function GET() {
 
     return NextResponse.json({ items: data ?? [] });
   } catch (e: any) {
-    return NextResponse.json({ error: e.message ?? "server_error" }, { status: 500 });
+    const cause = e?.cause?.message || e?.cause || null;
+    const message = e?.message ?? "server_error";
+    const debug = {
+      url: process.env.NEXT_PUBLIC_SUPABASE_URL || null,
+      keyLen: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.length || 0,
+      hasFetch: typeof fetch === "function",
+    };
+    console.error("[admin/onboarding] fetch error:", message, cause, debug);
+    return NextResponse.json({ error: message, cause, debug }, { status: 500 });
   }
 }
