@@ -605,7 +605,7 @@ export default function AdminOnboardingDetailPage() {
                       />
                     </label>
                   </div>
-                  <div className="text-[11px] text-[#9CA3AF]">세팅 완료 처리 시 함께 저장됩니다.</div>
+                  <div className="text-[11px] text-[#9CA3AF]">수정 내용 저장 시 함께 저장됩니다.</div>
                 </div>
                 <div className="flex flex-col gap-3 text-sm text-[#374151]">
                   <EditableInput label="지역" value={adminStadium.region || ""} onChange={(v) => setAdminStadium({ ...adminStadium, region: v })} />
@@ -961,6 +961,13 @@ export default function AdminOnboardingDetailPage() {
                           });
                           const json = await res.json();
                           if (!res.ok) throw new Error(json?.error || "저장 실패");
+                          const accountRes = await fetch(`/api/onboarding/${id}`, {
+                            method: "PATCH",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ final_account: finalAccount, final_password: finalPassword }),
+                          });
+                          const accountJson = await accountRes.json().catch(() => ({}));
+                          if (!accountRes.ok) throw new Error(accountJson?.error || "계정 정보 저장 실패");
                           setStadiumSaveMsg("저장되었습니다. 구장주 화면에도 반영되었습니다.");
                           loadStadiumInfo();
                         } catch (e: any) {

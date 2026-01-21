@@ -44,3 +44,30 @@ export async function GET(_req: NextRequest, context: { params: Promise<{ id: st
     return NextResponse.json({ error: e.message ?? "server_error" }, { status: 500 });
   }
 }
+
+export async function PATCH(req: NextRequest, context: { params: Promise<{ id: string }> }) {
+  try {
+    if (!supabaseClient) throw new Error("Supabase 설정이 필요합니다.");
+    const { id } = await context.params;
+    if (!id || !uuidRegex.test(id)) {
+      return NextResponse.json({ error: "invalid_id" }, { status: 400 });
+    }
+    const body = await req.json().catch(() => ({}));
+    const { final_account, final_password } = body || {};
+    const payload: Record<string, string | null> = {};
+    if (typeof final_account === "string") {
+      payload.final_account = final_account.trim() || null;
+    }
+    if (typeof final_password === "string") {
+      payload.final_password = final_password.trim() || null;
+    }
+    if (Object.keys(payload).length === 0) {
+      return NextResponse.json({ ok: true });
+    }
+    const { error } = await supabaseClient.from("onboarding_requests").update(payload).eq("id", id);
+    if (error) throw error;
+    return NextResponse.json({ ok: true });
+  } catch (e: any) {
+    return NextResponse.json({ error: e.message ?? "server_error" }, { status: 500 });
+  }
+}

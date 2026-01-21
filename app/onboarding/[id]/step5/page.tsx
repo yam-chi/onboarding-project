@@ -21,12 +21,12 @@ export default function OnboardingCompletePage() {
     (async () => {
       if (!id) return;
       try {
-        const res = await fetch(`/api/onboarding/${id}/step5`);
+        const res = await fetch(`/api/onboarding/${id}`);
         const json = await res.json();
         if (!res.ok) throw new Error(json?.error || "불러오기 실패");
         if (!mounted) return;
-        setAccount(json.final_account ?? null);
-        setPassword(json.final_password ?? null);
+        setAccount(json.onboarding?.final_account ?? null);
+        setPassword(json.onboarding?.final_password ?? null);
       } catch {
         // 실패 시 무시하고 기본 안내만 표시
       }
@@ -49,21 +49,37 @@ export default function OnboardingCompletePage() {
         <section className="grid gap-4">
           <InfoCard
             title="구장 관리 페이지"
-            items={[
-              "아래 버튼으로 접속해 매치 세팅 시간과 운영 현황을 확인할 수 있습니다.",
-              "계정 분실 시 문의 채널로 연락주세요.",
-              `계정 정보 ID: ${account || "담당자 입력 후 표시됩니다"} / PW: ${password || "담당자 입력 후 표시됩니다"}`,
-            ]}
-            action={
-              <Link
-                href={manageUrl}
-                className="inline-flex items-center justify-center px-4 py-2 rounded-lg text-white font-semibold bg-[#1C5DFF]"
-                target={manageUrl.startsWith("http") ? "_blank" : undefined}
-              >
-                구장 관리 페이지 접속
-              </Link>
-            }
-          />
+          >
+            <div className="space-y-2 text-sm text-[#4b5563]">
+              <div className="rounded-lg border border-[#E3E6EC] bg-[#F7F9FC] p-3 space-y-2">
+                <div className="font-semibold text-[#111827]">계정 정보</div>
+                <div className="space-y-1">
+                  <div>
+                    ID :{" "}
+                    <span className="font-semibold text-[#1C5DFF]">
+                      {account || "담당자 입력 후 표시됩니다"}
+                    </span>
+                  </div>
+                  <div>
+                    PW :{" "}
+                    <span className="font-semibold text-[#1C5DFF]">
+                      {password || "담당자 입력 후 표시됩니다"}
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <p>아래 버튼으로 접속해 매치 세팅 시간과 운영 현황을 확인할 수 있습니다. (계정 분실 시 문의 채널로 연락주세요.)</p>
+              <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+                <Link
+                  href={manageUrl}
+                  className="inline-flex items-center justify-center px-4 py-2 rounded-lg text-white font-semibold bg-[#1C5DFF]"
+                  target={manageUrl.startsWith("http") ? "_blank" : undefined}
+                >
+                  구장 관리 페이지 접속
+                </Link>
+              </div>
+            </div>
+          </InfoCard>
 
           <InfoCard
             title="문의 채널(카카오/채널톡)"
@@ -119,19 +135,24 @@ function InfoCard({
   title,
   items,
   action,
+  children,
 }: {
   title: string;
-  items: string[];
+  items?: React.ReactNode[];
   action?: React.ReactNode;
+  children?: React.ReactNode;
 }) {
   return (
     <div className="bg-white border border-[#E3E6EC] rounded-xl shadow-sm p-4 space-y-3">
       <div className="text-lg font-semibold text-[#111827]">{title}</div>
-      <ul className="list-disc list-inside space-y-1 text-sm text-[#4b5563]">
-        {items.map((it, idx) => (
-          <li key={idx}>{it}</li>
-        ))}
-      </ul>
+      {items && items.length > 0 && (
+        <ul className="list-disc list-inside space-y-1 text-sm text-[#4b5563]">
+          {items.map((it, idx) => (
+            <li key={idx}>{it}</li>
+          ))}
+        </ul>
+      )}
+      {children}
       {action && <div className="pt-1">{action}</div>}
     </div>
   );
