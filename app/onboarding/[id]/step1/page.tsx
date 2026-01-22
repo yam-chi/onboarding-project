@@ -853,9 +853,10 @@ export default function Step1SettlementPage() {
 
         <section className="bg-white border border-[#E3E6EC] rounded-xl shadow-sm p-6 space-y-4">
           <h2 className="text-sm font-semibold text-[#111827] flex flex-wrap items-center gap-2">
-            <span>약관 확인</span>
-            <span className="text-[11px] font-normal text-[#6b7280]">
-              운영에 있어 불이익이 생기지 않도록 약관 내용은 꼼꼼히 확인해 주세요. (특히 취소, 보상 정책은 미확인 하실 경우 정산 금액에 큰 영향을 끼칠 수 있습니다.)
+            <span className="text-2xl font-bold">약관 확인</span>
+            <span className="text-[10px] font-normal text-[#DC2626] whitespace-pre-line">
+              운영에 있어 불이익이 생기지 않도록 약관 내용은 꼼꼼히 확인해 주세요.
+              {"\n"}특히 취소, 보상 정책은 미확인 하실 경우 정산 금액에 큰 영향을 끼칠 수 있습니다.
             </span>
           </h2>
           <div className="space-y-2">

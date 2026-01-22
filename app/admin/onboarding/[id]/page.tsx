@@ -619,14 +619,16 @@ export default function AdminOnboardingDetailPage() {
                     value={adminStadium.address || ""}
                     onChange={(v) => setAdminStadium({ ...adminStadium, address: v })}
                   />
-                  <EditableInput
+                  <EditableSelect
                     label="구장 유형"
                     value={adminStadium.stadium_type || ""}
+                    options={["인조잔디", "천연잔디", "인도어", "모래", "마루", "플라스틱"]}
                     onChange={(v) => setAdminStadium({ ...adminStadium, stadium_type: v })}
                   />
-                  <EditableInput
+                  <EditableSelect
                     label="실내/실외"
                     value={adminStadium.indoor_outdoor || ""}
+                    options={["실외", "실내"]}
                     onChange={(v) => setAdminStadium({ ...adminStadium, indoor_outdoor: v })}
                   />
                   <EditableInput
