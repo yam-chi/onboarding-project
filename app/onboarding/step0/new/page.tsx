@@ -188,6 +188,15 @@ export default function Step0New() {
     });
   };
 
+  const buildApiUrl = (path: string, params?: Record<string, string>) => {
+    const base = `${window.location.protocol}//${window.location.host}`;
+    const url = new URL(path, base);
+    if (params) {
+      Object.entries(params).forEach(([key, value]) => url.searchParams.set(key, value));
+    }
+    return url.toString();
+  };
+
   const uploadDoc = async (
     id: string,
     docType: "business_registration" | "bankbook" | "lease_contract",
@@ -195,9 +204,8 @@ export default function Step0New() {
   ) => {
     const formData = new FormData();
     formData.append("file", file);
-    const uploadUrl = new URL(`/api/onboarding/${id}/step3/upload`, window.location.origin);
-    uploadUrl.searchParams.set("doc_type", docType);
-    const res = await fetch(uploadUrl.toString(), {
+    const uploadUrl = buildApiUrl(`/api/onboarding/${id}/step3/upload`, { doc_type: docType });
+    const res = await fetch(uploadUrl, {
       method: "POST",
       body: formData,
     });
@@ -227,8 +235,7 @@ export default function Step0New() {
         ...form,
         facility_count: form.facility_count ? Number(form.facility_count) : null,
         };
-      const createUrl = new URL("/api/onboarding", window.location.origin);
-      const res = await fetch(createUrl.toString(), {
+      const res = await fetch(buildApiUrl("/api/onboarding"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -241,8 +248,7 @@ export default function Step0New() {
         uploadDoc(json.id, "bankbook", bankbookFile),
         uploadDoc(json.id, "lease_contract", leaseFile),
       ]);
-      const docsUrl = new URL(`/api/onboarding/${json.id}/step3`, window.location.origin);
-      const docsRes = await fetch(docsUrl.toString(), {
+      const docsRes = await fetch(buildApiUrl(`/api/onboarding/${json.id}/step3`), {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
