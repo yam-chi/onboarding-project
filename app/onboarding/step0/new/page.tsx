@@ -195,7 +195,9 @@ export default function Step0New() {
   ) => {
     const formData = new FormData();
     formData.append("file", file);
-    const res = await fetch(`/api/onboarding/${id}/step3/upload?doc_type=${docType}`, {
+    const uploadUrl = new URL(`/api/onboarding/${id}/step3/upload`, window.location.origin);
+    uploadUrl.searchParams.set("doc_type", docType);
+    const res = await fetch(uploadUrl.toString(), {
       method: "POST",
       body: formData,
     });
