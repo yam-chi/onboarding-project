@@ -227,7 +227,8 @@ export default function Step0New() {
         ...form,
         facility_count: form.facility_count ? Number(form.facility_count) : null,
         };
-      const res = await fetch("/api/onboarding", {
+      const createUrl = new URL("/api/onboarding", window.location.origin);
+      const res = await fetch(createUrl.toString(), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -240,7 +241,8 @@ export default function Step0New() {
         uploadDoc(json.id, "bankbook", bankbookFile),
         uploadDoc(json.id, "lease_contract", leaseFile),
       ]);
-      const docsRes = await fetch(`/api/onboarding/${json.id}/step3`, {
+      const docsUrl = new URL(`/api/onboarding/${json.id}/step3`, window.location.origin);
+      const docsRes = await fetch(docsUrl.toString(), {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
