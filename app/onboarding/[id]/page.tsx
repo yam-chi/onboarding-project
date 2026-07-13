@@ -453,7 +453,7 @@ export default function VenueOwnerPage() {
                       ))}
                     </div>
                     {declineReason === "기타" && (
-                      <textarea value={declineReasonDetail} onChange={(e) => setDeclineReasonDetail(e.target.value)} placeholder="자세한 이유를 입력해주세요" className="w-full border border-[#E3E6EC] rounded-xl px-3 py-2.5 text-sm resize-none h-24 focus:outline-none focus:border-[#1C5DFF]" />
+                      <textarea value={declineReasonDetail} onChange={(e) => setDeclineReasonDetail(e.target.value)} placeholder="자세한 이유를 입력해주세요" className="w-full border border-[#E3E6EC] rounded-xl px-3 py-2.5 text-sm text-[#111827] resize-none h-24 focus:outline-none focus:border-[#1C5DFF]" />
                     )}
                     <div className="flex gap-2">
                       <button type="button" onClick={() => setSettlementDecision(null)} className="flex-1 py-2.5 rounded-xl border border-[#E3E6EC] text-sm text-[#6b7280]">돌아가기</button>
@@ -486,13 +486,13 @@ export default function VenueOwnerPage() {
                         value={(venueBasic as any)[f.key]}
                         onChange={(e) => setVenueBasic((prev) => ({ ...prev, [f.key]: e.target.value }))}
                         placeholder={f.placeholder}
-                        className="w-full mt-1 border border-[#E3E6EC] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[#1C5DFF]"
+                        className="w-full mt-1 border border-[#E3E6EC] rounded-xl px-3 py-2.5 text-sm text-[#111827] focus:outline-none focus:border-[#1C5DFF]"
                       />
                     </div>
                   ))}
                   <div>
                     <label className="text-xs font-semibold text-[#374151]">지역</label>
-                    <select value={venueBasic.region} onChange={(e) => setVenueBasic((f) => ({ ...f, region: e.target.value }))} className="w-full mt-1 border border-[#E3E6EC] rounded-xl px-3 py-2.5 text-sm">
+                    <select value={venueBasic.region} onChange={(e) => setVenueBasic((f) => ({ ...f, region: e.target.value }))} className="w-full mt-1 border border-[#E3E6EC] rounded-xl px-3 py-2.5 text-sm text-[#111827]">
                       <option value="">선택</option>
                       {REGION_OPTIONS.map((r) => <option key={r} value={r}>{r}</option>)}
                     </select>
@@ -520,7 +520,7 @@ export default function VenueOwnerPage() {
                     <div className="grid grid-cols-2 gap-3">
                       <div>
                         <label className="text-xs font-semibold text-[#374151]">운영 상태</label>
-                        <select value={venueDetail.operating_status} onChange={(e) => setVenueDetail((f) => ({ ...f, operating_status: e.target.value }))} className="w-full mt-1 border border-[#E3E6EC] rounded-xl px-3 py-2.5 text-sm">
+                        <select value={venueDetail.operating_status} onChange={(e) => setVenueDetail((f) => ({ ...f, operating_status: e.target.value }))} className="w-full mt-1 border border-[#E3E6EC] rounded-xl px-3 py-2.5 text-sm text-[#111827]">
                           <option value="">선택</option>
                           <option value="운영중">운영중</option>
                           <option value="준비중">준비중</option>
@@ -529,12 +529,12 @@ export default function VenueOwnerPage() {
                       </div>
                       <div>
                         <label className="text-xs font-semibold text-[#374151]">면 수</label>
-                        <input type="number" value={venueDetail.facility_count} onChange={(e) => setVenueDetail((f) => ({ ...f, facility_count: e.target.value }))} placeholder="예: 3" className="w-full mt-1 border border-[#E3E6EC] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[#1C5DFF]" />
+                        <input type="number" value={venueDetail.facility_count} onChange={(e) => setVenueDetail((f) => ({ ...f, facility_count: e.target.value }))} placeholder="예: 3" className="w-full mt-1 border border-[#E3E6EC] rounded-xl px-3 py-2.5 text-sm text-[#111827] focus:outline-none focus:border-[#1C5DFF]" />
                       </div>
                     </div>
                     <div>
                       <label className="text-xs font-semibold text-[#374151]">규격/실내외</label>
-                      <input value={venueDetail.size_info} onChange={(e) => setVenueDetail((f) => ({ ...f, size_info: e.target.value }))} placeholder="예: 실내 풋살 5인제" className="w-full mt-1 border border-[#E3E6EC] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[#1C5DFF]" />
+                      <input value={venueDetail.size_info} onChange={(e) => setVenueDetail((f) => ({ ...f, size_info: e.target.value }))} placeholder="예: 실내 풋살 5인제" className="w-full mt-1 border border-[#E3E6EC] rounded-xl px-3 py-2.5 text-sm text-[#111827] focus:outline-none focus:border-[#1C5DFF]" />
                     </div>
                     <div>
                       <label className="text-xs font-semibold text-[#374151]">희망 서비스</label>
@@ -549,7 +549,7 @@ export default function VenueOwnerPage() {
                     </div>
                     <div>
                       <label className="text-xs font-semibold text-[#374151]">공지사항</label>
-                      <textarea value={venueDetail.notice} onChange={(e) => setVenueDetail((f) => ({ ...f, notice: e.target.value }))} placeholder="구장 공지사항을 입력해주세요" className="w-full mt-1 border border-[#E3E6EC] rounded-xl px-3 py-2.5 text-sm resize-none h-20 focus:outline-none focus:border-[#1C5DFF]" />
+                      <textarea value={venueDetail.notice} onChange={(e) => setVenueDetail((f) => ({ ...f, notice: e.target.value }))} placeholder="구장 공지사항을 입력해주세요" className="w-full mt-1 border border-[#E3E6EC] rounded-xl px-3 py-2.5 text-sm text-[#111827] resize-none h-20 focus:outline-none focus:border-[#1C5DFF]" />
                     </div>
                   </div>
 
@@ -559,7 +559,7 @@ export default function VenueOwnerPage() {
                     <div className="grid grid-cols-2 gap-3">
                       <div>
                         <label className="text-xs font-semibold text-[#374151]">주차 가능</label>
-                        <select value={venueDetail.parking_available} onChange={(e) => setVenueDetail((f) => ({ ...f, parking_available: e.target.value }))} className="w-full mt-1 border border-[#E3E6EC] rounded-xl px-3 py-2.5 text-sm">
+                        <select value={venueDetail.parking_available} onChange={(e) => setVenueDetail((f) => ({ ...f, parking_available: e.target.value }))} className="w-full mt-1 border border-[#E3E6EC] rounded-xl px-3 py-2.5 text-sm text-[#111827]">
                           <option value="">선택</option>
                           <option value="가능">가능</option>
                           <option value="불가">불가</option>
@@ -568,7 +568,7 @@ export default function VenueOwnerPage() {
                       </div>
                       <div>
                         <label className="text-xs font-semibold text-[#374151]">무료 주차</label>
-                        <select value={venueDetail.parking_free === null ? "" : venueDetail.parking_free ? "예" : "아니오"} onChange={(e) => setVenueDetail((f) => ({ ...f, parking_free: e.target.value === "" ? null : e.target.value === "예" }))} className="w-full mt-1 border border-[#E3E6EC] rounded-xl px-3 py-2.5 text-sm">
+                        <select value={venueDetail.parking_free === null ? "" : venueDetail.parking_free ? "예" : "아니오"} onChange={(e) => setVenueDetail((f) => ({ ...f, parking_free: e.target.value === "" ? null : e.target.value === "예" }))} className="w-full mt-1 border border-[#E3E6EC] rounded-xl px-3 py-2.5 text-sm text-[#111827]">
                           <option value="">선택</option>
                           <option value="예">예</option>
                           <option value="아니오">아니오</option>
@@ -576,16 +576,16 @@ export default function VenueOwnerPage() {
                       </div>
                       <div>
                         <label className="text-xs font-semibold text-[#374151]">무료 주차 대수</label>
-                        <input type="number" value={venueDetail.parking_count} onChange={(e) => setVenueDetail((f) => ({ ...f, parking_count: e.target.value }))} placeholder="예: 10" className="w-full mt-1 border border-[#E3E6EC] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[#1C5DFF]" />
+                        <input type="number" value={venueDetail.parking_count} onChange={(e) => setVenueDetail((f) => ({ ...f, parking_count: e.target.value }))} placeholder="예: 10" className="w-full mt-1 border border-[#E3E6EC] rounded-xl px-3 py-2.5 text-sm text-[#111827] focus:outline-none focus:border-[#1C5DFF]" />
                       </div>
                       <div>
                         <label className="text-xs font-semibold text-[#374151]">주차 요금</label>
-                        <input value={venueDetail.parking_fee} onChange={(e) => setVenueDetail((f) => ({ ...f, parking_fee: e.target.value }))} placeholder="예: 1시간 무료" className="w-full mt-1 border border-[#E3E6EC] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[#1C5DFF]" />
+                        <input value={venueDetail.parking_fee} onChange={(e) => setVenueDetail((f) => ({ ...f, parking_fee: e.target.value }))} placeholder="예: 1시간 무료" className="w-full mt-1 border border-[#E3E6EC] rounded-xl px-3 py-2.5 text-sm text-[#111827] focus:outline-none focus:border-[#1C5DFF]" />
                       </div>
                     </div>
                     <div>
                       <label className="text-xs font-semibold text-[#374151]">주차 등록 연락처</label>
-                      <input value={venueDetail.parking_contact} onChange={(e) => setVenueDetail((f) => ({ ...f, parking_contact: e.target.value }))} placeholder="주차 등록 연락처" className="w-full mt-1 border border-[#E3E6EC] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[#1C5DFF]" />
+                      <input value={venueDetail.parking_contact} onChange={(e) => setVenueDetail((f) => ({ ...f, parking_contact: e.target.value }))} placeholder="주차 등록 연락처" className="w-full mt-1 border border-[#E3E6EC] rounded-xl px-3 py-2.5 text-sm text-[#111827] focus:outline-none focus:border-[#1C5DFF]" />
                     </div>
                   </div>
 
@@ -600,14 +600,14 @@ export default function VenueOwnerPage() {
                       <div key={availKey} className="grid grid-cols-2 gap-3">
                         <div>
                           <label className="text-xs font-semibold text-[#374151]">{label}</label>
-                          <select value={(venueDetail as any)[availKey]} onChange={(e) => setVenueDetail((f) => ({ ...f, [availKey]: e.target.value }))} className="w-full mt-1 border border-[#E3E6EC] rounded-xl px-3 py-2.5 text-sm">
+                          <select value={(venueDetail as any)[availKey]} onChange={(e) => setVenueDetail((f) => ({ ...f, [availKey]: e.target.value }))} className="w-full mt-1 border border-[#E3E6EC] rounded-xl px-3 py-2.5 text-sm text-[#111827]">
                             <option value="">선택</option>
                             {opts.map((o) => <option key={o} value={o}>{o}</option>)}
                           </select>
                         </div>
                         <div>
                           <label className="text-xs font-semibold text-[#374151]">메모</label>
-                          <input value={(venueDetail as any)[memoKey]} onChange={(e) => setVenueDetail((f) => ({ ...f, [memoKey]: e.target.value }))} placeholder={memoPlaceholder} className="w-full mt-1 border border-[#E3E6EC] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[#1C5DFF]" />
+                          <input value={(venueDetail as any)[memoKey]} onChange={(e) => setVenueDetail((f) => ({ ...f, [memoKey]: e.target.value }))} placeholder={memoPlaceholder} className="w-full mt-1 border border-[#E3E6EC] rounded-xl px-3 py-2.5 text-sm text-[#111827] focus:outline-none focus:border-[#1C5DFF]" />
                         </div>
                       </div>
                     ))}
@@ -615,7 +615,7 @@ export default function VenueOwnerPage() {
                     <div className="grid grid-cols-2 gap-3">
                       <div>
                         <label className="text-xs font-semibold text-[#374151]">화장실</label>
-                        <select value={venueDetail.toilet_type} onChange={(e) => setVenueDetail((f) => ({ ...f, toilet_type: e.target.value }))} className="w-full mt-1 border border-[#E3E6EC] rounded-xl px-3 py-2.5 text-sm">
+                        <select value={venueDetail.toilet_type} onChange={(e) => setVenueDetail((f) => ({ ...f, toilet_type: e.target.value }))} className="w-full mt-1 border border-[#E3E6EC] rounded-xl px-3 py-2.5 text-sm text-[#111827]">
                           <option value="">선택</option>
                           <option value="남녀구분">남녀구분</option>
                           <option value="남녀공용">남녀공용</option>
@@ -624,14 +624,14 @@ export default function VenueOwnerPage() {
                       </div>
                       <div>
                         <label className="text-xs font-semibold text-[#374151]">메모</label>
-                        <input value={venueDetail.toilet_memo} onChange={(e) => setVenueDetail((f) => ({ ...f, toilet_memo: e.target.value }))} placeholder="화장실 관련 메모" className="w-full mt-1 border border-[#E3E6EC] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[#1C5DFF]" />
+                        <input value={venueDetail.toilet_memo} onChange={(e) => setVenueDetail((f) => ({ ...f, toilet_memo: e.target.value }))} placeholder="화장실 관련 메모" className="w-full mt-1 border border-[#E3E6EC] rounded-xl px-3 py-2.5 text-sm text-[#111827] focus:outline-none focus:border-[#1C5DFF]" />
                       </div>
                     </div>
                     {/* 조끼 */}
                     <div className="grid grid-cols-2 gap-3">
                       <div>
                         <label className="text-xs font-semibold text-[#374151]">조끼 제공</label>
-                        <select value={venueDetail.vest_available === null ? "" : venueDetail.vest_available ? "예" : "아니오"} onChange={(e) => setVenueDetail((f) => ({ ...f, vest_available: e.target.value === "" ? null : e.target.value === "예" }))} className="w-full mt-1 border border-[#E3E6EC] rounded-xl px-3 py-2.5 text-sm">
+                        <select value={venueDetail.vest_available === null ? "" : venueDetail.vest_available ? "예" : "아니오"} onChange={(e) => setVenueDetail((f) => ({ ...f, vest_available: e.target.value === "" ? null : e.target.value === "예" }))} className="w-full mt-1 border border-[#E3E6EC] rounded-xl px-3 py-2.5 text-sm text-[#111827]">
                           <option value="">선택</option>
                           <option value="예">예</option>
                           <option value="아니오">아니오</option>
@@ -639,14 +639,14 @@ export default function VenueOwnerPage() {
                       </div>
                       <div>
                         <label className="text-xs font-semibold text-[#374151]">메모</label>
-                        <input value={venueDetail.vest_memo} onChange={(e) => setVenueDetail((f) => ({ ...f, vest_memo: e.target.value }))} placeholder="조끼 관련 메모" className="w-full mt-1 border border-[#E3E6EC] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[#1C5DFF]" />
+                        <input value={venueDetail.vest_memo} onChange={(e) => setVenueDetail((f) => ({ ...f, vest_memo: e.target.value }))} placeholder="조끼 관련 메모" className="w-full mt-1 border border-[#E3E6EC] rounded-xl px-3 py-2.5 text-sm text-[#111827] focus:outline-none focus:border-[#1C5DFF]" />
                       </div>
                     </div>
                     {/* 공 */}
                     <div className="grid grid-cols-2 gap-3">
                       <div>
                         <label className="text-xs font-semibold text-[#374151]">공 제공</label>
-                        <select value={venueDetail.ball_available === null ? "" : venueDetail.ball_available ? "예" : "아니오"} onChange={(e) => setVenueDetail((f) => ({ ...f, ball_available: e.target.value === "" ? null : e.target.value === "예" }))} className="w-full mt-1 border border-[#E3E6EC] rounded-xl px-3 py-2.5 text-sm">
+                        <select value={venueDetail.ball_available === null ? "" : venueDetail.ball_available ? "예" : "아니오"} onChange={(e) => setVenueDetail((f) => ({ ...f, ball_available: e.target.value === "" ? null : e.target.value === "예" }))} className="w-full mt-1 border border-[#E3E6EC] rounded-xl px-3 py-2.5 text-sm text-[#111827]">
                           <option value="">선택</option>
                           <option value="예">예</option>
                           <option value="아니오">아니오</option>
@@ -654,7 +654,7 @@ export default function VenueOwnerPage() {
                       </div>
                       <div>
                         <label className="text-xs font-semibold text-[#374151]">메모</label>
-                        <input value={venueDetail.ball_memo} onChange={(e) => setVenueDetail((f) => ({ ...f, ball_memo: e.target.value }))} placeholder="공 관련 메모" className="w-full mt-1 border border-[#E3E6EC] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[#1C5DFF]" />
+                        <input value={venueDetail.ball_memo} onChange={(e) => setVenueDetail((f) => ({ ...f, ball_memo: e.target.value }))} placeholder="공 관련 메모" className="w-full mt-1 border border-[#E3E6EC] rounded-xl px-3 py-2.5 text-sm text-[#111827] focus:outline-none focus:border-[#1C5DFF]" />
                       </div>
                     </div>
                   </div>
@@ -664,20 +664,20 @@ export default function VenueOwnerPage() {
                     <p className="text-xs font-bold text-[#374151] uppercase tracking-wide">소셜매치</p>
                     <div>
                       <label className="text-xs font-semibold text-[#374151]">소셜매치 특이사항</label>
-                      <input value={venueDetail.social_special} onChange={(e) => setVenueDetail((f) => ({ ...f, social_special: e.target.value }))} placeholder="소셜매치 특이사항" className="w-full mt-1 border border-[#E3E6EC] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[#1C5DFF]" />
+                      <input value={venueDetail.social_special} onChange={(e) => setVenueDetail((f) => ({ ...f, social_special: e.target.value }))} placeholder="소셜매치 특이사항" className="w-full mt-1 border border-[#E3E6EC] rounded-xl px-3 py-2.5 text-sm text-[#111827] focus:outline-none focus:border-[#1C5DFF]" />
                     </div>
                     <div>
                       <label className="text-xs font-semibold text-[#374151]">소셜매치 알림톡</label>
-                      <input value={venueDetail.social_message} onChange={(e) => setVenueDetail((f) => ({ ...f, social_message: e.target.value }))} placeholder="소셜매치 알림톡 내용" className="w-full mt-1 border border-[#E3E6EC] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[#1C5DFF]" />
+                      <input value={venueDetail.social_message} onChange={(e) => setVenueDetail((f) => ({ ...f, social_message: e.target.value }))} placeholder="소셜매치 알림톡 내용" className="w-full mt-1 border border-[#E3E6EC] rounded-xl px-3 py-2.5 text-sm text-[#111827] focus:outline-none focus:border-[#1C5DFF]" />
                     </div>
                     <div>
                       <label className="text-xs font-semibold text-[#374151]">매니저 특이사항</label>
-                      <input value={venueDetail.manager_note} onChange={(e) => setVenueDetail((f) => ({ ...f, manager_note: e.target.value }))} placeholder="매니저 특이사항" className="w-full mt-1 border border-[#E3E6EC] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[#1C5DFF]" />
+                      <input value={venueDetail.manager_note} onChange={(e) => setVenueDetail((f) => ({ ...f, manager_note: e.target.value }))} placeholder="매니저 특이사항" className="w-full mt-1 border border-[#E3E6EC] rounded-xl px-3 py-2.5 text-sm text-[#111827] focus:outline-none focus:border-[#1C5DFF]" />
                     </div>
                     <div>
                       <label className="text-xs font-semibold text-[#374151]">운영 불가 시간</label>
                       <p className="text-xs text-[#9CA3AF] mt-0.5">소셜 매치 배정이 어려운 시간대를 알려주세요.</p>
-                      <textarea value={venueDetail.hoped_times_note} onChange={(e) => setVenueDetail((f) => ({ ...f, hoped_times_note: e.target.value }))} placeholder="예: 평일 오전 6시~9시, 주말 오후 3시~5시" className="w-full mt-1 border border-[#E3E6EC] rounded-xl px-3 py-2.5 text-sm resize-none h-20 focus:outline-none focus:border-[#1C5DFF]" />
+                      <textarea value={venueDetail.hoped_times_note} onChange={(e) => setVenueDetail((f) => ({ ...f, hoped_times_note: e.target.value }))} placeholder="예: 평일 오전 6시~9시, 주말 오후 3시~5시" className="w-full mt-1 border border-[#E3E6EC] rounded-xl px-3 py-2.5 text-sm text-[#111827] resize-none h-20 focus:outline-none focus:border-[#1C5DFF]" />
                     </div>
                   </div>
 
@@ -686,15 +686,15 @@ export default function VenueOwnerPage() {
                     <p className="text-xs font-bold text-[#374151] uppercase tracking-wide">대관</p>
                     <div>
                       <label className="text-xs font-semibold text-[#374151]">대관 특이사항</label>
-                      <input value={venueDetail.rental_note} onChange={(e) => setVenueDetail((f) => ({ ...f, rental_note: e.target.value }))} placeholder="대관 특이사항" className="w-full mt-1 border border-[#E3E6EC] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[#1C5DFF]" />
+                      <input value={venueDetail.rental_note} onChange={(e) => setVenueDetail((f) => ({ ...f, rental_note: e.target.value }))} placeholder="대관 특이사항" className="w-full mt-1 border border-[#E3E6EC] rounded-xl px-3 py-2.5 text-sm text-[#111827] focus:outline-none focus:border-[#1C5DFF]" />
                     </div>
                     <div>
                       <label className="text-xs font-semibold text-[#374151]">꼭 지켜주세요</label>
-                      <input value={venueDetail.rental_warning} onChange={(e) => setVenueDetail((f) => ({ ...f, rental_warning: e.target.value }))} placeholder="꼭 지켜야 할 사항" className="w-full mt-1 border border-[#E3E6EC] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[#1C5DFF]" />
+                      <input value={venueDetail.rental_warning} onChange={(e) => setVenueDetail((f) => ({ ...f, rental_warning: e.target.value }))} placeholder="꼭 지켜야 할 사항" className="w-full mt-1 border border-[#E3E6EC] rounded-xl px-3 py-2.5 text-sm text-[#111827] focus:outline-none focus:border-[#1C5DFF]" />
                     </div>
                     <div>
                       <label className="text-xs font-semibold text-[#374151]">구장 예약 알림톡</label>
-                      <input value={venueDetail.rental_message} onChange={(e) => setVenueDetail((f) => ({ ...f, rental_message: e.target.value }))} placeholder="구장 예약 알림톡 내용" className="w-full mt-1 border border-[#E3E6EC] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[#1C5DFF]" />
+                      <input value={venueDetail.rental_message} onChange={(e) => setVenueDetail((f) => ({ ...f, rental_message: e.target.value }))} placeholder="구장 예약 알림톡 내용" className="w-full mt-1 border border-[#E3E6EC] rounded-xl px-3 py-2.5 text-sm text-[#111827] focus:outline-none focus:border-[#1C5DFF]" />
                     </div>
                   </div>
                 </div>
