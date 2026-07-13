@@ -4,11 +4,15 @@ const nextConfig: NextConfig = {
   turbopack: {
     root: __dirname,
   },
+  experimental: {
+    serverActions: {
+      bodySizeLimit: "20mb",
+    },
+  },
   images: {
     remotePatterns: [
       { protocol: "https", hostname: "images.unsplash.com" },
-      { protocol: "https", hostname: "zevvgyhzpyuqchyxjviz.supabase.co" },
-      { protocol: "https", hostname: "ndayxojdgsolszqamzbq.supabase.co" },
+      { protocol: "https", hostname: "bnexrnhumckrdzflaxuq.supabase.co" },
     ],
   },
 };

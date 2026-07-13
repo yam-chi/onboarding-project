@@ -1,1035 +1,520 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
-import Image from "next/image";
-import { OnboardingState, statusToLabel, statusToPath } from "@/lib/onboarding";
 
-type OnboardingRow = {
+type SectionKey = "terms" | "settlement" | "venue_basic" | "venue_detail" | "documents" | "photos";
+
+const ALL_SECTIONS: { key: SectionKey; label: string }[] = [
+  { key: "terms", label: "약관 동의" },
+  { key: "settlement", label: "정산료 확인" },
+  { key: "venue_detail", label: "구장 상세 정보" },
+  { key: "documents", label: "서류 업로드" },
+  { key: "photos", label: "구장 사진 업로드" },
+];
+
+const DAYS = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"] as const;
+const DAY_LABELS: Record<string, string> = { mon: "월", tue: "화", wed: "수", thu: "목", fri: "금", sat: "토", sun: "일" };
+const HOURS = Array.from({ length: 18 }, (_, i) => String(i + 6).padStart(2, "0"));
+
+type CourtRate = {
   id: string;
-  step_status: OnboardingState;
-  owner_name?: string | null;
-  owner_email?: string | null;
-  contact?: string | null;
-  temp_code?: string | null;
+  name: string;
+  player_count: number;
+  base_fee: number;
+  rates: Record<string, Record<string, number | null>>;
+};
+
+type OnboardingData = {
+  id: string;
+  stadium_name?: string | null;
+  manager?: string | null;
+  venue_type?: string | null;
   region?: string | null;
+  settlement_rate?: string | null;
+  settlement_rate_data?: CourtRate[] | null;
+  step_status?: string | null;
+  sections?: { key: SectionKey; order: number }[];
+  completed_sections?: SectionKey[];
+  settlement_decision?: string | null;
+  decline_reason?: string | null;
+  decline_reason_detail?: string | null;
+  owner_name?: string | null;
+  contact?: string | null;
   address?: string | null;
   address_detail?: string | null;
   operating_status?: string | null;
-  facility_count?: string | null;
+  facility_count?: number | null;
   size_info?: string | null;
   service_types?: string[] | null;
-  other_services?: string | null;
-  memo?: string | null;
-  source?: string | null;
-  updated_at?: string | null;
-  stadium_name?: string | null;
-  final_account?: string | null;
-  final_password?: string | null;
-};
-
-type Proposal = {
-  id: string;
-  title: string;
-  description: string | null;
-  image_urls: string[] | null;
-  created_at: string;
-};
-
-type DocRow = { doc_type: string; file_url: string; uploaded_at: string };
-
-type StadiumInfo = {
-  region?: string;
-  home_filter_region?: string;
-  stadium_name?: string;
-  address?: string;
-  address_detail?: string;
-  account_email?: string;
-  stadium_type?: string;
-  indoor_outdoor?: string;
-  artificial_grass?: boolean;
-  stadium_contact?: string;
-  laundry_contact?: string;
-  notice?: string;
-  parking_available?: boolean | null;
+  parking_available?: string | null;
   parking_free?: boolean | null;
   parking_count?: number | null;
   parking_contact?: string | null;
   parking_fee?: string | null;
-  shower_available?: boolean | null;
+  shower_available?: string | null;
   shower_memo?: string | null;
-  shoes_available?: boolean | null;
+  shoes_available?: string | null;
   shoes_memo?: string | null;
   toilet_type?: string | null;
   toilet_memo?: string | null;
-  drinks_available?: boolean | null;
+  drinks_available?: string | null;
   drinks_memo?: string | null;
+  vest_available?: boolean | null;
+  vest_memo?: string | null;
+  ball_available?: boolean | null;
+  ball_memo?: string | null;
+  notice?: string | null;
   social_special?: string | null;
   social_message?: string | null;
   manager_note?: string | null;
   rental_note?: string | null;
   rental_warning?: string | null;
   rental_message?: string | null;
-  vest_available?: boolean | null;
-  vest_memo?: string | null;
-  ball_available?: boolean | null;
-  ball_memo?: string | null;
   hoped_times_note?: string | null;
+  document_urls?: Record<string, string> | null;
+  photo_urls?: string[] | null;
+  updated_at?: string | null;
 };
-
-type CourtInfo = {
-  court_name?: string;
-  capacity?: number | null;
-  size_x?: number | null;
-  size_y?: number | null;
-  floor_type?: string;
-  indoor_outdoor?: string;
-  sort_order?: number | null;
-};
-
-type TimeRow = { day_of_week: string; start_time: string; end_time: string; note?: string | null };
 
 export default function AdminOnboardingDetailPage() {
   const params = useParams<{ id: string }>();
-  const rawId = params?.id;
-  const id = Array.isArray(rawId) ? rawId[0] : rawId;
+  const id = Array.isArray(params?.id) ? params.id[0] : params?.id;
 
-  const [info, setInfo] = useState<OnboardingRow | null>(null);
+  const [data, setData] = useState<OnboardingData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [banner, setBanner] = useState<string | null>(null);
-  const [saving, setSaving] = useState(false);
-  const [rejectionMemo, setRejectionMemo] = useState("");
-  const [settlementTitle, setSettlementTitle] = useState("");
-  const [settlementDesc, setSettlementDesc] = useState("");
-  const [settlementImages, setSettlementImages] = useState("");
-  const [settlementPreviews, setSettlementPreviews] = useState<string[]>([]);
-  const [proposals, setProposals] = useState<Proposal[]>([]);
-  const [editingProposalId, setEditingProposalId] = useState<string | null>(null);
-  const [editTitle, setEditTitle] = useState("");
-  const [editDesc, setEditDesc] = useState("");
-  const [editing, setEditing] = useState(false);
-  // stadiumInfo/courtInfo는 admin 편집 폼으로 대체되었으므로 사용하지 않음(legacy)
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [stadiumInfo, setStadiumInfo] = useState<StadiumInfo | null>(null);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [courtInfo, setCourtInfo] = useState<CourtInfo[]>([]);
-  const [adminStadium, setAdminStadium] = useState<StadiumInfo | null>(null);
-  const [adminCourts, setAdminCourts] = useState<CourtInfo[]>([]);
-  const [stadiumSaveMsg, setStadiumSaveMsg] = useState<string | null>(null);
-  const [stadiumSaveErr, setStadiumSaveErr] = useState<string | null>(null);
-  const [step1ApproveMsg, setStep1ApproveMsg] = useState<string | null>(null);
-  const [stadiumSaving, setStadiumSaving] = useState(false);
-  const [businessUrl, setBusinessUrl] = useState<string | null>(null);
-  const [bankbookUrl, setBankbookUrl] = useState<string | null>(null);
-  const [leaseUrl, setLeaseUrl] = useState<string | null>(null);
-  const [times, setTimes] = useState<TimeRow[]>([]);
-  const [uploading, setUploading] = useState(false);
-  const [deletingId, setDeletingId] = useState<string | null>(null);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
-  const [finalAccount, setFinalAccount] = useState("");
-  const [finalPassword, setFinalPassword] = useState("");
-  const [stadiumPanelOpen, setStadiumPanelOpen] = useState(false);
+  const [copied, setCopied] = useState(false);
 
-  const fetchData = async () => {
-    setError(null);
-    setBanner(null);
-    try {
-      const res = await fetch(`/api/onboarding/${id}`);
-      const json = await res.json();
-      if (!res.ok) throw new Error(json?.error || "불러오기 실패");
-      setInfo(json.onboarding);
-      setFinalAccount(json.onboarding?.final_account || "");
-      setFinalPassword(json.onboarding?.final_password || "");
-    } catch (e: any) {
-      setError(e.message ?? "오류가 발생했습니다.");
-    } finally {
-      setLoading(false);
-    }
-  };
+  // 섹션 편집
+  const [editSections, setEditSections] = useState<{ key: SectionKey; enabled: boolean }[]>([]);
+  const [editCourts, setEditCourts] = useState<CourtRate[]>([]);
+  const [dragIdx, setDragIdx] = useState<number | null>(null);
+  const [sectionSaving, setSectionSaving] = useState(false);
+  const [sectionSaved, setSectionSaved] = useState(false);
+
 
   useEffect(() => {
     if (!id) return;
-    fetchData();
-    // fetchData는 내부에서 id를 사용하므로 id만 의존성으로 처리
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [id]);
+    (async () => {
+      try {
+        const res = await fetch(`/api/onboarding/${id}`);
+        const json = await res.json();
+        if (!res.ok) throw new Error(json?.error || "불러오기 실패");
+        const d = json.onboarding;
+        setData(d);
+        setEditCourts(d?.settlement_rate_data || []);
 
-  const loadProposals = async () => {
-    if (!id) return;
-    try {
-      const res = await fetch(`/api/onboarding/${id}/step1`);
-      const json = await res.json();
-      if (!res.ok) throw new Error(json?.error || "불러오기 실패");
-      setProposals(json.proposals || []);
-    } catch {
-      // 제안이 없어도 무시
-    }
-  };
-
-  useEffect(() => {
-    if (!id) return;
-    loadProposals();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [id]);
-
-  const loadStadiumInfo = async () => {
-    if (!id) return;
-    try {
-      const res = await fetch(`/api/onboarding/${id}/step2`);
-      const json = await res.json();
-      if (!res.ok) throw new Error(json?.error || "구장 정보 불러오기 실패");
-      setStadiumInfo(json.stadium || null);
-      setCourtInfo(json.courts || []);
-      setAdminStadium(json.stadium || null);
-      setAdminCourts(json.courts || []);
-    } catch {
-      // ignore
-    }
-  };
-
-  useEffect(() => {
-    if (info) {
-      loadStadiumInfo();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [info?.step_status]);
-
-  const loadDocs = async () => {
-    if (!id) return;
-    try {
-      const res = await fetch(`/api/onboarding/${id}/step3`);
-      const json = await res.json();
-      if (!res.ok) throw new Error(json?.error || "서류 불러오기 실패");
-      const b = (json.documents || []).find((d: DocRow) => d.doc_type === "business_registration");
-      const bank = (json.documents || []).find((d: DocRow) => d.doc_type === "bankbook");
-      const lease = (json.documents || []).find((d: DocRow) => d.doc_type === "lease_contract");
-      setBusinessUrl(b?.file_url || null);
-      setBankbookUrl(bank?.file_url || null);
-      setLeaseUrl(lease?.file_url || null);
-    } catch {
-      // ignore
-    }
-  };
-
-  useEffect(() => {
-    if (info?.step_status) {
-      loadDocs();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [info?.step_status]);
-
-  const loadTimes = async () => {
-    if (!id) return;
-    try {
-      const res = await fetch(`/api/onboarding/${id}/step4`);
-      const json = await res.json();
-      if (!res.ok) throw new Error(json?.error || "세팅 가능 시간 불러오기 실패");
-      setTimes(json.times || []);
-    } catch {
-      // ignore
-    }
-  };
-
-  useEffect(() => {
-    if (info && ["step4_complete", "step5_submitted"].includes(info.step_status)) {
-      loadTimes();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [info?.step_status]);
-
-  const deleteProposal = async (proposalId: string) => {
-    if (!id || !proposalId) return;
-    setError(null);
-    setBanner(null);
-    setDeletingId(proposalId);
-    try {
-      const res = await fetch(`/api/onboarding/${id}/step1`, {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ proposal_id: proposalId }),
-      });
-      const json = await res.json();
-      if (!res.ok) throw new Error(json?.error || "삭제 실패");
-      setProposals((prev) => prev.filter((p) => p.id !== proposalId));
-      setBanner("정산안을 삭제했습니다.");
-    } catch (e: any) {
-      setError(e.message ?? "오류가 발생했습니다.");
-    } finally {
-      setDeletingId(null);
-    }
-  };
-
-  const startEditProposal = (proposal: Proposal) => {
-    setEditingProposalId(proposal.id);
-    setEditTitle(proposal.title || "");
-    setEditDesc(proposal.description || "");
-  };
-
-  const cancelEditProposal = () => {
-    setEditingProposalId(null);
-    setEditTitle("");
-    setEditDesc("");
-  };
-
-  const updateProposal = async () => {
-    if (!id || !editingProposalId) return;
-    setEditing(true);
-    setError(null);
-    try {
-      const res = await fetch(`/api/onboarding/${id}/step1`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          action: "update",
-          proposal_id: editingProposalId,
-          title: editTitle.trim(),
-          description: editDesc.trim(),
-        }),
-      });
-      const json = await res.json();
-      if (!res.ok) throw new Error(json?.error || "수정 실패");
-      setBanner("정산안이 수정되었습니다.");
-      cancelEditProposal();
-      loadProposals();
-    } catch (e: any) {
-      setError(e.message ?? "오류가 발생했습니다.");
-    } finally {
-      setEditing(false);
-    }
-  };
-
-  const doAction = async (next: OnboardingState) => {
-    if (!id) return;
-    setSaving(true);
-    setBanner(null);
-    setError(null);
-    setStep1ApproveMsg(null);
-    try {
-      const res = await fetch(`/api/admin/onboarding/${id}/status`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          new_status: next,
-          memo: next === "step0_rejected" ? rejectionMemo : undefined,
-          final_account: finalAccount,
-          final_password: finalPassword,
-        }),
-      });
-      const json = await res.json();
-      if (!res.ok) throw new Error(json?.error || "상태 변경 실패");
-      if (next === "step1_approved") {
-        setStep1ApproveMsg("승인 완료");
+        const activeSectionKeys: SectionKey[] = (d?.sections || []).map((s: any) => s.key);
+        setEditSections(
+          ALL_SECTIONS.map((s) => ({ key: s.key, enabled: activeSectionKeys.includes(s.key) }))
+        );
+      } catch (e: any) {
+        setError(e.message);
+      } finally {
+        setLoading(false);
       }
-      setBanner(`상태가 ${statusToLabel(next)}(으)로 변경되었습니다.`);
-      await fetchData();
+    })();
+  }, [id]);
+
+  const copyLink = () => {
+    const link = `${window.location.origin}/onboarding/${id}`;
+    navigator.clipboard.writeText(link).catch(() => {
+      const el = document.createElement("textarea");
+      el.value = link;
+      document.body.appendChild(el);
+      el.select();
+      document.execCommand("copy");
+      document.body.removeChild(el);
+    });
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const saveSections = async () => {
+    setSectionSaving(true);
+    setSectionSaved(false);
+    try {
+      const sections = editSections
+        .filter((s) => s.enabled)
+        .map((s, i) => ({ key: s.key, order: i }));
+
+      const res = await fetch(`/api/admin/onboarding/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ sections, settlement_rate_data: editCourts.length > 0 ? editCourts : null }),
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json?.error || "저장 실패");
+      setData((prev) => prev ? { ...prev, sections: json.sections, settlement_rate_data: json.settlement_rate_data } : prev);
+      setSectionSaved(true);
+      setTimeout(() => setSectionSaved(false), 2000);
     } catch (e: any) {
-      setError(e.message ?? "오류가 발생했습니다.");
+      setError(e.message);
     } finally {
-      setSaving(false);
+      setSectionSaving(false);
     }
   };
 
-  // 패널별로 액션을 구분
-  const step0Actions =
-    info?.step_status === "step0_pending"
-      ? [
-          { label: "승인", next: "step0_approved" as OnboardingState },
-          { label: "반려", next: "step0_rejected" as OnboardingState },
-        ]
-      : [];
-  const step0ApprovedActions =
-    info?.step_status === "step0_approved"
-      ? [
-          { label: "전화 안내 완료", next: "step2_done" as OnboardingState },
-          { label: "보류(다시 검토)", next: "step0_pending" as OnboardingState },
-          { label: "반려 처리", next: "step0_rejected" as OnboardingState },
-        ]
-      : [];
-  // 정산안 업로드 패널은 항상 노출
-  const step1Actions =
-    info && ["step1_pending", "step1_submitted", "step1_need_fix", "step4_submitted"].includes(info.step_status)
-      ? [
-          { label: "보완 요청", next: "step1_need_fix" as OnboardingState },
-          { label: "구장 정보 승인", next: "step1_approved" as OnboardingState },
-        ]
-      : [];
-  const isStep1Active =
-    !!info && ["step1_pending", "step1_submitted", "step1_need_fix", "step4_submitted"].includes(info.step_status);
-  // 서류 검토 패널은 스텝2 패널에 통합되었으므로 별도 액션 없음
-  const step5Actions =
-    info && ["step4_complete", "step5_submitted", "step5_complete"].includes(info.step_status)
-      ? [{ label: "세팅 완료 처리", next: "step5_complete" as OnboardingState }]
-      : [];
+  const toggleSection = (key: SectionKey) => {
+    setEditSections((prev) => prev.map((s) => s.key === key ? { ...s, enabled: !s.enabled } : s));
+  };
+
+  const addCourt = () => {
+    const newCourt: CourtRate = {
+      id: Date.now().toString(),
+      name: "",
+      player_count: 18,
+      base_fee: 0,
+      rates: {},
+    };
+    setEditCourts((prev) => [...prev, newCourt]);
+  };
+
+  const removeCourt = (id: string) => {
+    setEditCourts((prev) => prev.filter((c) => c.id !== id));
+  };
+
+  const updateCourt = (id: string, field: keyof CourtRate, value: any) => {
+    setEditCourts((prev) => prev.map((c) => c.id === id ? { ...c, [field]: value } : c));
+  };
+
+  const updateRate = (courtId: string, day: string, hour: string, value: string) => {
+    const num = value === "" ? null : Number(value);
+    setEditCourts((prev) => prev.map((c) => {
+      if (c.id !== courtId) return c;
+      const rates = { ...c.rates };
+      if (!rates[day]) rates[day] = {};
+      rates[day] = { ...rates[day], [hour]: num };
+      return { ...c, rates };
+    }));
+  };
+
 
   if (!id) return <div className="p-6 text-sm text-red-600">유효하지 않은 경로입니다.</div>;
-  if (loading) return <div className="p-6 text-sm">불러오는 중…</div>;
+  if (loading) return <div className="p-6 text-sm text-[#6b7280]">불러오는 중…</div>;
+  if (!data) return <div className="p-6 text-sm text-red-600">{error || "데이터를 찾을 수 없습니다."}</div>;
+
+  const sections = (data.sections || []).sort((a, b) => a.order - b.order);
+  const completed = data.completed_sections || [];
+  const isDeclined = data.settlement_decision === "decline";
+  const progressPct = sections.length > 0 ? Math.round((completed.length / sections.length) * 100) : 0;
 
   return (
     <>
       <main className="min-h-screen bg-[#F7F9FC] px-4 py-8">
-        <div className="max-w-4xl mx-auto space-y-4">
-        <header className="bg-white border border-[#E3E6EC] rounded-xl shadow-sm p-5 space-y-2">
-          <div className="text-xs text-[#6b7280] font-semibold uppercase">ADMIN · Onboarding</div>
-          <h1 className="text-2xl font-semibold text-[#111827]">요청 상세</h1>
-          {info && (
-            <div className="text-sm text-[#4b5563]">
-              현재 상태: <span className="text-[#1C5DFF] font-semibold">{statusToLabel(info.step_status)}</span>
-            </div>
+        <div className="max-w-3xl mx-auto space-y-5">
+
+          {/* 헤더 */}
+          <div className="flex items-center justify-between">
+            <Link href="/admin/onboarding" className="text-sm text-[#6b7280] hover:text-[#1C5DFF]">
+              ← 목록으로
+            </Link>
+            <button
+              type="button"
+              onClick={copyLink}
+              className="px-3 py-1.5 rounded-lg border border-[#1C5DFF] text-[#1C5DFF] text-xs font-semibold"
+            >
+              {copied ? "복사됨!" : "구장주 링크 복사"}
+            </button>
+          </div>
+
+          {error && (
+            <div className="bg-red-50 border border-red-200 rounded-xl px-4 py-3 text-sm text-red-600">{error}</div>
           )}
-          {banner && <div className="bg-green-100 text-green-800 px-3 py-2 rounded-lg text-sm">{banner}</div>}
-          {error && <div className="bg-red-100 text-red-800 px-3 py-2 rounded-lg text-sm">{error}</div>}
-        </header>
 
-        {info && (
-          <section className="bg-white border border-[#E3E6EC] rounded-xl shadow-sm p-5 space-y-4 text-sm text-[#4b5563]">
-            <div className="text-sm text-[#111827] font-semibold">구장 정보</div>
-            <div className="grid md:grid-cols-2 gap-3">
-              <InfoLine label="구장명" value={info.stadium_name} />
-              <InfoLine label="구장주 성함" value={info.owner_name} />
-              <InfoLine label="연락처" value={info.contact || info.temp_code} />
-              <InfoLine label="지역" value={info.region} />
-              <InfoLine label="주소" value={info.address} />
-              <InfoLine label="운영 상태" value={info.operating_status} />
-              <InfoLine label="면 개수" value={info.facility_count} />
-              <InfoLine label="규격/실내외" value={info.size_info} />
-              <InfoLine label="희망 제휴 서비스" value={formatServiceTypes(info.service_types)} />
-              <InfoLine label="사용 중 서비스" value={info.other_services} />
-              <InfoLine label="유입 경로" value={info.source} />
-              <InfoLine label="기타 참고사항" value={info.memo} />
-            </div>
-
-            <div className="pt-3 space-y-2">
-              <div className="text-sm text-[#374151] font-semibold">서류 확인</div>
-              {businessUrl || bankbookUrl || leaseUrl ? (
-                <div className="grid md:grid-cols-3 gap-3">
-                  <DocThumb label="사업자등록증" url={businessUrl} onPreview={setPreviewImage} />
-                  <DocThumb label="통장 사본" url={bankbookUrl} onPreview={setPreviewImage} />
-                  <DocThumb label="임대차 계약서" url={leaseUrl} onPreview={setPreviewImage} />
+          {/* 기본 정보 */}
+          <div className="bg-white border border-[#E3E6EC] rounded-2xl shadow-sm px-6 py-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <div className="flex items-center gap-2">
+                  <h1 className="text-xl font-semibold text-[#111827]">{data.stadium_name || "-"}</h1>
+                  <span className={`text-xs px-2 py-0.5 rounded-full font-semibold ${data.venue_type === "추가" ? "bg-[#FEF3C7] text-[#92400E]" : "bg-[#EEF3FF] text-[#1C5DFF]"}`}>
+                    {data.venue_type || "신규"}
+                  </span>
                 </div>
-              ) : (
-                <div className="text-sm text-[#6b7280]">구장주 서류 제출 대기중입니다.</div>
-              )}
-            </div>
-          </section>
-        )}
-
-        <ActionPanel
-          title="01 · 제휴 요청 검토"
-          active={info?.step_status === "step0_pending"}
-          actions={step0Actions}
-          doAction={doAction}
-          saving={saving}
-          memoValue={rejectionMemo}
-          onMemoChange={setRejectionMemo}
-          showMemo={info?.step_status === "step0_pending"}
-        />
-        <ActionPanel
-          title="01 · 승인 후 전화 안내"
-          active={info?.step_status === "step0_approved"}
-          actions={step0ApprovedActions}
-          doAction={doAction}
-          saving={saving}
-          memoValue={rejectionMemo}
-          onMemoChange={setRejectionMemo}
-          showMemo={info?.step_status === "step0_approved"}
-        />
-        <ActionPanel
-          title="02 · 정산안 업로드/제안"
-          active={["step2_done", "step3_proposed", "step3_approved"].includes(info?.step_status || "")}
-          actions={[]}
-          doAction={doAction}
-          saving={saving}
-          extraContent={
-            ["step2_done", "step3_proposed", "step3_approved"].includes(info?.step_status || "") ? (
-              <SettlementForm
-                id={id}
-                saving={saving}
-                title={settlementTitle}
-                desc={settlementDesc}
-                images={settlementImages}
-                previews={settlementPreviews}
-                setTitle={setSettlementTitle}
-                setDesc={setSettlementDesc}
-                setImages={setSettlementImages}
-                setPreviews={setSettlementPreviews}
-                uploading={uploading}
-                setUploading={setUploading}
-                onSuccess={({ reset, newPreviews } = { reset: false, newPreviews: [] }) => {
-                  setBanner("정산안이 업로드되었습니다.");
-                  fetchData();
-                  loadProposals();
-                  if (newPreviews && newPreviews.length) {
-                    setSettlementPreviews((prev) => Array.from(new Set([...prev, ...newPreviews])));
-                  }
-                  if (reset) {
-                    setSettlementTitle("");
-                    setSettlementDesc("");
-                    setSettlementImages("");
-                    setSettlementPreviews([]);
-                  }
-                }}
-                onError={(msg) => setError(msg)}
-              />
-            ) : (
-              <div className="text-sm text-[#6b7280]">
-                전화 안내 완료 후 정산안 업로드가 가능합니다.
+                <p className="text-sm text-[#6b7280] mt-1">담당자: {data.manager || "-"} · {data.region || "-"}</p>
               </div>
-            )
-          }
-        />
-        {proposals.length > 0 && (
-          <section className="bg-white border border-[#E3E6EC] rounded-xl shadow-sm p-5 space-y-3 text-sm text-[#4b5563]">
-            <div className="text-sm text-[#111827] font-semibold">업로드된 정산안</div>
+              <div className="text-right">
+                <div className="text-xs text-[#9CA3AF]">진행률</div>
+                <div className="text-sm font-bold text-[#1C5DFF]">{completed.length} / {sections.length}</div>
+              </div>
+            </div>
+            {isDeclined && (
+              <div className="mt-3 bg-red-50 border border-red-200 rounded-xl px-4 py-3 space-y-1">
+                <p className="text-sm font-semibold text-red-600">제휴 희망하지 않음</p>
+                <p className="text-sm text-red-500">{data.decline_reason || "-"}</p>
+                {data.decline_reason_detail && <p className="text-xs text-red-400">{data.decline_reason_detail}</p>}
+              </div>
+            )}
+          </div>
+
+          {/* 섹션 구성 편집 */}
+          <div className="bg-white border border-[#E3E6EC] rounded-2xl shadow-sm p-6 space-y-4">
+            <div>
+              <h2 className="text-sm font-semibold text-[#111827]">섹션 구성 관리</h2>
+              <p className="text-xs text-[#9CA3AF] mt-1">구장주 링크에서 보여줄 항목을 선택하세요. 저장 후 같은 링크로 즉시 반영됩니다.</p>
+            </div>
+
+            {/* 정산료 테이블 에디터 */}
             <div className="space-y-3">
-              {proposals.map((p, idx) => (
-                <div key={p.id} className="border border-[#E3E6EC] rounded-lg p-3 space-y-2 bg-[#F9FAFB]">
-                  <div className="flex items-center justify-between text-xs text-[#6b7280]">
-                    <div className="text-[#111827] font-semibold">
-                      {p.title} {idx === 0 && <span className="text-[#1C5DFF] text-[10px] ml-1">최신</span>}
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span>{new Date(p.created_at).toLocaleString()}</span>
-                      <button
-                        type="button"
-                        onClick={() => startEditProposal(p)}
-                        className="px-2 py-1 rounded-md border border-[#E3E6EC] text-[#1C5DFF] text-[11px] font-semibold"
-                      >
-                        수정
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => deleteProposal(p.id)}
-                        disabled={deletingId === p.id}
-                        className="px-2 py-1 rounded-md border border-[#E3E6EC] text-[#ef4444] text-[11px] font-semibold"
-                      >
-                        {deletingId === p.id ? "삭제 중..." : "삭제"}
-                      </button>
-                    </div>
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-semibold text-[#374151]">정산료 설정 (면별 요일×시간)</label>
+                <button type="button" onClick={addCourt} className="text-xs px-2.5 py-1 rounded-lg bg-[#EEF3FF] text-[#1C5DFF] font-semibold">+ 면 추가</button>
+              </div>
+              {editCourts.length === 0 && (
+                <p className="text-xs text-[#9CA3AF] text-center py-3 border border-dashed border-[#E3E6EC] rounded-xl">면을 추가하고 정산율을 입력하세요.</p>
+              )}
+              {editCourts.map((court) => (
+                <div key={court.id} className="border border-[#E3E6EC] rounded-xl overflow-hidden">
+                  {/* 면 헤더 */}
+                  <div className="flex items-center gap-2 px-3 py-2.5 bg-[#F9FAFB] border-b border-[#E3E6EC]">
+                    <input
+                      value={court.name}
+                      onChange={(e) => updateCourt(court.id, "name", e.target.value)}
+                      placeholder="면 이름 (예: 실내 6:6)"
+                      className="flex-1 text-xs border border-[#E3E6EC] rounded-lg px-2 py-1 focus:outline-none focus:border-[#1C5DFF]"
+                    />
+                    <input
+                      type="number"
+                      value={court.player_count || ""}
+                      onChange={(e) => updateCourt(court.id, "player_count", Number(e.target.value))}
+                      placeholder="인원"
+                      className="w-14 text-xs border border-[#E3E6EC] rounded-lg px-2 py-1 focus:outline-none focus:border-[#1C5DFF] text-center"
+                    />
+                    <span className="text-[10px] text-[#9CA3AF]">명</span>
+                    <input
+                      type="number"
+                      value={court.base_fee || ""}
+                      onChange={(e) => updateCourt(court.id, "base_fee", Number(e.target.value))}
+                      placeholder="구장료"
+                      className="w-20 text-xs border border-[#E3E6EC] rounded-lg px-2 py-1 focus:outline-none focus:border-[#1C5DFF] text-right"
+                    />
+                    <span className="text-[10px] text-[#9CA3AF]">원</span>
+                    <button type="button" onClick={() => removeCourt(court.id)} className="text-[#EF4444] text-xs font-bold ml-1">✕</button>
                   </div>
-                  {editingProposalId === p.id ? (
-                    <div className="space-y-2 text-sm text-[#374151]">
-                      <input
-                        className="w-full border border-[#E3E6EC] rounded-md px-3 py-2"
-                        value={editTitle}
-                        onChange={(e) => setEditTitle(e.target.value)}
-                        placeholder="제안 제목"
-                      />
-                      <textarea
-                        className="w-full border border-[#E3E6EC] rounded-md px-3 py-2 min-h-[90px]"
-                        value={editDesc}
-                        onChange={(e) => setEditDesc(e.target.value)}
-                        placeholder="간단 설명"
-                      />
-                      <div className="flex items-center gap-2">
-                        <button
-                          type="button"
-                          onClick={updateProposal}
-                          disabled={editing || !editTitle.trim()}
-                          className="px-3 py-2 rounded-md bg-[#1C5DFF] text-white text-xs font-semibold"
-                        >
-                          {editing ? "저장 중..." : "저장"}
-                        </button>
-                        <button
-                          type="button"
-                          onClick={cancelEditProposal}
-                          className="px-3 py-2 rounded-md border border-[#E3E6EC] text-xs font-semibold"
-                        >
-                          취소
-                        </button>
-                      </div>
-                    </div>
-                  ) : (
-                    p.description && <div className="text-sm text-[#374151]">{p.description}</div>
-                  )}
-                  {Array.isArray(p.image_urls) && p.image_urls.length > 0 && (
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                      {p.image_urls.map((url, i) => (
-                        <button
-                          key={`${p.id}-${i}`}
-                          type="button"
-                          onClick={() => setPreviewImage(url)}
-                          className="block border rounded-lg overflow-hidden"
-                        >
-                          <Image src={url} alt="settlement" width={300} height={200} className="w-full h-32 object-cover" />
-                        </button>
-                      ))}
-                    </div>
-                  )}
+                  {/* 정산율 테이블 */}
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-[10px] border-collapse min-w-[420px]">
+                      <thead>
+                        <tr className="bg-[#F9FAFB]">
+                          <th className="px-2 py-1.5 text-left text-[#9CA3AF] border-b border-[#E3E6EC] w-10">시간</th>
+                          {DAYS.map((d) => (
+                            <th key={d} className="px-1 py-1.5 text-center text-[#374151] font-semibold border-b border-[#E3E6EC]">{DAY_LABELS[d]}</th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {HOURS.map((h) => (
+                          <tr key={h} className="even:bg-[#F9FAFB]">
+                            <td className="px-2 py-1 text-[#6b7280] border-b border-[#F3F4F6] whitespace-nowrap font-medium">{h}시</td>
+                            {DAYS.map((d) => (
+                              <td key={d} className="px-0.5 py-0.5 border-b border-[#F3F4F6]">
+                                <input
+                                  type="number"
+                                  min="0"
+                                  max="100"
+                                  value={court.rates?.[d]?.[h] ?? ""}
+                                  onChange={(e) => updateRate(court.id, d, h, e.target.value)}
+                                  className="w-full text-center text-[10px] border border-transparent rounded focus:border-[#1C5DFF] focus:outline-none py-0.5 bg-transparent focus:bg-white"
+                                  placeholder="-"
+                                />
+                              </td>
+                            ))}
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
               ))}
             </div>
-          </section>
-        )}
-        <ActionPanel
-          title="03 · 구장 정보 검토"
-          active={isStep1Active}
-          actions={step1Actions}
-          doAction={doAction}
-          saving={saving}
-          hideActions
-          collapsed={!stadiumPanelOpen}
-          onToggleCollapse={() => setStadiumPanelOpen((prev) => !prev)}
-          extraContent={
-            adminStadium ? (
-              <div className="mt-2 space-y-3">
-                <div className="text-sm text-[#374151] font-semibold">계정 이메일</div>
-                <div className="grid md:grid-cols-2 gap-3 text-sm text-[#374151]">
-                  <EditableInput
-                    label="계정 이메일"
-                    value={adminStadium.account_email || ""}
-                    onChange={(v) => setAdminStadium({ ...adminStadium, account_email: v })}
-                    placeholder="예: owner@example.com"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <div className="text-sm text-[#374151] font-semibold">구관사 계정 정보 (구장구 공유용)</div>
-                  <div className="grid md:grid-cols-2 gap-2">
-                    <label className="text-xs text-[#6b7280] flex flex-col gap-1">
-                      계정(ID)
-                      <input
-                        value={finalAccount}
-                        onChange={(e) => setFinalAccount(e.target.value)}
-                        className="border border-[#E3E6EC] rounded-lg px-3 py-2 text-sm"
-                        placeholder="예: stadium123"
-                      />
-                    </label>
-                    <label className="text-xs text-[#6b7280] flex flex-col gap-1">
-                      비밀번호
-                      <input
-                        value={finalPassword}
-                        onChange={(e) => setFinalPassword(e.target.value)}
-                        className="border border-[#E3E6EC] rounded-lg px-3 py-2 text-sm"
-                        placeholder="예: temp1234"
-                      />
-                    </label>
-                  </div>
-                  <div className="text-[11px] text-[#9CA3AF]">수정 내용 저장 시 함께 저장됩니다.</div>
-                </div>
-                <div className="flex flex-col gap-3 text-sm text-[#374151]">
-                  <EditableInput label="지역" value={adminStadium.region || ""} onChange={(v) => setAdminStadium({ ...adminStadium, region: v })} />
-                  <EditableInput
-                    label="구장명"
-                    value={adminStadium.stadium_name || ""}
-                    onChange={(v) => setAdminStadium({ ...adminStadium, stadium_name: v })}
-                  />
-                  <EditableInput
-                    label="주소"
-                    value={adminStadium.address || ""}
-                    onChange={(v) => setAdminStadium({ ...adminStadium, address: v })}
-                  />
-                  <EditableSelect
-                    label="구장 유형"
-                    value={adminStadium.stadium_type || ""}
-                    options={["인조잔디", "천연잔디", "인도어", "모래", "마루", "플라스틱"]}
-                    onChange={(v) => setAdminStadium({ ...adminStadium, stadium_type: v })}
-                  />
-                  <EditableSelect
-                    label="실내/실외"
-                    value={adminStadium.indoor_outdoor || ""}
-                    options={["실외", "실내"]}
-                    onChange={(v) => setAdminStadium({ ...adminStadium, indoor_outdoor: v })}
-                  />
-                  <EditableInput
-                    label="구장 연락처"
-                    value={adminStadium.stadium_contact || ""}
-                    onChange={(v) => setAdminStadium({ ...adminStadium, stadium_contact: v })}
-                  />
-                  <EditableInput
-                    label="런드리 연락처"
-                    value={adminStadium.laundry_contact || ""}
-                    onChange={(v) => setAdminStadium({ ...adminStadium, laundry_contact: v })}
-                  />
-                  <div className="border-t border-[#E3E6EC] pt-3 text-sm font-semibold text-[#111827]">공통 정보</div>
-                  <EditableInput
-                    label="공지사항"
-                    value={adminStadium.notice || ""}
-                    onChange={(v) => setAdminStadium({ ...adminStadium, notice: v })}
-                    help={"구장 페이지 상단(구장명 아래)에만 노출됩니다.\n소셜 매치 신청 페이지에는 노출되지 않습니다."}
-                  />
-                  <EditableSelect
-                    label="주차 가능"
-                    value={adminStadium.parking_available === true ? "예" : adminStadium.parking_available === false ? "아니오" : ""}
-                    options={["예", "아니오"]}
-                    onChange={(v) =>
-                      setAdminStadium({
-                        ...adminStadium,
-                        parking_available: v === "" ? null : v === "예",
-                      })
-                    }
-                  />
-                  <EditableSelect
-                    label="무료 주차"
-                    value={adminStadium.parking_free === true ? "예" : adminStadium.parking_free === false ? "아니오" : ""}
-                    options={["예", "아니오"]}
-                    onChange={(v) =>
-                      setAdminStadium({
-                        ...adminStadium,
-                        parking_free: v === "" ? null : v === "예",
-                      })
-                    }
-                  />
-                  <EditableInput
-                    label="무료 주차 대수"
-                    value={adminStadium.parking_count ?? ""}
-                    onChange={(v) =>
-                      setAdminStadium({
-                        ...adminStadium,
-                        parking_count: v === "" ? null : Number(v),
-                      })
-                    }
-                    help={"주차 어려움이 없다면 0으로 적어주세요."}
-                  />
-                  <EditableInput
-                    label="주차 연락처"
-                    value={adminStadium.parking_contact || ""}
-                    onChange={(v) => setAdminStadium({ ...adminStadium, parking_contact: v })}
-                  />
-                  <EditableInput
-                    label="주차 요금"
-                    value={adminStadium.parking_fee || ""}
-                    onChange={(v) => setAdminStadium({ ...adminStadium, parking_fee: v })}
-                  />
-                  <div className="grid md:grid-cols-2 gap-3">
-                    <EditableSelect
-                      label="샤워장"
-                      value={adminStadium?.shower_available === true ? "예" : adminStadium?.shower_available === false ? "아니오" : ""}
-                      options={["예", "아니오"]}
-                      onChange={(v) =>
-                        setAdminStadium({
-                          ...adminStadium,
-                          shower_available: v === "" ? null : v === "예",
-                        })
-                      }
-                    />
-                  <EditableInput
-                    label="샤워 메모"
-                    value={adminStadium.shower_memo || ""}
-                    onChange={(v) => setAdminStadium({ ...adminStadium, shower_memo: v })}
-                    help={"클릭 시 표시되는 짧은 안내입니다. 한 문장으로 적어주세요."}
-                  />
-                  </div>
-                  <div className="grid md:grid-cols-2 gap-3">
-                    <EditableSelect
-                      label="풋살화 대여"
-                      value={adminStadium?.shoes_available === true ? "예" : adminStadium?.shoes_available === false ? "아니오" : ""}
-                      options={["예", "아니오"]}
-                      onChange={(v) =>
-                        setAdminStadium({
-                          ...adminStadium,
-                          shoes_available: v === "" ? null : v === "예",
-                        })
-                      }
-                    />
-                  <EditableInput
-                    label="풋살화 메모"
-                    value={adminStadium.shoes_memo || ""}
-                    onChange={(v) => setAdminStadium({ ...adminStadium, shoes_memo: v })}
-                    help={"클릭 시 표시되는 짧은 안내입니다. 한 문장으로 적어주세요."}
-                  />
-                  </div>
-                  <div className="grid md:grid-cols-2 gap-3">
-                    <EditableSelect
-                      label="화장실"
-                      value={adminStadium?.toilet_type || ""}
-                      options={["남녀구분", "남녀공용", "아니요"]}
-                      onChange={(v) =>
-                        setAdminStadium({
-                          ...adminStadium,
-                          toilet_type: v === "" ? null : v,
-                        })
-                      }
-                    />
-                  <EditableInput
-                    label="화장실 메모"
-                    value={adminStadium.toilet_memo || ""}
-                    onChange={(v) => setAdminStadium({ ...adminStadium, toilet_memo: v })}
-                    help={"클릭 시 표시되는 짧은 안내입니다. 한 문장으로 적어주세요."}
-                  />
-                  </div>
-                  <div className="grid md:grid-cols-2 gap-3">
-                    <EditableSelect
-                      label="음료"
-                      value={adminStadium?.drinks_available === true ? "예" : adminStadium?.drinks_available === false ? "아니오" : ""}
-                      options={["예", "아니오"]}
-                      onChange={(v) =>
-                        setAdminStadium({
-                          ...adminStadium,
-                          drinks_available: v === "" ? null : v === "예",
-                        })
-                      }
-                    />
-                  <EditableInput
-                    label="음료 메모"
-                    value={adminStadium.drinks_memo || ""}
-                    onChange={(v) => setAdminStadium({ ...adminStadium, drinks_memo: v })}
-                    help={"클릭 시 표시되는 짧은 안내입니다. 한 문장으로 적어주세요."}
-                  />
-                  </div>
-                  <div className="border-t border-[#E3E6EC] pt-3 text-sm font-semibold text-[#111827]">소셜 매치</div>
-                  <EditableInput
-                    label="소셜매치 특이사항"
-                    value={adminStadium.social_special || ""}
-                    onChange={(v) => setAdminStadium({ ...adminStadium, social_special: v })}
-                    help={"소셜 신청 페이지에만 노출됩니다."}
-                    multiline
-                  />
-                  <EditableInput
-                    label="소셜매치 알림톡"
-                    value={adminStadium.social_message || ""}
-                    onChange={(v) => setAdminStadium({ ...adminStadium, social_message: v })}
-                    help={"매치 확정 후 참여자 연락처로 안내되는 내용입니다."}
-                    multiline
-                  />
-                  <EditableInput
-                    label="매니저 특이사항"
-                    value={adminStadium.manager_note || ""}
-                    onChange={(v) => setAdminStadium({ ...adminStadium, manager_note: v })}
-                    help={"매니저 앱에서 매치 선택 전 노출됩니다."}
-                    multiline
-                  />
-                  <div className="border-t border-[#E3E6EC] pt-3 text-sm font-semibold text-[#111827]">구장 예약</div>
-                  <EditableInput
-                    label="대관 특이사항"
-                    value={adminStadium.rental_note || ""}
-                    onChange={(v) => setAdminStadium({ ...adminStadium, rental_note: v })}
-                    help={"구장 예약 신청 페이지에서 노출됩니다."}
-                    multiline
-                  />
-                  <EditableInput
-                    label="꼭 지켜주세요"
-                    value={adminStadium.rental_warning || ""}
-                    onChange={(v) => setAdminStadium({ ...adminStadium, rental_warning: v })}
-                    help={"구장 예약 신청 페이지에서 노출됩니다."}
-                    multiline
-                  />
-                  <EditableInput
-                    label="대관 알림"
-                    value={adminStadium.rental_message || ""}
-                    onChange={(v) => setAdminStadium({ ...adminStadium, rental_message: v })}
-                    help={"구장 예약 신청 후 신청자 연락처로 안내되는 내용입니다."}
-                    multiline
-                  />
-                  <div className="grid md:grid-cols-2 gap-3">
-                    <EditableSelect
-                      label="조끼 제공"
-                      value={adminStadium?.vest_available === true ? "예" : adminStadium?.vest_available === false ? "아니오" : ""}
-                      options={["예", "아니오"]}
-                      onChange={(v) =>
-                        setAdminStadium({
-                          ...adminStadium,
-                          vest_available: v === "" ? null : v === "예",
-                        })
-                      }
-                    />
-                  <EditableInput
-                    label="조끼 메모"
-                    value={adminStadium.vest_memo || ""}
-                    onChange={(v) => setAdminStadium({ ...adminStadium, vest_memo: v })}
-                    help={"클릭 시 표시되는 짧은 안내입니다. 한 문장으로 적어주세요."}
-                  />
-                  </div>
-                  <div className="grid md:grid-cols-2 gap-3">
-                    <EditableSelect
-                      label="공 제공"
-                      value={adminStadium?.ball_available === true ? "예" : adminStadium?.ball_available === false ? "아니오" : ""}
-                      options={["예", "아니오"]}
-                      onChange={(v) =>
-                        setAdminStadium({
-                          ...adminStadium,
-                          ball_available: v === "" ? null : v === "예",
-                        })
-                      }
-                    />
-                  <EditableInput
-                    label="공 메모"
-                    value={adminStadium.ball_memo || ""}
-                    onChange={(v) => setAdminStadium({ ...adminStadium, ball_memo: v })}
-                    help={"클릭 시 표시되는 짧은 안내입니다. 한 문장으로 적어주세요."}
-                  />
-                  </div>
-                  <div className="border-t border-[#E3E6EC] pt-3" />
-                </div>
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <div className="text-sm font-semibold text-[#111827]">면 정보</div>
-                    <button
-                      type="button"
-                      onClick={() => setAdminCourts((prev) => [...prev, { court_name: "", size_x: null, size_y: null, floor_type: "", indoor_outdoor: "" }])}
-                      className="px-2 py-1 rounded border border-[#1C5DFF] text-[#1C5DFF] text-xs font-semibold"
-                    >
-                      면 추가
-                    </button>
-                  </div>
-                  {adminCourts && adminCourts.length > 0 ? (
-                    <div className="space-y-2">
-                      {adminCourts
-                        .slice()
-                        .sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0))
-                        .map((c, idx) => (
-                          <div key={`${c.court_name}-${idx}`} className="border border-[#E3E6EC] rounded-lg p-3 grid md:grid-cols-3 gap-2 text-sm">
-                            <EditableInput
-                              label="면 이름"
-                              value={c.court_name || ""}
-                              onChange={(v) => {
-                                const next = [...adminCourts];
-                                next[idx] = { ...next[idx], court_name: v };
-                                setAdminCourts(next);
-                              }}
-                            />
-                            <EditableInput
-                              label="사이즈 X"
-                              value={c.size_x ?? ""}
-                              onChange={(v) => {
-                                const next = [...adminCourts];
-                                next[idx] = { ...next[idx], size_x: Number(v) || null };
-                                setAdminCourts(next);
-                              }}
-                            />
-                            <EditableInput
-                              label="사이즈 Y"
-                              value={c.size_y ?? ""}
-                              onChange={(v) => {
-                                const next = [...adminCourts];
-                                next[idx] = { ...next[idx], size_y: Number(v) || null };
-                                setAdminCourts(next);
-                              }}
-                            />
-                            <EditableInput
-                              label="바닥/유형"
-                              value={c.floor_type || ""}
-                              onChange={(v) => {
-                                const next = [...adminCourts];
-                                next[idx] = { ...next[idx], floor_type: v };
-                                setAdminCourts(next);
-                              }}
-                            />
-                            <EditableInput
-                              label="실내/실외"
-                              value={c.indoor_outdoor || ""}
-                              onChange={(v) => {
-                                const next = [...adminCourts];
-                                next[idx] = { ...next[idx], indoor_outdoor: v };
-                                setAdminCourts(next);
-                              }}
-                            />
-                            {adminCourts.length > 1 && (
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  const next = [...adminCourts];
-                                  next.splice(idx, 1);
-                                  setAdminCourts(next);
-                                }}
-                                className="text-xs text-red-500"
-                              >
-                                삭제
-                              </button>
-                            )}
-                          </div>
-                        ))}
-                    </div>
-                  ) : (
-                    <div className="text-sm text-[#111827]">면 정보가 아직 없습니다.</div>
-                  )}
-                </div>
-                <div className="text-sm text-[#374151] space-y-2">
-                  <div className="font-semibold">운영 불가 시간</div>
-                  <div className="border border-[#E3E6EC] rounded-lg px-3 py-2 bg-[#F9FAFB] min-h-[48px]">
-                    {adminStadium.hoped_times_note && adminStadium.hoped_times_note.trim().length > 0
-                      ? adminStadium.hoped_times_note
-                      : "구장주가 입력한 운영 불가 시간이 없습니다."}
-                  </div>
-                </div>
 
-                {stadiumSaveMsg && <div className="bg-green-100 text-green-800 px-3 py-2 rounded-lg text-sm">{stadiumSaveMsg}</div>}
-                {step1ApproveMsg && <div className="bg-green-100 text-green-800 px-3 py-2 rounded-lg text-sm">{step1ApproveMsg}</div>}
-                {stadiumSaveErr && <div className="bg-red-100 text-red-800 px-3 py-2 rounded-lg text-sm">{stadiumSaveErr}</div>}
-                <div className="flex flex-wrap items-end justify-between gap-2">
-                  <div className="flex items-center gap-3">
-                    <button
-                      type="button"
-                      onClick={async () => {
-                        if (!id || !adminStadium) return;
-                        setStadiumSaveErr(null);
-                        setStadiumSaveMsg(null);
-                        setStadiumSaving(true);
-                        try {
-                          const res = await fetch(`/api/onboarding/${id}/step2`, {
-                            method: "PUT",
-                            headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify({ stadium: adminStadium, courts: adminCourts, submit: false }),
-                          });
-                          const json = await res.json();
-                          if (!res.ok) throw new Error(json?.error || "저장 실패");
-                          const accountRes = await fetch(`/api/onboarding/${id}`, {
-                            method: "PATCH",
-                            headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify({ final_account: finalAccount, final_password: finalPassword }),
-                          });
-                          const accountJson = await accountRes.json().catch(() => ({}));
-                          if (!accountRes.ok) throw new Error(accountJson?.error || "계정 정보 저장 실패");
-                          setStadiumSaveMsg("저장되었습니다. 구장주 화면에도 반영되었습니다.");
-                          loadStadiumInfo();
-                        } catch (e: any) {
-                          setStadiumSaveErr(e.message ?? "저장 중 오류가 발생했습니다.");
-                        } finally {
-                          setStadiumSaving(false);
-                        }
-                      }}
-                      disabled={stadiumSaving}
-                      className="px-3 py-2 rounded-lg border border-[#1C5DFF] text-[#1C5DFF] text-sm font-semibold"
-                    >
-                      {stadiumSaving ? "저장 중…" : "수정 내용 저장"}
-                    </button>
-                    {info?.step_status === "step1_approved" && (
-                      <span className="text-sm text-[#6b7280]">승인 완료</span>
-                    )}
-                  </div>
-                  <div className="flex flex-wrap gap-2">
-                    {step1Actions.map((b) => (
-                      <button
-                        key={b.next}
-                        type="button"
-                        disabled={saving}
-                        onClick={() => doAction(b.next)}
-                        className="px-3 py-2 rounded-lg border border-[#1C5DFF] text-[#1C5DFF] text-sm font-semibold"
-                      >
-                        {saving ? "처리 중…" : b.label}
-                      </button>
-                    ))}
-                  </div>
+            <div className="space-y-2">
+              {editSections.map((s, i) => {
+                const label = ALL_SECTIONS.find((a) => a.key === s.key)?.label || s.key;
+                const isDone = completed.includes(s.key);
+                return (
+                  <label
+                    key={s.key}
+                    draggable
+                    onDragStart={() => setDragIdx(i)}
+                    onDragOver={(e) => { e.preventDefault(); }}
+                    onDrop={() => {
+                      if (dragIdx === null || dragIdx === i) return;
+                      const next = [...editSections];
+                      const [moved] = next.splice(dragIdx, 1);
+                      next.splice(i, 0, moved);
+                      setEditSections(next);
+                      setDragIdx(null);
+                    }}
+                    onDragEnd={() => setDragIdx(null)}
+                    className={`flex items-center gap-3 px-4 py-3 rounded-xl border transition-colors cursor-grab active:cursor-grabbing ${
+                      dragIdx === i ? "opacity-40" : ""
+                    } ${s.enabled ? "border-[#1C5DFF] bg-[#EEF3FF]" : "border-[#E3E6EC] bg-[#F9FAFB]"}`}
+                  >
+                    <span className="text-[#9CA3AF] text-sm select-none">⠿</span>
+                    <div className="flex items-center gap-2 flex-1 min-w-0">
+                      <span className={`text-sm font-medium ${s.enabled ? "text-[#1C5DFF]" : "text-[#9CA3AF]"}`}>{label}</span>
+                      {isDone && <span className="text-xs bg-[#DCFCE7] text-[#16A34A] px-2 py-0.5 rounded-full font-semibold">완료됨</span>}
+                    </div>
+                    <input
+                      type="checkbox"
+                      checked={s.enabled}
+                      onChange={() => toggleSection(s.key)}
+                      className="w-4 h-4 accent-[#1C5DFF] shrink-0"
+                    />
+                  </label>
+                );
+              })}
+            </div>
+
+            <button
+              type="button"
+              onClick={saveSections}
+              disabled={sectionSaving}
+              className="w-full py-3 rounded-xl text-white text-sm font-semibold disabled:opacity-50 transition-colors"
+              style={{ background: sectionSaved ? "#22c55e" : "#1C5DFF" }}
+            >
+              {sectionSaving ? "저장 중…" : sectionSaved ? "저장됨!" : "저장 및 반영"}
+            </button>
+          </div>
+
+
+          {/* 구장 상세 (venue_detail 완료 시) */}
+          {completed.includes("venue_detail") && (
+            <div className="bg-white border border-[#E3E6EC] rounded-2xl shadow-sm p-6 space-y-5">
+              <h2 className="text-sm font-semibold text-[#111827]">구장 상세 정보</h2>
+
+              {/* 운영 현황 */}
+              <div className="space-y-2">
+                <p className="text-xs font-bold text-[#9CA3AF] uppercase tracking-wide">운영 현황</p>
+                <div className="grid grid-cols-2 gap-2 text-sm">
+                  <InfoRow label="운영 상태" value={data.operating_status} />
+                  <InfoRow label="면 수" value={data.facility_count?.toString()} />
+                  <InfoRow label="규격/실내외" value={data.size_info} />
+                  <InfoRow label="희망 서비스" value={(data.service_types || []).map((s) => s === "social_match" ? "소셜 매치" : s === "rental" ? "구장 예약" : s).join(", ")} />
+                </div>
+                {data.notice && <div><p className="text-xs text-[#9CA3AF]">공지사항</p><p className="text-sm text-[#374151] mt-0.5 whitespace-pre-wrap">{data.notice}</p></div>}
+              </div>
+
+              {/* 주차 */}
+              <div className="space-y-2 border-t border-[#F3F4F6] pt-4">
+                <p className="text-xs font-bold text-[#9CA3AF] uppercase tracking-wide">주차</p>
+                <div className="grid grid-cols-2 gap-2 text-sm">
+                  <InfoRow label="주차 가능" value={data.parking_available} />
+                  <InfoRow label="무료 주차" value={data.parking_free === null || data.parking_free === undefined ? undefined : data.parking_free ? "예" : "아니오"} />
+                  <InfoRow label="주차 대수" value={data.parking_count?.toString()} />
+                  <InfoRow label="주차 요금" value={data.parking_fee} />
+                  <InfoRow label="주차 등록 연락처" value={data.parking_contact} />
                 </div>
               </div>
-            ) : (
-              <div className="text-sm text-[#6b7280]">구장주가 구장 상세 정보를 제출하면 이곳에 표시됩니다.</div>
-            )
-          }
-        />
-        <div className="flex justify-end">
-          <Link
-            href="/admin/onboarding"
-            className="inline-flex items-center px-3 py-1.5 rounded-lg border border-[#E3E6EC] text-[#1C5DFF] text-xs font-semibold"
-          >
-            리스트로 돌아가기
-          </Link>
-        </div>
+
+              {/* 편의시설 */}
+              <div className="space-y-2 border-t border-[#F3F4F6] pt-4">
+                <p className="text-xs font-bold text-[#9CA3AF] uppercase tracking-wide">편의시설</p>
+                <div className="grid grid-cols-2 gap-2 text-sm">
+                  <InfoRow label="샤워장" value={data.shower_available} />
+                  <InfoRow label="샤워 메모" value={data.shower_memo} />
+                  <InfoRow label="풋살화 대여" value={data.shoes_available} />
+                  <InfoRow label="풋살화 메모" value={data.shoes_memo} />
+                  <InfoRow label="화장실" value={data.toilet_type} />
+                  <InfoRow label="화장실 메모" value={data.toilet_memo} />
+                  <InfoRow label="음료 판매" value={data.drinks_available} />
+                  <InfoRow label="음료 메모" value={data.drinks_memo} />
+                  <InfoRow label="조끼 제공" value={data.vest_available === null || data.vest_available === undefined ? undefined : data.vest_available ? "예" : "아니오"} />
+                  <InfoRow label="조끼 메모" value={data.vest_memo} />
+                  <InfoRow label="공 제공" value={data.ball_available === null || data.ball_available === undefined ? undefined : data.ball_available ? "예" : "아니오"} />
+                  <InfoRow label="공 메모" value={data.ball_memo} />
+                </div>
+              </div>
+
+              {/* 소셜매치 */}
+              <div className="space-y-2 border-t border-[#F3F4F6] pt-4">
+                <p className="text-xs font-bold text-[#9CA3AF] uppercase tracking-wide">소셜매치</p>
+                <div className="grid grid-cols-2 gap-2 text-sm">
+                  <InfoRow label="소셜매치 특이사항" value={data.social_special} />
+                  <InfoRow label="소셜매치 알림톡" value={data.social_message} />
+                  <InfoRow label="매니저 특이사항" value={data.manager_note} />
+                </div>
+                {data.hoped_times_note && <div><p className="text-xs text-[#9CA3AF]">운영 불가 시간</p><p className="text-sm text-[#374151] mt-0.5 whitespace-pre-wrap">{data.hoped_times_note}</p></div>}
+              </div>
+
+              {/* 대관 */}
+              <div className="space-y-2 border-t border-[#F3F4F6] pt-4">
+                <p className="text-xs font-bold text-[#9CA3AF] uppercase tracking-wide">대관</p>
+                <div className="grid grid-cols-2 gap-2 text-sm">
+                  <InfoRow label="대관 특이사항" value={data.rental_note} />
+                  <InfoRow label="꼭 지켜주세요" value={data.rental_warning} />
+                  <InfoRow label="구장 예약 알림톡" value={data.rental_message} />
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* 서류 (documents 완료 시) */}
+          {completed.includes("documents") && data.document_urls && (
+            <div className="bg-white border border-[#E3E6EC] rounded-2xl shadow-sm p-6 space-y-4">
+              <h2 className="text-sm font-semibold text-[#111827]">제출 서류</h2>
+              <div className="grid grid-cols-3 gap-3">
+                {[
+                  { key: "business_registration", label: "사업자등록증" },
+                  { key: "bankbook", label: "통장 사본" },
+                  { key: "lease_contract", label: "임대차 계약서" },
+                ].map(({ key, label }) => {
+                  const url = data.document_urls?.[key];
+                  return (
+                    <div key={key} className="border border-[#E3E6EC] rounded-xl p-3 space-y-2">
+                      <p className="text-xs text-[#6b7280]">{label}</p>
+                      {url ? (
+                        <>
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img src={url} alt={label} className="w-full h-20 object-cover rounded-lg cursor-pointer border border-[#E3E6EC]" onClick={() => setPreviewImage(url)} />
+                          <a href={url} target="_blank" rel="noopener noreferrer" className="text-xs text-[#1C5DFF]">원본 보기</a>
+                        </>
+                      ) : (
+                        <p className="text-xs text-[#9CA3AF]">없음</p>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* 사진 (photos 완료 시) */}
+          {completed.includes("photos") && data.photo_urls && data.photo_urls.length > 0 && (
+            <div className="bg-white border border-[#E3E6EC] rounded-2xl shadow-sm p-6 space-y-4">
+              <h2 className="text-sm font-semibold text-[#111827]">구장 사진 ({data.photo_urls.length}장)</h2>
+              <div className="grid grid-cols-3 gap-2">
+                {data.photo_urls.map((url, i) => (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    key={i}
+                    src={url}
+                    alt={`사진 ${i + 1}`}
+                    className="aspect-square object-cover rounded-lg border border-[#E3E6EC] cursor-pointer"
+                    onClick={() => setPreviewImage(url)}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
+
+          <p className="text-xs text-center text-[#9CA3AF]">
+            마지막 업데이트: {data.updated_at ? new Date(data.updated_at).toLocaleString("ko-KR") : "-"}
+          </p>
         </div>
       </main>
 
       {previewImage && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4">
-          <div className="bg-white rounded-xl shadow-xl max-w-3xl w-full p-4 space-y-3">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4" onClick={() => setPreviewImage(null)}>
+          <div className="bg-white rounded-xl shadow-xl max-w-3xl w-full p-4 space-y-3" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center justify-between">
               <span className="text-sm font-semibold text-[#111827]">원본 보기</span>
-              <button
-                type="button"
-                onClick={() => setPreviewImage(null)}
-                className="text-[#6b7280] text-sm px-2 py-1 rounded-md border border-[#E3E6EC]"
-              >
-                닫기
-              </button>
+              <button type="button" onClick={() => setPreviewImage(null)} className="text-[#6b7280] text-sm px-2 py-1 rounded-md border border-[#E3E6EC]">닫기</button>
             </div>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={previewImage} alt="preview" className="w-full max-h-[70vh] object-contain rounded-lg border border-[#E3E6EC]" />
@@ -1040,428 +525,11 @@ export default function AdminOnboardingDetailPage() {
   );
 }
 
-function InfoLine({ label, value, className }: { label: string; value?: string | null; className?: string }) {
+function InfoRow({ label, value }: { label: string; value?: string | null }) {
   return (
-    <div className={className}>
-      <div className="text-xs text-[#6b7280]">{label}</div>
-      <div className="text-sm text-[#111827]">{value && value.length ? value : "-"}</div>
-    </div>
-  );
-}
-
-function formatYesNo(value?: boolean | null) {
-  if (value === true) return "예";
-  if (value === false) return "아니오";
-  return "-";
-}
-
-function formatServiceTypes(types?: string[] | null) {
-  if (!types || types.length === 0) return "-";
-  return types
-    .map((t) => {
-      if (t === "social_match") return "소셜 매치";
-      if (t === "rental") return "구장 예약";
-      return t;
-    })
-    .join(", ");
-}
-
-function EditableInput({
-  label,
-  value,
-  onChange,
-  placeholder,
-  help,
-  multiline,
-}: {
-  label: string;
-  value: string | number | null | undefined;
-  onChange: (v: string) => void;
-  placeholder?: string;
-  help?: string;
-  multiline?: boolean;
-}) {
-  return (
-    <label className="flex flex-col gap-1 text-xs text-[#6b7280]">
-      <span className="inline-flex items-center gap-1">
-        {label}
-        {help && (
-          <span className="relative inline-flex items-center text-[#9CA3AF] cursor-help group">
-            <span className="inline-flex items-center justify-center w-4 h-4 rounded-full border border-[#D1D5DB] text-[10px]">?</span>
-            <span className="pointer-events-none absolute left-5 top-0 translate-y-1 w-64 rounded-md border border-[#E3E6EC] bg-white px-2 py-1 text-[11px] text-[#6b7280] shadow-sm opacity-0 transition-opacity group-hover:opacity-100 whitespace-pre-line">
-              {help}
-            </span>
-          </span>
-        )}
-      </span>
-      {multiline ? (
-        <textarea
-          value={value ?? ""}
-          onChange={(e) => onChange(e.target.value)}
-          placeholder={placeholder}
-          rows={4}
-          className="border border-[#E3E6EC] rounded-lg px-3 py-2 text-sm text-[#111827] whitespace-pre-wrap resize-y"
-        />
-      ) : (
-        <input
-          value={value ?? ""}
-          onChange={(e) => onChange(e.target.value)}
-          placeholder={placeholder}
-          className="border border-[#E3E6EC] rounded-lg px-3 py-2 text-sm text-[#111827]"
-        />
-      )}
-    </label>
-  );
-}
-
-function EditableSelect({
-  label,
-  value,
-  options,
-  onChange,
-}: {
-  label: string;
-  value: string;
-  options: string[];
-  onChange: (v: string) => void;
-}) {
-  return (
-    <label className="flex flex-col gap-1 text-xs text-[#6b7280]">
-      <span>{label}</span>
-      <select
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        className="border border-[#E3E6EC] rounded-lg px-3 py-2 text-sm text-[#111827] bg-white"
-      >
-        <option value="">선택하세요</option>
-        {options.map((opt) => (
-          <option key={opt} value={opt}>
-            {opt}
-          </option>
-        ))}
-      </select>
-    </label>
-  );
-}
-
-function EditableToggle({ label, checked, onChange }: { label: string; checked: boolean; onChange: (v: boolean) => void }) {
-  return (
-    <label className="inline-flex items-center gap-2 text-xs text-[#6b7280]">
-      <input type="checkbox" checked={checked} onChange={(e) => onChange(e.target.checked)} />
-      <span className="text-[#111827] text-sm">{label}</span>
-    </label>
-  );
-}
-
-function ActionPanel({
-  title,
-  active,
-  actions,
-  doAction,
-  saving,
-  hideActions,
-  collapsed,
-  onToggleCollapse,
-  memoValue,
-  onMemoChange,
-  showMemo,
-  extraContent,
-}: {
-  title: string;
-  active: boolean;
-  actions: { label: string; next: OnboardingState }[];
-  doAction: (next: OnboardingState) => Promise<void>;
-  saving: boolean;
-  hideActions?: boolean;
-  collapsed?: boolean;
-  onToggleCollapse?: () => void;
-  memoValue?: string;
-  onMemoChange?: (v: string) => void;
-  showMemo?: boolean;
-  extraContent?: React.ReactNode;
-}) {
-  return (
-    <section
-      className={`bg-white border rounded-xl shadow-sm p-5 space-y-3 ${
-        active ? "border-[#1C5DFF]" : "border-[#E3E6EC]"
-      }`}
-      style={active ? { boxShadow: "0 0 0 2px rgba(28,93,255,0.08)" } : undefined}
-    >
-      <div className="flex items-center gap-2">
-        <div className="w-2 h-2 rounded-full" style={{ background: active ? "#1C5DFF" : "#E3E6EC" }} />
-        <div className="text-sm text-[#111827] font-semibold">{title}</div>
-        {onToggleCollapse && (
-          <button
-            type="button"
-            onClick={onToggleCollapse}
-            className="text-[#6b7280] text-sm hover:text-[#1C5DFF] cursor-pointer"
-            aria-label={collapsed ? "열기" : "접기"}
-          >
-            <span aria-hidden>{collapsed ? "▶" : "▼"}</span>
-          </button>
-        )}
-      </div>
-      {collapsed ? null : (
-        <>
-          {!hideActions &&
-            (actions.length === 0 ? (
-              <div className="text-sm text-[#6b7280]">현재 상태에서 실행할 액션이 없습니다.</div>
-            ) : (
-              <div className="flex flex-wrap gap-2">
-                {actions.map((b) => (
-                  <button
-                    key={b.next}
-                    type="button"
-                    disabled={saving}
-                    onClick={() => doAction(b.next)}
-                    className="px-3 py-2 rounded-lg border border-[#1C5DFF] text-[#1C5DFF] text-sm font-semibold"
-                  >
-                    {saving ? "처리 중…" : b.label}
-                  </button>
-                ))}
-              </div>
-            ))}
-          {showMemo && onMemoChange && (
-            <div className="space-y-1 pt-2 w-full md:w-2/3">
-              <label className="text-xs text-[#6b7280]">반려 사유 (반려 시 기록)</label>
-              <textarea
-                value={memoValue || ""}
-                onChange={(e) => onMemoChange(e.target.value)}
-                className="w-full border border-[#E3E6EC] rounded-lg px-3 py-2 text-sm"
-                rows={3}
-                placeholder="반려 사유를 입력하세요."
-              />
-            </div>
-          )}
-          {extraContent}
-        </>
-      )}
-    </section>
-  );
-}
-
-function SettlementForm({
-  id,
-  saving,
-  title,
-  desc,
-  images,
-  setTitle,
-  setDesc,
-  setImages,
-  previews,
-  setPreviews,
-  onSuccess,
-  onError,
-  uploading,
-  setUploading,
-}: {
-  id: string;
-  saving: boolean;
-  title: string;
-  desc: string;
-  images: string;
-  setTitle: (v: string) => void;
-  setDesc: (v: string) => void;
-  previews: string[];
-  setPreviews: (list: string[]) => void;
-  setImages: (v: string) => void;
-  onSuccess: (opts?: { reset?: boolean; newPreviews?: string[] }) => void;
-  onError: (msg: string) => void;
-  uploading: boolean;
-  setUploading: (v: boolean) => void;
-}) {
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
-  const [submitting, setSubmitting] = useState(false);
-  const [localError, setLocalError] = useState<string | null>(null);
-  const parsedImages = images
-    .split(",")
-    .map((u) => u.trim())
-    .filter(Boolean);
-  const mergedImages = Array.from(new Set([...(previews || []), ...parsedImages]));
-
-  const uploadFile = async (file: File) => {
-    setLocalError(null);
-    onError("");
-    setUploading(true);
-    try {
-      const form = new FormData();
-      form.append("file", file);
-      const res = await fetch(`/api/admin/onboarding/${id}/settlement-upload`, { method: "POST", body: form });
-      const json = await res.json();
-      if (!res.ok) throw new Error(json?.error || "업로드 실패");
-      const current = images
-        .split(",")
-        .map((u) => u.trim())
-        .filter(Boolean);
-      current.push(json.url);
-      setImages(current.join(", "));
-      const nextPreviews = Array.from(new Set([...(previews || []), json.url]));
-      setPreviews(nextPreviews);
-      onSuccess({ reset: false, newPreviews: [json.url] });
-    } catch (e: any) {
-      const msg = e.message ?? "업로드 중 오류가 발생했습니다.";
-      onError(msg);
-      setLocalError(msg);
-    } finally {
-      setUploading(false);
-    }
-  };
-
-  const submit = async () => {
-    setLocalError(null);
-    onError("");
-    if (!title.trim()) {
-      const msg = "제목을 입력해주세요.";
-      onError(msg);
-      setLocalError(msg);
-      return;
-    }
-    if (parsedImages.length === 0) {
-      const msg = "이미지 URL을 1개 이상 입력해주세요.";
-      onError(msg);
-      setLocalError(msg);
-      return;
-    }
-    setSubmitting(true);
-    try {
-      const res = await fetch(`/api/onboarding/${id}/step1`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title, description: desc, image_urls: parsedImages }),
-      });
-      const json = await res.json();
-      if (!res.ok) throw new Error(json?.error || "업로드 실패");
-      onSuccess({ reset: true });
-    } catch (e: any) {
-      const msg = e.message ?? "업로드 중 오류가 발생했습니다.";
-      onError(msg);
-      setLocalError(msg);
-    } finally {
-      setSubmitting(false);
-    }
-  };
-
-  return (
-    <div className="space-y-2 border-t border-[#E3E6EC] pt-3">
-      <div className="text-sm text-[#111827] font-semibold">정산안 정보</div>
-      <div className="space-y-1">
-        <label className="text-xs text-[#6b7280]">제목</label>
-        <input
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          className="w-full border border-[#E3E6EC] rounded-lg px-3 py-2 text-sm"
-          placeholder="예: 요일/시간별 정산안 v1"
-        />
-      </div>
-      <div className="space-y-1">
-        <label className="text-xs text-[#6b7280]">설명 (선택)</label>
-        <textarea
-          value={desc}
-          onChange={(e) => setDesc(e.target.value)}
-          className="w-full border border-[#E3E6EC] rounded-lg px-3 py-2 text-sm"
-          rows={2}
-          placeholder="설명 또는 특이사항"
-        />
-      </div>
-      <div className="space-y-2">
-        <div className="space-y-1">
-          <label className="text-xs text-[#6b7280]">이미지 URL (쉼표 구분)</label>
-          <textarea
-            value={images}
-            onChange={(e) => setImages(e.target.value)}
-            className="w-full border border-[#E3E6EC] rounded-lg px-3 py-2 text-sm"
-            rows={2}
-            placeholder="https://...jpg, https://...png"
-          />
-        </div>
-        <div className="flex items-center gap-3">
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept=".jpg,.jpeg,.png,.pdf"
-            className="hidden"
-            disabled={uploading}
-            onChange={(e) => {
-              const file = e.target.files?.[0];
-              if (file) uploadFile(file);
-              e.target.value = "";
-            }}
-          />
-          <button
-            type="button"
-            onClick={() => fileInputRef.current?.click()}
-            disabled={uploading}
-            className="px-3 py-2 rounded-lg border border-[#1C5DFF] text-[#1C5DFF] text-sm font-semibold"
-          >
-            {uploading ? "업로드 중..." : "파일 선택/업로드"}
-          </button>
-          {mergedImages.length > 0 && <span className="text-xs text-[#6b7280] truncate">추가된 URL: {mergedImages.length}개</span>}
-        </div>
-        {mergedImages.length > 0 && (
-          <div className="space-y-2">
-            <div className="text-xs text-[#6b7280]">업로드/입력된 이미지 미리보기</div>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-              {mergedImages.map((url) => (
-                <div key={url} className="border border-[#E3E6EC] rounded-lg p-2 flex flex-col gap-2">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={url} alt="정산안" className="w-full h-28 object-cover rounded-md" />
-                  <a
-                    href={url}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="text-xs text-[#1C5DFF] underline break-all"
-                  >
-                    원본 보기
-                  </a>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-      </div>
-      <div className="flex justify-end">
-        <button
-          type="button"
-          onClick={submit}
-          disabled={saving || submitting}
-          className="px-4 py-2 rounded-lg text-white font-semibold"
-          style={{ background: "#1C5DFF" }}
-        >
-          {saving || submitting ? "업로드 중..." : "정산안 업로드"}
-        </button>
-      </div>
-      {localError && <div className="text-xs text-red-600">{localError}</div>}
-    </div>
-  );
-}
-
-function DocThumb({ label, url, onPreview }: { label: string; url: string | null; onPreview?: (url: string) => void }) {
-  if (!url) {
-    return (
-      <div className="border border-dashed border-[#E3E6EC] rounded-lg p-3 text-sm text-[#9CA3AF] flex flex-col gap-2 items-start">
-        <span className="text-xs text-[#6b7280]">{label}</span>
-        <span>미업로드</span>
-      </div>
-    );
-  }
-  const fileName = url.split("/").pop() || "download";
-  const downloadUrl = url.includes("?") ? `${url}&download=1` : `${url}?download=1`;
-  return (
-    <div className="border border-[#E3E6EC] rounded-lg p-3 flex flex-col gap-2 bg-[#F9FAFB]">
-      <span className="text-xs text-[#6b7280]">{label}</span>
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src={url}
-        alt={label}
-        className="w-full h-28 object-contain bg-white rounded-md border border-[#E3E6EC] cursor-pointer"
-        onClick={() => onPreview?.(url)}
-      />
-      <div className="flex items-center gap-2">
-        <a href={downloadUrl} download={fileName} className="text-[#1C5DFF] underline text-sm">
-          다운로드
-        </a>
-      </div>
+    <div>
+      <p className="text-xs text-[#9CA3AF]">{label}</p>
+      <p className="text-sm text-[#374151] font-medium">{value || "-"}</p>
     </div>
   );
 }

@@ -32,18 +32,31 @@ export async function PATCH(req: NextRequest, context: { params: Promise<{ id: s
     if (!id || !uuidRegex.test(id)) return NextResponse.json({ error: "invalid_id" }, { status: 400 });
 
     const body = await req.json();
-    const manager_done = !!body?.manager_done;
+    const updatePayload: Record<string, any> = {};
+
+    if (typeof body?.manager_done === "boolean") {
+      updatePayload.manager_done = body.manager_done;
+    }
+    if (Array.isArray(body?.sections)) {
+      updatePayload.sections = body.sections;
+    }
+    if (body?.settlement_rate !== undefined) {
+      updatePayload.settlement_rate = body.settlement_rate;
+    }
+    if (body?.settlement_rate_data !== undefined) {
+      updatePayload.settlement_rate_data = body.settlement_rate_data;
+    }
 
     const { data, error } = await supabaseClient
       .from("onboarding_requests")
-      .update({ manager_done })
+      .update(updatePayload)
       .eq("id", id)
-      .select("manager_done")
+      .select("manager_done, sections, settlement_rate, settlement_rate_data")
       .single();
 
     if (error) throw error;
 
-    return NextResponse.json({ ok: true, manager_done: data.manager_done });
+    return NextResponse.json({ ok: true, ...data });
   } catch (e: any) {
     return NextResponse.json({ error: e.message ?? "server_error" }, { status: 500 });
   }

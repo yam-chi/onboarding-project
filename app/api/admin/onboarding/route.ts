@@ -1,9 +1,8 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { supabaseClient } from "@/lib/supabaseClient";
 
 export const runtime = "nodejs";
 
-// 간단 조회용 관리자 리스트 API (권한 가드는 추후 Auth 붙일 때 보완)
 export async function GET() {
   try {
     if (!supabaseClient) throw new Error("Supabase 설정이 필요합니다.");
@@ -17,6 +16,8 @@ export async function GET() {
           region,
           step_status,
           manager_done,
+          manager,
+          venue_type,
           updated_at
         `)
       .order("updated_at", { ascending: false });
@@ -34,5 +35,40 @@ export async function GET() {
     };
     console.error("[admin/onboarding] fetch error:", message, cause, debug);
     return NextResponse.json({ error: message, cause, debug }, { status: 500 });
+  }
+}
+
+// 어드민에서 신규 온보딩 링크 생성
+export async function POST(req: NextRequest) {
+  try {
+    if (!supabaseClient) throw new Error("Supabase 설정이 필요합니다.");
+
+    const body = await req.json().catch(() => ({}));
+    const { stadium_name, manager, venue_type, region, settlement_rate, sections } = body;
+
+    if (!stadium_name) {
+      return NextResponse.json({ error: "구장명을 입력해주세요." }, { status: 400 });
+    }
+
+    const { data, error } = await supabaseClient
+      .from("onboarding_requests")
+      .insert({
+        stadium_name,
+        manager: manager || null,
+        venue_type: venue_type || "신규",
+        region: region || null,
+        settlement_rate: settlement_rate || null,
+        sections: sections || [],
+        completed_sections: [],
+        step_status: "step0_pending",
+      })
+      .select("id")
+      .single();
+
+    if (error) throw error;
+
+    return NextResponse.json({ id: data.id });
+  } catch (e: any) {
+    return NextResponse.json({ error: e.message ?? "server_error" }, { status: 500 });
   }
 }
